@@ -1,0 +1,73 @@
+:root {
+  /* ── Backgrounds (Warp-inspired dark palette) ───────── */
+  --bg-base:        #0A0A0A;
+  --bg-pane:        #0D0D0D;
+  --bg-surface:     #111111;
+  --bg-elevated:    #181818;
+  --bg-hover:       #202020;
+  --bg-input:       #0F0F0F;
+  --bg-glass:       rgba(10, 10, 10, 0.94);
+
+  /* ── Tab bar specific ──────────────────────────────── */
+  --tab-active-bg:  #141414;
+  --tab-hover-bg:   #161616;
+
+  /* ── Borders ────────────────────────────────────────── */
+  --border:         #1C1C1C;
+  --border-subtle:  #161616;
+  --border-focus:   #2C2C2C;
+  --border-strong:  #3C3C3C;
+
+  /* ── Text ───────────────────────────────────────────── */
+  --text-primary:   #E5E5E3;
+  --text-secondary: #717171;
+  --text-tertiary:  #383838;
+  --text-muted:     #4C4C4C;
+  --text-inverse:   #0A0A0A;
+
+  /* ── Accent (Warp blue) ─────────────────────────────── */
+  --accent:         #3B7FF5;
+  --accent-dim:     rgba(59, 127, 245, 0.10);
+  --accent-border:  rgba(59, 127, 245, 0.38);
+
+  /* ── AI Session Colors ──────────────────────────────── */
+  --ai-claude:      #D4A27F;
+  --ai-opencode:    #7FB5D4;
+  --ai-aider:       #A27FD4;
+  --ai-continue:    #7FD4A2;
+  --ai-default:     #555555;
+
+  /* ── Semantic ───────────────────────────────────────── */
+  --ok:             #3A8A52;
+  --warn:           #A06E28;
+  --err:            #8A3838;
+  --info:           #385E8A;
+
+  /* ── Shadows ────────────────────────────────────────── */
+  --shadow-sm:      0 1px 3px rgba(0,0,0,0.6);
+  --shadow-md:      0 4px 16px rgba(0,0,0,0.7);
+  --shadow-lg:      0 12px 40px rgba(0,0,0,0.85);
+  --shadow-palette: 0 0 0 1px rgba(255,255,255,0.05), 0 20px 56px rgba(0,0,0,0.9);
+
+  /* ── Sizing ─────────────────────────────────────────── */
+  --titlebar-h:     38px;
+  --tabbar-h:       36px;
+  --statusbar-h:    24px;
+  --filetree-w:     220px;
+  --pane-header-h:  30px;
+  --radius-sm:      4px;
+  --radius-md:      6px;
+  --radius-lg:      10px;
+  --border-radius:  var(--radius-sm);
+
+  /* ── Animation ──────────────────────────────────────── */
+  --dur-fast:       80ms;
+  --dur-base:       140ms;
+  --dur-slow:       220ms;
+  --ease:           cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-out:       cubic-bezier(0, 0, 0.2, 1);
+
+  /* ── Font ───────────────────────────────────────────── */
+  --font-mono: "TX-02", "Berkeley Mono", "Cascadia Code", "JetBrains Mono", monospace;
+  --font-ui:   "Geist Mono", "JetBrains Mono", "Fira Code", "Cascadia Mono", monospace;
+}

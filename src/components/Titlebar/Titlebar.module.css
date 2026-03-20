@@ -1,0 +1,104 @@
+.titlebar {
+  height: var(--titlebar-h);
+  background: var(--bg-base);
+  border-bottom: 1px solid var(--border-subtle);
+  display: flex;
+  align-items: center;
+  padding: 0 6px;
+  -webkit-app-region: drag;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 10;
+  gap: 8px;
+}
+
+.trafficLights {
+  width: 70px;
+  flex-shrink: 0;
+  -webkit-app-region: no-drag;
+}
+
+/* ── Center meta ───────────────────────────────── */
+.meta {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-width: 0;
+  -webkit-app-region: drag;
+}
+
+.workspaceName {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  font-family: var(--font-ui);
+  letter-spacing: 0.01em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.branch {
+  font-size: 10px;
+  color: var(--text-muted);
+  font-family: var(--font-ui);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+/* ── Right actions ─────────────────────────────── */
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 1px;
+  -webkit-app-region: no-drag;
+}
+
+.actionBtn {
+  width: 26px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+  border-radius: var(--radius-sm);
+  transition: color var(--dur-fast), background var(--dur-fast);
+}
+
+.actionBtn:hover {
+  color: var(--text-secondary);
+  background: var(--bg-hover);
+}
+
+/* ── Windows controls ──────────────────────────── */
+.windowControls {
+  display: flex;
+  align-items: center;
+  gap: 1px;
+  -webkit-app-region: no-drag;
+}
+
+.winBtn {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-secondary);
+  transition: color var(--dur-fast), background var(--dur-fast);
+  border-radius: 0;
+}
+
+.winBtn:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+.closeBtn:hover {
+  background: #c42b1c;
+  color: #fff;
+}

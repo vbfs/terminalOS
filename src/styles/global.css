@@ -1,0 +1,53 @@
+@import './tokens.css';
+@import './reset.css';
+
+body {
+  background: var(--bg-base);
+  color: var(--text-primary);
+  font-family: var(--font-ui);
+  font-size: 13px;
+  line-height: 1.4;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  user-select: none;
+}
+
+/* ── Scrollbar ─────────────────────────────────── */
+::-webkit-scrollbar {
+  width: 3px;
+  height: 3px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-focus);
+  border-radius: 2px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--border-strong);
+}
+
+/* ── Selection ─────────────────────────────────── */
+::selection {
+  background: rgba(232, 232, 230, 0.1);
+}
+
+/* ── Focus ring ────────────────────────────────── */
+:focus-visible {
+  outline: 1px solid var(--accent-border);
+  outline-offset: -1px;
+}
+
+/* ── Button base ───────────────────────────────── */
+button {
+  cursor: pointer;
+  border: none;
+  background: none;
+  padding: 0;
+  color: inherit;
+  font: inherit;
+}

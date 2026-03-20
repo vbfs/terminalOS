@@ -1,0 +1,19 @@
+appId: dev.aiterminal.app
+productName: AI Terminal
+directories:
+  output: dist
+files:
+  - build/**
+  - electron/**
+  - node_modules/**
+mac:
+  target: dmg
+  arch:
+    - x64
+    - arm64
+  category: public.app-category.developer-tools
+win:
+  target: nsis
+linux:
+  target: AppImage
+nativeRebuilder: node-pty

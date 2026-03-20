@@ -1,0 +1,179 @@
+/* ── Tab Bar container ─────────────────────────── */
+.tabBar {
+  height: var(--tabbar-h);
+  background: var(--bg-base);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: stretch;
+  flex-shrink: 0;
+  overflow: hidden;
+  -webkit-app-region: drag;
+}
+
+.tabs {
+  display: flex;
+  align-items: stretch;
+  flex: 1;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+  gap: 1px;
+  /* padding: 5px 4px 0; */
+  -webkit-app-region: no-drag;
+}
+
+.tabs::-webkit-scrollbar {
+  display: none;
+}
+
+/* ── Individual tab ────────────────────────────── */
+.tab {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 0 8px 0 10px;
+  min-width: 110px;
+  max-width: 180px;
+  cursor: pointer;
+  border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+  position: relative;
+  color: var(--text-muted);
+  font-size: 11px;
+  font-family: var(--font-ui);
+  background: transparent;
+  border: 1px solid transparent;
+  border-bottom: none;
+  user-select: none;
+  transition:
+    color var(--dur-fast),
+    background var(--dur-fast);
+  flex-shrink: 0;
+  -webkit-app-region: no-drag;
+}
+
+.tab:hover {
+  color: var(--text-secondary);
+  background: var(--tab-hover-bg);
+}
+
+.tab.active {
+  background: var(--tab-active-bg);
+  border-color: var(--border);
+  color: var(--text-primary);
+  box-shadow: 0 -1px 0 0 var(--accent) inset;
+}
+
+/* Bottom fill for active tab to merge with pane grid */
+.tab.active::after {
+  content: "";
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: var(--tab-active-bg);
+}
+
+/* ── Tab icon ──────────────────────────────────── */
+.tabIcon {
+  font-size: 10px;
+  color: var(--text-tertiary);
+  flex-shrink: 0;
+  letter-spacing: -0.5px;
+  font-family: monospace;
+}
+
+.tab.active .tabIcon {
+  color: var(--accent);
+}
+
+/* ── Tab name ──────────────────────────────────── */
+.tabName {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ── Inline rename input ───────────────────────── */
+.tabInput {
+  flex: 1;
+  background: var(--bg-input);
+  border: 1px solid var(--accent-border);
+  border-radius: 2px;
+  padding: 0 4px;
+  font-size: 11px;
+  font-family: var(--font-ui);
+  color: var(--text-primary);
+  outline: none;
+  min-width: 0;
+  height: 18px;
+}
+
+/* ── Pane count badge ──────────────────────────── */
+.paneCount {
+  font-size: 9px;
+  color: var(--text-tertiary);
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  padding: 0 3px;
+  flex-shrink: 0;
+  line-height: 14px;
+}
+
+/* ── Close button ──────────────────────────────── */
+.closeBtn {
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  line-height: 1;
+  color: var(--text-tertiary);
+  border-radius: 3px;
+  flex-shrink: 0;
+  opacity: 0;
+  transition:
+    opacity var(--dur-fast),
+    color var(--dur-fast),
+    background var(--dur-fast);
+  cursor: pointer;
+  border: none;
+  background: none;
+  padding: 0;
+}
+
+.tab:hover .closeBtn,
+.tab.active .closeBtn {
+  opacity: 1;
+}
+
+.closeBtn:hover {
+  color: var(--text-primary);
+  background: var(--bg-hover);
+}
+
+/* ── New tab button ────────────────────────────── */
+.newTabBtn {
+  width: 32px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  line-height: 1;
+  color: var(--text-muted);
+  cursor: pointer;
+  border: none;
+  background: none;
+  padding: 0;
+  margin-bottom: 1px;
+  transition: color var(--dur-fast);
+  -webkit-app-region: no-drag;
+}
+
+.newTabBtn:hover {
+  color: var(--text-primary);
+}
