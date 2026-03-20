@@ -6,27 +6,62 @@ import { SearchAddon } from '@xterm/addon-search'
 import { useSessionsStore } from '../store/sessions.store'
 
 const termTheme = {
-  background: '#0F0F0F',
-  foreground: '#E4E4E2',
-  cursor: '#E4E4E2',
-  cursorAccent: '#0F0F0F',
-  selectionBackground: 'rgba(232, 232, 230, 0.15)',
-  black: '#1A1A1A',
-  brightBlack: '#3A3A3A',
-  red: '#9E5A5A',
-  brightRed: '#C47A7A',
-  green: '#5A9E6F',
-  brightGreen: '#7AC494',
-  yellow: '#C4893A',
-  brightYellow: '#E4A95A',
-  blue: '#5A7A9E',
-  brightBlue: '#7A9AC4',
-  magenta: '#8A5A9E',
-  brightMagenta: '#AA7AC4',
-  cyan: '#5A9E8A',
-  brightCyan: '#7AC4B0',
-  white: '#C8C8C6',
-  brightWhite: '#E8E8E6',
+  background: '#0a0a0c',
+  foreground: '#dddbd4',
+  cursor: '#e8a44a',
+  cursorAccent: '#0a0a0c',
+  selectionBackground: 'rgba(221, 219, 212, 0.15)',
+  black: '#1e1e26',
+  brightBlack: '#5a5a62',
+  red: '#f87171',
+  brightRed: '#f87171',
+  green: '#4ade80',
+  brightGreen: '#4ade80',
+  yellow: '#e8a44a',
+  brightYellow: '#e8a44a',
+  blue: '#60a5fa',
+  brightBlue: '#60a5fa',
+  magenta: '#7b6ef6',
+  brightMagenta: '#7b6ef6',
+  cyan: '#2dd4bf',
+  brightCyan: '#2dd4bf',
+  white: '#dddbd4',
+  brightWhite: '#ffffff',
+}
+
+// Parse token count from PTY stdout
+function parseTokens(data: string): number | null {
+  // Pattern: ↑ 2.4k tokens  or  ↑ 2,400 tokens
+  const m1 = data.match(/↑\s*([\d.,]+)(k)?\s*tokens/i)
+  if (m1) {
+    const val = parseFloat(m1[1].replace(',', '.'))
+    return m1[2] ? Math.round(val * 1000) : Math.round(val)
+  }
+  // Pattern: tokens used: 18234
+  const m2 = data.match(/tokens\s+used:\s*([\d,]+)/i)
+  if (m2) return parseInt(m2[1].replace(/,/g, ''))
+  // Pattern: "5.2k tokens" in parentheses
+  const m3 = data.match(/\(\s*([\d.,]+)(k)?\s*tokens\s*\)/i)
+  if (m3) {
+    const val = parseFloat(m3[1].replace(',', '.'))
+    return m3[2] ? Math.round(val * 1000) : Math.round(val)
+  }
+  return null
+}
+
+// Parse error alert from PTY stdout
+function parseAlert(data: string): string | null {
+  if (/API Error:.*404.*model.*not found/i.test(data)) {
+    const m = data.match(/model[:\s'"]+([^\s'"]+)/i)
+    return `Model '${m?.[1] ?? 'unknown'}' not found`
+  }
+  if (/Auth conflict.*ANTHROPIC_AUTH_TOKEN/i.test(data)) {
+    return 'Auth conflict: use ANTHROPIC_API_KEY instead of ANTHROPIC_AUTH_TOKEN'
+  }
+  if (/authentication.*failed/i.test(data) || /Invalid API key/i.test(data)) {
+    return 'API key authentication failed — check your ANTHROPIC_API_KEY'
+  }
+  return null
 }
 
 interface UsePtyOptions {
@@ -45,7 +80,7 @@ export function usePty({ sessionId, containerRef, onReady }: UsePtyOptions) {
   const resizeDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const lastSizeRef = useRef({ cols: 0, rows: 0 })
 
-  const { updateStatus, updateCwd, setAiProcess } = useSessionsStore()
+  const { updateStatus, updateCwd, setAiProcess, updateTokens, setAlert } = useSessionsStore()
 
   const flushData = useCallback(() => {
     if (pendingDataRef.current.length === 0) return
@@ -61,7 +96,6 @@ export function usePty({ sessionId, containerRef, onReady }: UsePtyOptions) {
     const container = containerRef.current
     if (!container) return
 
-    // Single ResizeObserver: initializes terminal on first non-zero size, fits on subsequent
     const ro = new ResizeObserver((entries) => {
       const entry = entries[0]
       if (!entry) return
@@ -72,9 +106,9 @@ export function usePty({ sessionId, containerRef, onReady }: UsePtyOptions) {
         initializedRef.current = true
 
         const terminal = new Terminal({
-          fontFamily: '"MesloLGS NF", "Hack Nerd Font", "FiraCode Nerd Font", "JetBrainsMono Nerd Font", "Cascadia Code", "JetBrains Mono", "Fira Code", "Menlo", "Monaco", monospace',
+          fontFamily: '"JetBrains Mono", "MesloLGS NF", "Hack Nerd Font", "Cascadia Code", monospace',
           fontSize: 13,
-          lineHeight: 1.2,
+          lineHeight: 1.5,
           letterSpacing: 0,
           theme: termTheme,
           allowTransparency: false,
@@ -94,8 +128,7 @@ export function usePty({ sessionId, containerRef, onReady }: UsePtyOptions) {
         terminal.loadAddon(searchAddon)
 
         terminal.attachCustomKeyEventHandler((e) => {
-          // Prevent Cmd+* combos from being forwarded to the PTY.
-          // These are handled by the app's global keymap (useKeymap).
+          // Let Cmd+* combos through to global keymap
           if (e.metaKey) return false
           return true
         })
@@ -107,21 +140,18 @@ export function usePty({ sessionId, containerRef, onReady }: UsePtyOptions) {
         fitAddonRef.current = fitAddon
         searchAddonRef.current = searchAddon
 
-        // Delay first resize by 400ms so the shell finishes initializing
-        // before receiving SIGWINCH — prevents garbage characters on first render
         const { cols, rows } = terminal
         lastSizeRef.current = { cols, rows }
         setTimeout(() => {
-          if (termRef.current) {
-            window.api.pty.resize(sessionId, cols, rows)
-          }
+          if (termRef.current) window.api.pty.resize(sessionId, cols, rows)
         }, 400)
 
+        // Forward any direct terminal input to PTY (fallback)
         terminal.onData((data) => {
           window.api.pty.write(sessionId, data)
         })
 
-        // OSC 7: track real-time CWD changes (format: file://hostname/path)
+        // OSC 7: track CWD changes
         terminal.parser.registerOscHandler(7, (data) => {
           try {
             const url = new URL(data)
@@ -134,7 +164,6 @@ export function usePty({ sessionId, containerRef, onReady }: UsePtyOptions) {
 
         onReady?.()
       } else {
-        // Subsequent resizes: debounce fit to avoid SIGWINCH spam
         if (resizeDebounceRef.current) clearTimeout(resizeDebounceRef.current)
         resizeDebounceRef.current = setTimeout(() => {
           const fit = fitAddonRef.current
@@ -142,7 +171,6 @@ export function usePty({ sessionId, containerRef, onReady }: UsePtyOptions) {
           if (!fit || !term) return
           fit.fit()
           const { cols, rows } = term
-          // Only send resize if size actually changed
           if (cols !== lastSizeRef.current.cols || rows !== lastSizeRef.current.rows) {
             lastSizeRef.current = { cols, rows }
             window.api.pty.resize(sessionId, cols, rows)
@@ -155,6 +183,15 @@ export function usePty({ sessionId, containerRef, onReady }: UsePtyOptions) {
 
     const unsubData = window.api.pty.onData((id, data) => {
       if (id !== sessionId) return
+
+      // Token parsing
+      const tokens = parseTokens(data)
+      if (tokens !== null) updateTokens(sessionId, tokens)
+
+      // Alert parsing
+      const alert = parseAlert(data)
+      if (alert !== null) setAlert(sessionId, alert)
+
       pendingDataRef.current.push(data)
       if (rafRef.current === null) {
         rafRef.current = requestAnimationFrame(flushData)
@@ -169,6 +206,8 @@ export function usePty({ sessionId, containerRef, onReady }: UsePtyOptions) {
     const unsubAiDetected = window.api.pty.onAiDetected((id, aiProcess) => {
       if (id !== sessionId) return
       setAiProcess(sessionId, aiProcess)
+      // Clear alert when AI starts fresh
+      setAlert(sessionId, null)
     })
 
     const unsubAiExited = window.api.pty.onAiExited((id) => {

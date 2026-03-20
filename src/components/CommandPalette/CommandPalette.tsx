@@ -64,7 +64,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose 
         if (!activeTab?.activePaneId) return
         const sessionId = await window.api.pty.create({ cwd: activeCwd })
         const newPaneId = tabsStore.splitTabPane(activeTab.id, activeTab.activePaneId, 'v', sessionId)
-        addSession({ id: sessionId, paneId: newPaneId, cwd: activeCwd ?? '', status: 'running', aiProcess: null, createdAt: Date.now() })
+        addSession({ id: sessionId, paneId: newPaneId, name: 'Session', cwd: activeCwd ?? '', status: 'running', aiProcess: null, tokens: 0, alertMessage: null, createdAt: Date.now() })
         onClose()
       },
     },
@@ -77,7 +77,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose 
         if (!activeTab?.activePaneId) return
         const sessionId = await window.api.pty.create({ cwd: activeCwd })
         const newPaneId = tabsStore.splitTabPane(activeTab.id, activeTab.activePaneId, 'h', sessionId)
-        addSession({ id: sessionId, paneId: newPaneId, cwd: activeCwd ?? '', status: 'running', aiProcess: null, createdAt: Date.now() })
+        addSession({ id: sessionId, paneId: newPaneId, name: 'Session', cwd: activeCwd ?? '', status: 'running', aiProcess: null, tokens: 0, alertMessage: null, createdAt: Date.now() })
         onClose()
       },
     },
@@ -92,7 +92,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose 
         const cwd = rootFolder ?? undefined
         const sessionId = await window.api.pty.create({ cwd })
         const paneId = tabsStore.initTabRoot(tabId, sessionId)
-        addSession({ id: sessionId, paneId, cwd: cwd ?? '', status: 'running', aiProcess: null, createdAt: Date.now() })
+        addSession({ id: sessionId, paneId, name: `Shell ${n}`, cwd: cwd ?? '', status: 'running', aiProcess: null, tokens: 0, alertMessage: null, createdAt: Date.now() })
         onClose()
       },
     },

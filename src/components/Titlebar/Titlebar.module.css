@@ -1,77 +1,66 @@
 .titlebar {
   height: var(--titlebar-h);
-  background: var(--bg-base);
-  border-bottom: 1px solid var(--border-subtle);
+  background: var(--bg2);
+  border-bottom: 1px solid var(--border);
   display: flex;
   align-items: center;
-  padding: 0 6px;
+  padding: 0 12px 0 22px;
   -webkit-app-region: drag;
   flex-shrink: 0;
   position: relative;
   z-index: 10;
-  gap: 8px;
 }
 
 .trafficLights {
-  width: 70px;
+  width: 72px;
   flex-shrink: 0;
   -webkit-app-region: no-drag;
 }
 
-/* ── Center meta ───────────────────────────────── */
-.meta {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  min-width: 0;
-  -webkit-app-region: drag;
+/* ── Centered title ──────────────────────────────── */
+.center {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  pointer-events: none;
 }
 
-.workspaceName {
-  font-size: 11px;
-  font-weight: 500;
-  color: var(--text-secondary);
-  font-family: var(--font-ui);
-  letter-spacing: 0.01em;
-  overflow: hidden;
-  text-overflow: ellipsis;
+.title {
+  font-size: 13px;
+  font-family: var(--font-mono);
+  color: var(--muted2);
   white-space: nowrap;
+  letter-spacing: 0;
 }
 
-.branch {
-  font-size: 10px;
-  color: var(--text-muted);
-  font-family: var(--font-ui);
+/* ── Right side ──────────────────────────────────── */
+.right {
+  margin-left: auto;
   display: flex;
   align-items: center;
-  gap: 4px;
-  flex-shrink: 0;
-}
-
-/* ── Right actions ─────────────────────────────── */
-.actions {
-  display: flex;
-  align-items: center;
-  gap: 1px;
+  gap: 6px;
   -webkit-app-region: no-drag;
 }
 
-.actionBtn {
-  width: 26px;
-  height: 26px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--text-muted);
-  border-radius: var(--radius-sm);
-  transition: color var(--dur-fast), background var(--dur-fast);
+.sessionCount {
+  font-size: 11px;
+  font-family: var(--font-ui);
+  color: var(--muted);
 }
 
-.actionBtn:hover {
-  color: var(--text-secondary);
-  background: var(--bg-hover);
+.connectedDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--green);
+  box-shadow: 0 0 6px var(--green);
+  flex-shrink: 0;
+}
+
+.connectedLabel {
+  font-size: 11px;
+  font-family: var(--font-ui);
+  color: var(--muted);
 }
 
 /* ── Windows controls ──────────────────────────── */
@@ -80,6 +69,7 @@
   align-items: center;
   gap: 1px;
   -webkit-app-region: no-drag;
+  margin-left: 8px;
 }
 
 .winBtn {
@@ -88,14 +78,17 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--text-secondary);
+  color: var(--muted2);
   transition: color var(--dur-fast), background var(--dur-fast);
   border-radius: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
 }
 
 .winBtn:hover {
-  background: var(--bg-hover);
-  color: var(--text-primary);
+  background: var(--bg3);
+  color: var(--text);
 }
 
 .closeBtn:hover {

@@ -1,104 +1,103 @@
-import React, { useRef, useState } from 'react'
+import React, { useMemo } from 'react'
 import styles from './TabBar.module.css'
-import { useTabsStore } from '../../store/tabs.store'
-import type { Tab } from '../../store/tabs.store'
+import { useSessionsStore } from '../../store/sessions.store'
+import { getAgentType, getDotState } from '../../types/session'
+import type { Session, AgentType, DotState } from '../../types/session'
 
-interface TabItemProps {
-  tab: Tab
-  isActive: boolean
-  onActivate: () => void
-  onClose: () => void
-  onRename: (name: string) => void
+function formatTokens(n: number): string {
+  if (n === 0) return ''
+  if (n >= 1000) return `${(n / 1000).toFixed(1)}k`
+  return String(n)
 }
 
-const TabItem: React.FC<TabItemProps> = ({ tab, isActive, onActivate, onClose, onRename }) => {
-  const [editing, setEditing] = useState(false)
-  const [draft, setDraft] = useState(tab.name)
-  const inputRef = useRef<HTMLInputElement>(null)
+const AGENT_LABELS: Record<AgentType, string> = {
+  CLAUDE: 'CLAUDE',
+  OC: 'OC',
+  SHELL: 'SHELL',
+}
 
-  const startEdit = (e: React.MouseEvent) => {
-    if (!isActive) return
-    e.stopPropagation()
-    setDraft(tab.name)
-    setEditing(true)
-    setTimeout(() => inputRef.current?.select(), 0)
-  }
+interface AgentBadgeProps {
+  type: AgentType
+  small?: boolean
+}
 
-  const commitEdit = () => {
-    setEditing(false)
-    const trimmed = draft.trim()
-    if (trimmed && trimmed !== tab.name) onRename(trimmed)
-  }
+export const AgentBadge: React.FC<AgentBadgeProps> = ({ type, small }) => (
+  <span className={`${styles.agentBadge} ${styles[`badge${type}`]} ${small ? styles.badgeSmall : ''}`}>
+    {AGENT_LABELS[type]}
+  </span>
+)
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') commitEdit()
-    if (e.key === 'Escape') setEditing(false)
-  }
+interface StatusDotProps {
+  state: DotState
+}
+
+export const StatusDot: React.FC<StatusDotProps> = ({ state }) => (
+  <span className={`${styles.statusDot} ${styles[`dot${state}`]}`} />
+)
+
+interface TabItemProps {
+  session: Session
+  isActive: boolean
+  onActivate: () => void
+}
+
+const TabItem: React.FC<TabItemProps> = ({ session, isActive, onActivate }) => {
+  const agentType = getAgentType(session)
+  const dotState = getDotState(session)
+  const tokenStr = formatTokens(session.tokens)
+  const isError = session.status === 'error'
 
   return (
     <div
       className={`${styles.tab} ${isActive ? styles.active : ''}`}
       onClick={onActivate}
-      onDoubleClick={startEdit}
-      title={tab.name}
+      title={session.name}
     >
-      <span className={styles.tabIcon}>›_</span>
-
-      {editing ? (
-        <input
-          ref={inputRef}
-          className={styles.tabInput}
-          value={draft}
-          onChange={(e) => setDraft(e.target.value)}
-          onBlur={commitEdit}
-          onKeyDown={handleKeyDown}
-          onClick={(e) => e.stopPropagation()}
-        />
-      ) : (
-        <span className={styles.tabName}>{tab.name}</span>
+      <StatusDot state={dotState} />
+      <AgentBadge type={agentType} />
+      <span className={styles.tabName}>{session.name}</span>
+      {tokenStr && (
+        <span className={`${styles.tokenCount} ${isError ? styles.tokenError : ''}`}>
+          {tokenStr}
+        </span>
       )}
-
-      {tab.paneCount > 1 && (
-        <span className={styles.paneCount}>{tab.paneCount}</span>
-      )}
-
-      <button
-        className={styles.closeBtn}
-        onClick={(e) => { e.stopPropagation(); onClose() }}
-        title="Close tab"
-      >
-        ×
-      </button>
     </div>
   )
 }
 
-interface TabBarProps {
-  onNewTab: () => void
+interface SessionTabBarProps {
+  onNewSession: () => void
 }
 
-export const TabBar: React.FC<TabBarProps> = ({ onNewTab }) => {
-  const { tabs, activeTabId, setActiveTab, closeTab, renameTab } = useTabsStore()
+export const SessionTabBar: React.FC<SessionTabBarProps> = ({ onNewSession }) => {
+  const sessionOrder = useSessionsStore((s) => s.sessionOrder)
+  const sessionsMap = useSessionsStore((s) => s.sessions)
+  const focusedSessionId = useSessionsStore((s) => s.focusedSessionId)
+  const setFocusedSession = useSessionsStore((s) => s.setFocusedSession)
+
+  const sessions = useMemo(
+    () => sessionOrder.map((id) => sessionsMap.get(id)).filter((s): s is Session => s !== undefined),
+    [sessionOrder, sessionsMap]
+  )
 
   return (
     <div className={styles.tabBar}>
       <div className={styles.tabs}>
-        {tabs.map((tab) => (
+        {sessions.map((session) => (
           <TabItem
-            key={tab.id}
-            tab={tab}
-            isActive={tab.id === activeTabId}
-            onActivate={() => setActiveTab(tab.id)}
-            onClose={() => closeTab(tab.id)}
-            onRename={(name) => renameTab(tab.id, name)}
+            key={session.id}
+            session={session}
+            isActive={session.id === focusedSessionId}
+            onActivate={() => setFocusedSession(session.id)}
           />
         ))}
       </div>
 
       <button
         className={styles.newTabBtn}
-        onClick={onNewTab}
-        title="New tab (⌘T)"
+        onClick={onNewSession}
+        disabled={sessions.length >= 4}
+        title="New session"
       >
         +
       </button>

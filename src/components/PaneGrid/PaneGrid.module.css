@@ -1,80 +1,23 @@
 .paneGrid {
   flex: 1;
-  display: flex;
-  min-width: 0;
-  min-height: 0;
-  overflow: hidden;
-}
-
-.split {
-  display: flex;
-  flex: 1;
-  min-width: 0;
-  min-height: 0;
-}
-
-.splitH {
-  flex-direction: row;
-}
-
-.splitV {
-  flex-direction: column;
-}
-
-.splitChild {
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-  min-height: 0;
-  overflow: hidden;
-}
-
-/* ── Split handle ───────────────────────────────── */
-.splitHandle {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  gap: 1px;
   background: var(--border);
-  flex-shrink: 0;
-  position: relative;
-  z-index: 10;
-  transition: background var(--dur-fast);
+  min-height: 0;
+  overflow: hidden;
 }
 
-.splitHandle::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-}
-
-.splitHandle:hover {
-  background: var(--accent);
-}
-
-.splitHandleH {
-  width: 1px;
-  cursor: col-resize;
-}
-
-.splitHandleH::after {
-  left: -4px;
-  right: -4px;
-}
-
-.splitHandleV {
-  height: 1px;
-  cursor: row-resize;
-}
-
-.splitHandleV::after {
-  top: -4px;
-  bottom: -4px;
-}
-
-.empty {
-  flex: 1;
+.emptySlot {
+  background: var(--bg);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--text-tertiary);
+}
+
+.emptyLabel {
   font-size: 11px;
   font-family: var(--font-ui);
-  letter-spacing: 0.04em;
+  color: var(--muted);
 }

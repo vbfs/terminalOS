@@ -1,68 +1,60 @@
-import React, { useRef } from 'react'
+import React, { useRef, useMemo } from 'react'
 import styles from './TermPane.module.css'
 import { PaneHeader } from './PaneHeader'
 import { usePty } from '../../hooks/usePty'
-import { useTabsStore } from '../../store/tabs.store'
 import { useSessionsStore } from '../../store/sessions.store'
-import { useWorkspaceStore } from '../../store/workspace.store'
+import type { Session } from '../../types/session'
 
 interface TermPaneProps {
-  paneId: string
   sessionId: string
-  tabId: string
 }
 
-export const TermPane: React.FC<TermPaneProps> = React.memo(({ paneId, sessionId, tabId }) => {
+export const TermPane: React.FC<TermPaneProps> = React.memo(({ sessionId }) => {
   const containerRef = useRef<HTMLDivElement>(null)
 
-  const tab = useTabsStore((s) => s.tabs.find((t) => t.id === tabId))
-  const tabCount = useTabsStore((s) => s.tabs.length)
-  const { splitTabPane, closeTabPane, setTabActivePane } = useTabsStore()
-  const { getSession } = useSessionsStore()
-  const rootFolder = useWorkspaceStore((s) => s.rootFolder)
-  const addSession = useSessionsStore((s) => s.addSession)
+  const session = useSessionsStore((s) => s.sessions.get(sessionId))
+  const focusedSessionId = useSessionsStore((s) => s.focusedSessionId)
+  const setFocusedSession = useSessionsStore((s) => s.setFocusedSession)
+  const sessionOrder = useSessionsStore((s) => s.sessionOrder)
+  const sessionsMap = useSessionsStore((s) => s.sessions)
+  const sessions = useMemo(
+    () => sessionOrder.map((id) => sessionsMap.get(id)).filter((s): s is Session => s !== undefined),
+    [sessionOrder, sessionsMap]
+  )
 
-  const session = getSession(sessionId)
-  const isActive = tab?.activePaneId === paneId
-  const canClose = tabCount > 1 || (tab?.paneCount ?? 1) > 1
+  const isFocused = focusedSessionId === sessionId
 
   usePty({ sessionId, containerRef })
 
-  const handleSplit = async (direction: 'h' | 'v') => {
-    const cwd = session?.cwd || rootFolder || undefined
-    const newSessionId = await window.api.pty.create({ cwd })
-    const newPaneId = splitTabPane(tabId, paneId, direction, newSessionId)
-    addSession({
-      id: newSessionId,
-      paneId: newPaneId,
-      cwd: cwd ?? '',
-      status: 'running',
-      aiProcess: null,
-      createdAt: Date.now(),
-    })
+  // Find shared paths: cwds that appear in more than one session
+  const cwdMap = new Map<string, number>()
+  for (const s of sessions) {
+    if (s.cwd) cwdMap.set(s.cwd, (cwdMap.get(s.cwd) ?? 0) + 1)
+  }
+  const sharedPaths = session?.cwd && (cwdMap.get(session.cwd) ?? 0) > 1
+    ? [session.cwd.split('/').pop() ?? session.cwd]
+    : []
+
+  const handleClick = () => {
+    setFocusedSession(sessionId)
+    window.dispatchEvent(new CustomEvent('focus-input-bar'))
   }
 
-  const handleClose = () => {
-    window.api.pty.kill(sessionId)
-    closeTabPane(tabId, paneId)
-  }
+  if (!session) return null
 
   return (
     <div
-      className={`${styles.termPane} ${isActive ? styles.active : ''}`}
-      onClick={() => setTabActivePane(tabId, paneId)}
+      className={`${styles.termPane} ${isFocused ? styles.focused : ''}`}
+      onClick={handleClick}
     >
-      <PaneHeader
-        paneId={paneId}
-        aiProcess={session?.aiProcess ?? null}
-        cwd={session?.cwd ?? '~'}
-        isActive={isActive}
-        canClose={canClose}
-        onSplitV={() => handleSplit('v')}
-        onSplitH={() => handleSplit('h')}
-        onClose={handleClose}
-        onFocus={() => setTabActivePane(tabId, paneId)}
-      />
+      <PaneHeader session={session} isFocused={isFocused} sharedPaths={sharedPaths} />
+
+      {session.alertMessage && (
+        <div className={styles.inlineAlert}>
+          {session.alertMessage}
+        </div>
+      )}
+
       <div ref={containerRef} className={styles.terminal} />
     </div>
   )
