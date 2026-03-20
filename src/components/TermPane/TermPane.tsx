@@ -1,63 +1,55 @@
-import React, { useRef, useMemo } from 'react'
+import React, { useRef } from 'react'
 import styles from './TermPane.module.css'
 import { PaneHeader } from './PaneHeader'
 import { usePty } from '../../hooks/usePty'
 import { useSessionsStore } from '../../store/sessions.store'
-import type { Session } from '../../types/session'
+import type { SplitDirection } from '../../types/pane'
 
 interface TermPaneProps {
   sessionId: string
+  paneId: string
+  isActive: boolean
+  canClose: boolean
+  onSplit: (paneId: string, dir: SplitDirection) => void
+  onClose: (paneId: string) => void
+  onFocus: (paneId: string) => void
 }
 
-export const TermPane: React.FC<TermPaneProps> = React.memo(({ sessionId }) => {
-  const containerRef = useRef<HTMLDivElement>(null)
+export const TermPane: React.FC<TermPaneProps> = React.memo(
+  ({ sessionId, paneId, isActive, canClose, onSplit, onClose, onFocus }) => {
+    const containerRef = useRef<HTMLDivElement>(null)
+    const session = useSessionsStore((s) => s.sessions.get(sessionId))
 
-  const session = useSessionsStore((s) => s.sessions.get(sessionId))
-  const focusedSessionId = useSessionsStore((s) => s.focusedSessionId)
-  const setFocusedSession = useSessionsStore((s) => s.setFocusedSession)
-  const sessionOrder = useSessionsStore((s) => s.sessionOrder)
-  const sessionsMap = useSessionsStore((s) => s.sessions)
-  const sessions = useMemo(
-    () => sessionOrder.map((id) => sessionsMap.get(id)).filter((s): s is Session => s !== undefined),
-    [sessionOrder, sessionsMap]
-  )
+    usePty({ sessionId, containerRef })
 
-  const isFocused = focusedSessionId === sessionId
+    const handleClick = () => {
+      onFocus(paneId)
+    }
 
-  usePty({ sessionId, containerRef })
+    if (!session) return null
 
-  // Find shared paths: cwds that appear in more than one session
-  const cwdMap = new Map<string, number>()
-  for (const s of sessions) {
-    if (s.cwd) cwdMap.set(s.cwd, (cwdMap.get(s.cwd) ?? 0) + 1)
+    return (
+      <div
+        className={`${styles.termPane} ${isActive ? styles.focused : ''}`}
+        onClick={handleClick}
+      >
+        <PaneHeader
+          session={session}
+          isFocused={isActive}
+          paneId={paneId}
+          canClose={canClose}
+          onSplit={onSplit}
+          onClose={onClose}
+        />
+
+        {session.alertMessage && (
+          <div className={styles.inlineAlert}>{session.alertMessage}</div>
+        )}
+
+        <div ref={containerRef} className={styles.terminal} />
+      </div>
+    )
   }
-  const sharedPaths = session?.cwd && (cwdMap.get(session.cwd) ?? 0) > 1
-    ? [session.cwd.split('/').pop() ?? session.cwd]
-    : []
-
-  const handleClick = () => {
-    setFocusedSession(sessionId)
-    window.dispatchEvent(new CustomEvent('focus-input-bar'))
-  }
-
-  if (!session) return null
-
-  return (
-    <div
-      className={`${styles.termPane} ${isFocused ? styles.focused : ''}`}
-      onClick={handleClick}
-    >
-      <PaneHeader session={session} isFocused={isFocused} sharedPaths={sharedPaths} />
-
-      {session.alertMessage && (
-        <div className={styles.inlineAlert}>
-          {session.alertMessage}
-        </div>
-      )}
-
-      <div ref={containerRef} className={styles.terminal} />
-    </div>
-  )
-})
+)
 
 TermPane.displayName = 'TermPane'

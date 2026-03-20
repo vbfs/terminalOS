@@ -139,19 +139,46 @@
   font-size: 11px;
 }
 
-/* ── Token count ───────────────────────────────── */
-.tokenCount {
-  font-size: 9px;
+/* ── Close tab button ──────────────────────────── */
+.closeTabBtn {
+  background: none;
+  border: none;
   color: var(--muted);
+  cursor: pointer;
+  padding: 0 2px;
+  font-size: 14px;
+  line-height: 1;
+  border-radius: 3px;
   flex-shrink: 0;
-  font-family: var(--font-mono);
+  opacity: 0;
+  transition: color var(--dur-fast), opacity var(--dur-fast);
+  margin-left: 2px;
 }
 
-.tokenError {
+.tab:hover .closeTabBtn,
+.tab.active .closeTabBtn {
+  opacity: 1;
+}
+
+.closeTabBtn:hover {
   color: var(--red);
 }
 
-/* ── New session button ────────────────────────── */
+/* ── Tab name inline edit ──────────────────────── */
+.tabNameInput {
+  flex: 1;
+  background: none;
+  border: none;
+  border-bottom: 1px solid var(--amber);
+  color: var(--text);
+  font-size: 11px;
+  font-family: var(--font-ui);
+  padding: 0;
+  outline: none;
+  min-width: 0;
+}
+
+/* ── New project button ────────────────────────── */
 .newTabBtn {
   width: 36px;
   flex-shrink: 0;

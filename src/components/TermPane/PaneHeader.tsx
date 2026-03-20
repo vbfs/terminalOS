@@ -3,11 +3,15 @@ import styles from './TermPane.module.css'
 import { AgentBadge, StatusDot } from '../TabBar/TabBar'
 import { getAgentType, getDotState } from '../../types/session'
 import type { Session } from '../../types/session'
+import type { SplitDirection } from '../../types/pane'
 
 interface PaneHeaderProps {
   session: Session
   isFocused: boolean
-  sharedPaths: string[]
+  paneId: string
+  canClose: boolean
+  onSplit: (paneId: string, dir: SplitDirection) => void
+  onClose: (paneId: string) => void
 }
 
 function shortPath(cwd: string): string {
@@ -16,11 +20,17 @@ function shortPath(cwd: string): string {
   return parts.slice(-2).join('/')
 }
 
-export const PaneHeader: React.FC<PaneHeaderProps> = ({ session, isFocused, sharedPaths }) => {
+export const PaneHeader: React.FC<PaneHeaderProps> = ({
+  session,
+  isFocused,
+  paneId,
+  canClose,
+  onSplit,
+  onClose,
+}) => {
   const agentType = getAgentType(session)
   const dotState = getDotState(session)
   const path = shortPath(session.cwd)
-  const hasShared = sharedPaths.length > 0
 
   return (
     <div className={`${styles.paneHeader} ${isFocused ? styles.focused : ''}`}>
@@ -31,12 +41,40 @@ export const PaneHeader: React.FC<PaneHeaderProps> = ({ session, isFocused, shar
         <span className={styles.sessionPath}>{path}</span>
       </div>
 
-      {hasShared && (
-        <div className={styles.sharedCtxPill}>
-          <span className={styles.sharedDot} />
-          <span className={styles.sharedLabel}>shared ctx</span>
-        </div>
-      )}
+      <div className={styles.paneActions}>
+        <button
+          className={styles.paneActionBtn}
+          onClick={(e) => {
+            e.stopPropagation()
+            onSplit(paneId, 'h')
+          }}
+          title="Split right (Cmd+D)"
+        >
+          |
+        </button>
+        <button
+          className={styles.paneActionBtn}
+          onClick={(e) => {
+            e.stopPropagation()
+            onSplit(paneId, 'v')
+          }}
+          title="Split down (Cmd+Shift+D)"
+        >
+          —
+        </button>
+        {canClose && (
+          <button
+            className={`${styles.paneActionBtn} ${styles.closePaneBtn}`}
+            onClick={(e) => {
+              e.stopPropagation()
+              onClose(paneId)
+            }}
+            title="Close pane (Cmd+W)"
+          >
+            ×
+          </button>
+        )}
+      </div>
     </div>
   )
 }

@@ -1,29 +1,34 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Titlebar } from './components/Titlebar/Titlebar'
-import { SessionTabBar } from './components/TabBar/TabBar'
+import { TabBar } from './components/TabBar/TabBar'
 import { PaneGrid } from './components/PaneGrid/PaneGrid'
-import { InputBar } from './components/InputBar/InputBar'
 import { StatusBar } from './components/StatusBar/StatusBar'
 import { CommandPalette } from './components/CommandPalette/CommandPalette'
 import { useSessionsStore } from './store/sessions.store'
+import { useTabsStore } from './store/tabs.store'
 import { useWorkspaceStore } from './store/workspace.store'
-import { useState } from 'react'
+import { useKeymap } from './hooks/useKeymap'
+import { getAllLeaves } from './types/pane'
 import styles from './App.module.css'
-
-const SESSION_NAMES = ['Session 1', 'Session 2', 'Session 3', 'Session 4']
+import type { SplitDirection } from './types/pane'
 
 export const App: React.FC = () => {
   const [commandPaletteOpen, setCommandPaletteOpen] = useState(false)
-  const { addSession, getOrderedSessions } = useSessionsStore()
+  const addSession = useSessionsStore((s) => s.addSession)
+  const { createTab, closeTab, initTabRoot, splitTabPane, closeTabPane } = useTabsStore()
+  const activeTabId = useTabsStore((s) => s.activeTabId)
   const { rootFolder } = useWorkspaceStore()
 
-  const createSession = async (name: string) => {
+  const handleNewTab = async () => {
+    const n = useTabsStore.getState().tabs.length + 1
+    const tabId = createTab(`Project ${n}`)
     const cwd = rootFolder ?? undefined
     const sessionId = await window.api.pty.create({ cwd })
+    const paneId = initTabRoot(tabId, sessionId)
     addSession({
       id: sessionId,
-      paneId: sessionId,
-      name,
+      paneId,
+      name: 'shell',
       cwd: cwd ?? '',
       status: 'running',
       aiProcess: null,
@@ -31,43 +36,96 @@ export const App: React.FC = () => {
       alertMessage: null,
       createdAt: Date.now(),
     })
-    return sessionId
   }
 
-  const handleNewSession = async () => {
-    const sessions = getOrderedSessions()
-    if (sessions.length >= 4) return
-    const n = sessions.length + 1
-    await createSession(`Session ${n}`)
+  const handleSplit = async (tabId: string, paneId: string, dir: SplitDirection) => {
+    const activeSession = Array.from(useSessionsStore.getState().sessions.values()).find(
+      (s) => s.paneId === paneId
+    )
+    const cwd = activeSession?.cwd || rootFolder || undefined
+    const sessionId = await window.api.pty.create({ cwd })
+    const newPaneId = splitTabPane(tabId, paneId, dir, sessionId)
+    if (!newPaneId) {
+      window.api.pty.kill?.(sessionId)
+      return
+    }
+    addSession({
+      id: sessionId,
+      paneId: newPaneId,
+      name: 'shell',
+      cwd: cwd ?? '',
+      status: 'running',
+      aiProcess: null,
+      tokens: 0,
+      alertMessage: null,
+      createdAt: Date.now(),
+    })
   }
 
-  // Initialize 4 sessions on mount
+  const handleClosePane = (tabId: string, paneId: string) => {
+    const sessions = useSessionsStore.getState().sessions
+    for (const session of sessions.values()) {
+      if (session.paneId === paneId) {
+        window.api.pty.kill?.(session.id)
+        break
+      }
+    }
+    closeTabPane(tabId, paneId)
+  }
+
+  const handleCloseTab = (tabId: string) => {
+    const tab = useTabsStore.getState().tabs.find((t) => t.id === tabId)
+    if (tab?.root) {
+      const leaves = getAllLeaves(tab.root)
+      const sessions = useSessionsStore.getState().sessions
+      for (const leaf of leaves) {
+        for (const session of sessions.values()) {
+          if (session.paneId === leaf.id) {
+            window.api.pty.kill?.(session.id)
+          }
+        }
+      }
+    }
+    closeTab(tabId)
+  }
+
   useEffect(() => {
     const init = async () => {
-      for (let i = 0; i < 4; i++) {
-        await createSession(SESSION_NAMES[i])
-      }
+      const tabId = createTab('Project 1')
+      const cwd = rootFolder ?? undefined
+      const sessionId = await window.api.pty.create({ cwd })
+      const paneId = initTabRoot(tabId, sessionId)
+      addSession({
+        id: sessionId,
+        paneId,
+        name: 'shell',
+        cwd: cwd ?? '',
+        status: 'running',
+        aiProcess: null,
+        tokens: 0,
+        alertMessage: null,
+        createdAt: Date.now(),
+      })
     }
     init()
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
-  useEffect(() => {
-    const handler = (e: KeyboardEvent) => {
-      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
-        e.preventDefault()
-        setCommandPaletteOpen(true)
-      }
-    }
-    window.addEventListener('keydown', handler)
-    return () => window.removeEventListener('keydown', handler)
-  }, [])
+  useKeymap({
+    onCommandPalette: () => setCommandPaletteOpen(true),
+    onNewTab: handleNewTab,
+  })
 
   return (
     <div className={styles.app}>
       <Titlebar />
-      <SessionTabBar onNewSession={handleNewSession} />
-      <PaneGrid />
-      <InputBar />
+      <TabBar onNewTab={handleNewTab} onCloseTab={handleCloseTab} />
+      {activeTabId && (
+        <PaneGrid
+          tabId={activeTabId}
+          onSplit={handleSplit}
+          onClose={handleClosePane}
+        />
+      )}
       <StatusBar />
       <CommandPalette
         isOpen={commandPaletteOpen}

@@ -25,7 +25,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 10px;
+  padding: 0 6px 0 10px;
   flex-shrink: 0;
   position: relative;
 }
@@ -57,31 +57,41 @@
   margin-left: auto;
 }
 
-/* ── Shared context pill ────────────────────────── */
-.sharedCtxPill {
+/* ── Pane action buttons ────────────────────────── */
+.paneActions {
   display: flex;
   align-items: center;
-  gap: 5px;
-  background: #0d2e2b;
-  border: 1px solid rgba(45, 212, 191, 0.15);
-  border-radius: 4px;
-  padding: 2px 7px;
+  gap: 1px;
   flex-shrink: 0;
+  opacity: 0;
+  transition: opacity var(--dur-fast);
 }
 
-.sharedDot {
-  width: 4px;
-  height: 4px;
-  border-radius: 50%;
-  background: var(--teal);
-  flex-shrink: 0;
+.paneHeader:hover .paneActions,
+.paneHeader.focused .paneActions {
+  opacity: 1;
 }
 
-.sharedLabel {
-  font-size: 11px;
-  font-family: var(--font-ui);
-  color: var(--teal);
-  white-space: nowrap;
+.paneActionBtn {
+  background: none;
+  border: none;
+  color: var(--muted);
+  cursor: pointer;
+  padding: 1px 6px;
+  font-size: 13px;
+  line-height: 1.6;
+  border-radius: 3px;
+  transition: color var(--dur-fast), background var(--dur-fast);
+  font-family: var(--font-mono);
+}
+
+.paneActionBtn:hover {
+  color: var(--text);
+  background: var(--bg3);
+}
+
+.closePaneBtn:hover {
+  color: var(--red);
 }
 
 /* ── Inline alert ───────────────────────────────── */
