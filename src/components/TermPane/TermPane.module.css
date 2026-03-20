@@ -17,6 +17,19 @@
   outline-offset: -1px;
 }
 
+/* Unfocused pane: dim header + terminal overlay */
+.termPane:not(.focused) .paneHeader {
+  background: var(--bg);
+}
+
+.termPane:not(.focused) .terminal::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.18);
+  pointer-events: none;
+}
+
 /* ── Pane header ────────────────────────────────── */
 .paneHeader {
   height: var(--pane-header-h);

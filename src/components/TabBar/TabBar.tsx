@@ -114,7 +114,18 @@ export const TabBar: React.FC<TabBarProps> = ({ onNewTab, onCloseTab }) => {
                   autoFocus
                 />
               ) : (
-                <span className={styles.tabName}>{tab.name}</span>
+                <span
+                  className={styles.tabName}
+                  onClick={(e) => {
+                    if (isActive) {
+                      e.stopPropagation()
+                      startRename(tab.id, tab.name)
+                    }
+                  }}
+                  title={isActive ? 'Click to rename' : tab.name}
+                >
+                  {tab.name}
+                </span>
               )}
               {tabs.length > 1 && (
                 <button

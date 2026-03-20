@@ -139,6 +139,10 @@
   font-size: 11px;
 }
 
+.tab.active .tabName {
+  cursor: text;
+}
+
 /* ── Close tab button ──────────────────────────── */
 .closeTabBtn {
   background: none;

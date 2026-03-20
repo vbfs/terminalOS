@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { Titlebar } from './components/Titlebar/Titlebar'
 import { TabBar } from './components/TabBar/TabBar'
 import { PaneGrid } from './components/PaneGrid/PaneGrid'
@@ -14,6 +14,7 @@ import type { SplitDirection } from './types/pane'
 
 export const App: React.FC = () => {
   const [commandPaletteOpen, setCommandPaletteOpen] = useState(false)
+  const initDoneRef = useRef(false)
   const addSession = useSessionsStore((s) => s.addSession)
   const { createTab, closeTab, initTabRoot, splitTabPane, closeTabPane } = useTabsStore()
   const activeTabId = useTabsStore((s) => s.activeTabId)
@@ -90,6 +91,8 @@ export const App: React.FC = () => {
   }
 
   useEffect(() => {
+    if (initDoneRef.current) return
+    initDoneRef.current = true
     const init = async () => {
       const tabId = createTab('Project 1')
       const cwd = rootFolder ?? undefined
