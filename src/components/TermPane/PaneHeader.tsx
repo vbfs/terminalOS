@@ -4,6 +4,7 @@ import { AgentBadge, StatusDot } from '../TabBar/TabBar'
 import { getAgentType, getDotState } from '../../types/session'
 import type { Session } from '../../types/session'
 import type { SplitDirection } from '../../types/pane'
+import { IconX, IconMinus, IconRestore, IconPanelRight, IconPanelBottom, IconMarkdownDoc } from '../Icons'
 
 interface PaneHeaderProps {
   session: Session
@@ -53,7 +54,7 @@ export const PaneHeader: React.FC<PaneHeaderProps> = ({
           onClick={(e) => { e.stopPropagation(); onToggleMinimize?.(paneId) }}
           title={isMinimized ? 'Restore pane' : 'Minimize pane'}
         >
-          {isMinimized ? '⊞' : '⊟'}
+          {isMinimized ? <IconRestore size={10} /> : <IconMinus size={10} />}
         </button>
         {!isMinimized && onOpenMd && (
           <button
@@ -61,7 +62,7 @@ export const PaneHeader: React.FC<PaneHeaderProps> = ({
             onClick={(e) => { e.stopPropagation(); onOpenMd(paneId) }}
             title="Open Markdown Editor"
           >
-            ◆
+            <IconMarkdownDoc size={12} />
           </button>
         )}
         {!isMinimized && (
@@ -70,7 +71,7 @@ export const PaneHeader: React.FC<PaneHeaderProps> = ({
             onClick={(e) => { e.stopPropagation(); onSplit(paneId, 'h') }}
             title="Split right (Cmd+D)"
           >
-            |
+            <IconPanelRight size={12} />
           </button>
         )}
         {!isMinimized && (
@@ -79,7 +80,7 @@ export const PaneHeader: React.FC<PaneHeaderProps> = ({
             onClick={(e) => { e.stopPropagation(); onSplit(paneId, 'v') }}
             title="Split down (Cmd+Shift+D)"
           >
-            —
+            <IconPanelBottom size={12} />
           </button>
         )}
         {!isMinimized && canClose && (
@@ -88,7 +89,7 @@ export const PaneHeader: React.FC<PaneHeaderProps> = ({
             onClick={(e) => { e.stopPropagation(); onClose(paneId) }}
             title="Close pane (Cmd+W)"
           >
-            ×
+            <IconX size={10} />
           </button>
         )}
       </div>

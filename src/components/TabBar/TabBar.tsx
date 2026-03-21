@@ -5,6 +5,7 @@ import { useSessionsStore } from "../../store/sessions.store";
 import { getAgentType, getDotState } from "../../types/session";
 import { getAllLeaves } from "../../types/pane";
 import type { AgentType, DotState } from "../../types/session";
+import { IconX, IconPlus } from "../Icons";
 
 const AGENT_LABELS: Record<AgentType, string> = {
   CLAUDE: "CLAUDE",
@@ -142,7 +143,7 @@ export const TabBar: React.FC<TabBarProps> = ({ onNewTab, onCloseTab }) => {
                   }}
                   title="Close workspace"
                 >
-                  ×
+                  <IconX size={9} />
                 </button>
               )}
             </div>
@@ -155,7 +156,7 @@ export const TabBar: React.FC<TabBarProps> = ({ onNewTab, onCloseTab }) => {
         onClick={onNewTab}
         title="New Workspace (Cmd+T)"
       >
-        +
+        <IconPlus size={11} />
       </button>
     </div>
   );

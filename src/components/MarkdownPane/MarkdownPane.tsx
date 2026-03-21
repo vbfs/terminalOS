@@ -4,6 +4,10 @@ import styles from './MarkdownPane.module.css'
 import { useMdPaneStore } from '../../store/mdpane.store'
 import { useTabsStore } from '../../store/tabs.store'
 import type { FsEntry } from '../../store/mdpane.store'
+import {
+  IconX, IconMinus, IconRestore, IconArrowUp, IconArrowLeft,
+  IconFilePlus, IconFolderPlus, IconFolder, IconFile, IconMarkdownDoc,
+} from '../Icons'
 
 // Configure marked for clean output
 marked.setOptions({ gfm: true, breaks: true })
@@ -71,22 +75,24 @@ const FileBrowser: React.FC<FileBrowserProps> = ({ paneId, browsePath, entries, 
     <div className={styles.browser}>
       <div className={styles.browserPath}>
         <button className={styles.upBtn} onClick={() => goUp(paneId)} title="Go up">
-          ↑
+          <IconArrowUp size={11} />
         </button>
         <span className={styles.pathText}>{shortPath(browsePath)}</span>
         <div className={styles.createBtns}>
           <button className={styles.createBtn} onClick={() => setCreating('file')} title="New file">
-            + file
+            <IconFilePlus size={12} /> file
           </button>
           <button className={styles.createBtn} onClick={() => setCreating('dir')} title="New folder">
-            + folder
+            <IconFolderPlus size={12} /> folder
           </button>
         </div>
       </div>
 
       {creating && (
         <div className={styles.newEntryRow}>
-          <span className={styles.newEntryIcon}>{creating === 'dir' ? '▶' : '◆'}</span>
+          <span className={styles.newEntryIcon}>
+            {creating === 'dir' ? <IconFolder size={11} /> : <IconMarkdownDoc size={11} />}
+          </span>
           <input
             ref={inputRef}
             className={styles.newEntryInput}
@@ -114,7 +120,11 @@ const FileBrowser: React.FC<FileBrowserProps> = ({ paneId, browsePath, entries, 
             onClick={() => handleEntryClick(entry)}
           >
             <span className={styles.entryIcon}>
-              {entry.isDirectory ? '▶' : isMd(entry) ? '◆' : '·'}
+              {entry.isDirectory
+                ? <IconFolder size={11} />
+                : isMd(entry)
+                  ? <IconMarkdownDoc size={11} />
+                  : <IconFile size={11} />}
             </span>
             <span className={styles.entryName}>{entry.name}</span>
             {isMd(entry) && <span className={styles.mdBadge}>md</span>}
@@ -140,8 +150,9 @@ const Editor: React.FC<EditorProps> = ({ paneId, filePath, content, isDirty }) =
   const scrollRef = useRef<{ preview: number }>({ preview: 0 })
 
   const filename = filePath.split('/').pop() ?? filePath
+  const isMarkdown = filePath.endsWith('.md') || filePath.endsWith('.mdx')
 
-  const html = marked.parse(content) as string
+  const html = isMarkdown ? (marked.parse(content) as string) : ''
 
   // Auto-save debounce
   const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -168,7 +179,7 @@ const Editor: React.FC<EditorProps> = ({ paneId, filePath, content, isDirty }) =
     <div className={styles.editorLayout}>
       <div className={styles.editorHeader}>
         <button className={styles.backBtn} onClick={() => closeFile(paneId)} title="Back to files">
-          ←
+          <IconArrowLeft size={12} />
         </button>
         <span className={styles.filename}>{filename}</span>
         {isDirty && <span className={styles.dirtyDot} title="Unsaved changes">●</span>}
@@ -190,12 +201,16 @@ const Editor: React.FC<EditorProps> = ({ paneId, filePath, content, isDirty }) =
             autoCapitalize="off"
           />
         </div>
-        <div className={styles.editorDivider} />
-        <div
-          ref={previewRef}
-          className={styles.preview}
-          dangerouslySetInnerHTML={{ __html: html }}
-        />
+        {isMarkdown && (
+          <>
+            <div className={styles.editorDivider} />
+            <div
+              ref={previewRef}
+              className={styles.preview}
+              dangerouslySetInnerHTML={{ __html: html }}
+            />
+          </>
+        )}
       </div>
     </div>
   )
@@ -227,7 +242,7 @@ export const MarkdownPane: React.FC<MarkdownPaneProps> = React.memo(
         {/* Header */}
         <div className={`${styles.header} ${isActive ? styles.headerFocused : ''}`}>
           <div className={styles.headerLeft}>
-            <span className={styles.headerIcon}>◆</span>
+            <span className={styles.headerIcon}><IconMarkdownDoc size={12} /></span>
             <span className={styles.headerLabel}>
               {state.filePath
                 ? state.filePath.split('/').pop()
@@ -240,7 +255,7 @@ export const MarkdownPane: React.FC<MarkdownPaneProps> = React.memo(
               onClick={(e) => { e.stopPropagation(); toggleMinimize(paneId) }}
               title={isMinimized ? 'Restore pane' : 'Minimize pane'}
             >
-              {isMinimized ? '⊞' : '⊟'}
+              {isMinimized ? <IconRestore size={10} /> : <IconMinus size={10} />}
             </button>
             {!isMinimized && canClose && (
               <button
@@ -248,7 +263,7 @@ export const MarkdownPane: React.FC<MarkdownPaneProps> = React.memo(
                 onClick={(e) => { e.stopPropagation(); onClose(paneId) }}
                 title="Close pane"
               >
-                ×
+                <IconX size={10} />
               </button>
             )}
           </div>

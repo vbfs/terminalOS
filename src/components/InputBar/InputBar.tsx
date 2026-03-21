@@ -3,6 +3,7 @@ import styles from './InputBar.module.css'
 import { useSessionsStore } from '../../store/sessions.store'
 import { getDotState } from '../../types/session'
 import type { Session } from '../../types/session'
+import { IconChevronDown, IconSend } from '../Icons'
 
 export const InputBar: React.FC = () => {
   const inputRef = useRef<HTMLInputElement>(null)
@@ -98,7 +99,7 @@ export const InputBar: React.FC = () => {
       <div className={styles.selector} onClick={() => setDropdownOpen((o) => !o)}>
         <span className={`${styles.selectorDot} ${styles[`dot${dotState}`]}`} />
         <span className={styles.selectorName}>{focusedSession?.name ?? 'No session'}</span>
-        <span className={styles.selectorChevron}>▾</span>
+        <span className={styles.selectorChevron}><IconChevronDown size={10} /></span>
 
         {dropdownOpen && (
           <div className={styles.dropdown}>
@@ -145,7 +146,7 @@ export const InputBar: React.FC = () => {
 
       {/* Send button */}
       <button className={styles.sendBtn} onClick={handleSend} title="Send (Enter)">
-        ↑
+        <IconSend size={13} />
       </button>
     </div>
   )
