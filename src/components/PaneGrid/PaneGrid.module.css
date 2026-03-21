@@ -32,16 +32,57 @@
 
 /* ── Resize divider ───────────────────────────── */
 .divider {
-  background: var(--border);
   flex-shrink: 0;
+  position: relative;
+  z-index: 10;
 }
 
+/* Vertical divider (between side-by-side panes) */
 .dividerH {
-  width: 1px;
+  width: 5px;
   cursor: col-resize;
 }
 
+.dividerH::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 2px;
+  width: 1px;
+  background: var(--border);
+  transition: background 120ms;
+}
+
+.dividerH:hover::after {
+  background: rgba(232, 164, 74, 0.5);
+}
+
+.dividerH:active::after {
+  background: var(--amber);
+}
+
+/* Horizontal divider (between stacked panes) */
 .dividerV {
-  height: 1px;
+  height: 5px;
   cursor: row-resize;
+}
+
+.dividerV::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 2px;
+  height: 1px;
+  background: var(--border);
+  transition: background 120ms;
+}
+
+.dividerV:hover::after {
+  background: rgba(232, 164, 74, 0.5);
+}
+
+.dividerV:active::after {
+  background: var(--amber);
 }

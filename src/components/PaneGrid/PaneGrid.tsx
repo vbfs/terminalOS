@@ -1,9 +1,33 @@
-import React from 'react'
+import React, { useRef, useCallback } from 'react'
 import styles from './PaneGrid.module.css'
 import { TermPane } from '../TermPane/TermPane'
 import { MarkdownPane } from '../MarkdownPane/MarkdownPane'
 import { useTabsStore } from '../../store/tabs.store'
 import type { PaneNode, SplitDirection } from '../../types/pane'
+
+// ── Helpers ────────────────────────────────────────────────────
+
+const MIN_W = 36   // px – horizontal minimize: narrow strip
+const MIN_H = 34   // px – vertical minimize: just the header
+
+function isSubtreeMinimized(node: PaneNode, set: Set<string>): boolean {
+  if (node.type === 'leaf' || node.type === 'md') return set.has(node.id)
+  return isSubtreeMinimized(node.a, set) && isSubtreeMinimized(node.b, set)
+}
+
+function countLeaves(node: PaneNode): number {
+  if (node.type === 'leaf' || node.type === 'md') return 1
+  return countLeaves(node.a) + countLeaves(node.b)
+}
+
+/** Total collapsed px a fully-minimized subtree needs in parent direction */
+function collapsedPx(node: PaneNode, parentIsHorizontal: boolean): number {
+  const n = countLeaves(node)
+  // n leaves, n-1 dividers (1px each)
+  return parentIsHorizontal ? n * MIN_W + (n - 1) : n * MIN_H + (n - 1)
+}
+
+// ── Props ──────────────────────────────────────────────────────
 
 interface PaneGridProps {
   tabId: string
@@ -23,6 +47,8 @@ interface NodeRendererProps {
   onOpenMd: (paneId: string) => void
 }
 
+// ── NodeRenderer ───────────────────────────────────────────────
+
 const NodeRenderer: React.FC<NodeRendererProps> = ({
   node,
   tabId,
@@ -33,6 +59,46 @@ const NodeRenderer: React.FC<NodeRendererProps> = ({
   onFocus,
   onOpenMd,
 }) => {
+  // All hooks must be unconditional — before any early returns
+  const minimizedPanes = useTabsStore((s) => s.minimizedPanes)
+  const updateTabRatio = useTabsStore((s) => s.updateTabRatio)
+  const containerRef = useRef<HTMLDivElement>(null)
+  const draggingRef = useRef(false)
+
+  const handleDividerMouseDown = useCallback(
+    (e: React.MouseEvent) => {
+      if (node.type !== 'split') return
+      e.preventDefault()
+
+      const isH = node.direction === 'h'
+      const splitId = node.id
+      draggingRef.current = true
+
+      const onMove = (ev: MouseEvent) => {
+        if (!draggingRef.current || !containerRef.current) return
+        const rect = containerRef.current.getBoundingClientRect()
+        const ratio = isH
+          ? (ev.clientX - rect.left) / rect.width
+          : (ev.clientY - rect.top) / rect.height
+        updateTabRatio(tabId, splitId, ratio)
+      }
+
+      const onUp = () => {
+        draggingRef.current = false
+        document.removeEventListener('mousemove', onMove)
+        document.removeEventListener('mouseup', onUp)
+        document.body.style.cursor = ''
+        document.body.style.userSelect = ''
+      }
+
+      document.body.style.cursor = isH ? 'col-resize' : 'row-resize'
+      document.body.style.userSelect = 'none'
+      document.addEventListener('mousemove', onMove)
+      document.addEventListener('mouseup', onUp)
+    },
+    [node, tabId, updateTabRatio],
+  )
+
   if (node.type === 'leaf') {
     return (
       <TermPane
@@ -61,31 +127,36 @@ const NodeRenderer: React.FC<NodeRendererProps> = ({
     )
   }
 
+  // Split node
   const isHorizontal = node.direction === 'h'
-  // eslint-disable-next-line react-hooks/rules-of-hooks
-  const minimizedPanes = useTabsStore((s) => s.minimizedPanes)
-
-  const isLeaf = (n: PaneNode) => n.type === 'leaf' || n.type === 'md'
-  const aMin = isLeaf(node.a) && minimizedPanes.has(node.a.id)
-  const bMin = isLeaf(node.b) && minimizedPanes.has(node.b.id)
-
-  // Minimized sizes: thin strip in each axis direction
-  const MIN_W = 36   // px – horizontal minimize: narrow strip
-  const MIN_H = 34   // px – vertical minimize: just the header
+  const aMin = isSubtreeMinimized(node.a, minimizedPanes)
+  const bMin = isSubtreeMinimized(node.b, minimizedPanes)
 
   let aStyle: React.CSSProperties
   let bStyle: React.CSSProperties
 
-  if (aMin) {
+  if (aMin && bMin) {
+    // Both sides fully minimized — give each side its collapsed size
+    const aPx = collapsedPx(node.a, isHorizontal)
+    const bPx = collapsedPx(node.b, isHorizontal)
     aStyle = isHorizontal
-      ? { flex: 'none', width: MIN_W, minWidth: MIN_W, maxWidth: MIN_W, overflow: 'hidden' }
-      : { flex: 'none', height: MIN_H, minHeight: MIN_H, maxHeight: MIN_H, overflow: 'hidden' }
+      ? { flex: 'none', width: aPx, minWidth: aPx, maxWidth: aPx, overflow: 'hidden' }
+      : { flex: 'none', height: aPx, minHeight: aPx, maxHeight: aPx, overflow: 'hidden' }
+    bStyle = isHorizontal
+      ? { flex: 'none', width: bPx, minWidth: bPx, maxWidth: bPx, overflow: 'hidden' }
+      : { flex: 'none', height: bPx, minHeight: bPx, maxHeight: bPx, overflow: 'hidden' }
+  } else if (aMin) {
+    const px = collapsedPx(node.a, isHorizontal)
+    aStyle = isHorizontal
+      ? { flex: 'none', width: px, minWidth: px, maxWidth: px, overflow: 'hidden' }
+      : { flex: 'none', height: px, minHeight: px, maxHeight: px, overflow: 'hidden' }
     bStyle = { flex: 1 }
   } else if (bMin) {
+    const px = collapsedPx(node.b, isHorizontal)
     aStyle = { flex: 1 }
     bStyle = isHorizontal
-      ? { flex: 'none', width: MIN_W, minWidth: MIN_W, maxWidth: MIN_W, overflow: 'hidden' }
-      : { flex: 'none', height: MIN_H, minHeight: MIN_H, maxHeight: MIN_H, overflow: 'hidden' }
+      ? { flex: 'none', width: px, minWidth: px, maxWidth: px, overflow: 'hidden' }
+      : { flex: 'none', height: px, minHeight: px, maxHeight: px, overflow: 'hidden' }
   } else {
     aStyle = { flex: node.ratio }
     bStyle = { flex: 1 - node.ratio }
@@ -93,6 +164,7 @@ const NodeRenderer: React.FC<NodeRendererProps> = ({
 
   return (
     <div
+      ref={containerRef}
       className={`${styles.splitContainer} ${isHorizontal ? styles.horizontal : styles.vertical}`}
     >
       <div style={aStyle} className={styles.splitChild}>
@@ -107,7 +179,10 @@ const NodeRenderer: React.FC<NodeRendererProps> = ({
           onOpenMd={onOpenMd}
         />
       </div>
-      <div className={`${styles.divider} ${isHorizontal ? styles.dividerH : styles.dividerV}`} />
+      <div
+        className={`${styles.divider} ${isHorizontal ? styles.dividerH : styles.dividerV}`}
+        onMouseDown={handleDividerMouseDown}
+      />
       <div style={bStyle} className={styles.splitChild}>
         <NodeRenderer
           node={node.b}
