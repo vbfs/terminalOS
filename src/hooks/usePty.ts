@@ -143,8 +143,13 @@ export function usePty({ sessionId, containerRef, onReady }: UsePtyOptions) {
         const { cols, rows } = terminal
         lastSizeRef.current = { cols, rows }
         setTimeout(() => {
-          if (termRef.current) window.api.pty.resize(sessionId, cols, rows)
-        }, 400)
+          if (!termRef.current) return
+          window.api.pty.resize(sessionId, cols, rows)
+          // Ctrl+L: clears screen and redraws prompt atomically (avoids duplicate prompt)
+          setTimeout(() => {
+            window.api.pty.write(sessionId, '\x0c')
+          }, 30)
+        }, 50)
 
         // Forward any direct terminal input to PTY (fallback)
         terminal.onData((data) => {
