@@ -18,6 +18,7 @@ export const App: React.FC = () => {
   const addSession = useSessionsStore((s) => s.addSession)
   const { createTab, closeTab, initTabRoot, splitTabPane, closeTabPane } = useTabsStore()
   const activeTabId = useTabsStore((s) => s.activeTabId)
+  const tabs = useTabsStore((s) => s.tabs)
   const { rootFolder } = useWorkspaceStore()
 
   const handleNewTab = async () => {
@@ -122,13 +123,26 @@ export const App: React.FC = () => {
     <div className={styles.app}>
       <Titlebar />
       <TabBar onNewTab={handleNewTab} onCloseTab={handleCloseTab} />
-      {activeTabId && (
-        <PaneGrid
-          tabId={activeTabId}
-          onSplit={handleSplit}
-          onClose={handleClosePane}
-        />
-      )}
+      <div style={{ flex: 1, position: 'relative', minHeight: 0, overflow: 'hidden' }}>
+        {tabs.map((tab) => (
+          <div
+            key={tab.id}
+            style={{
+              position: 'absolute',
+              inset: 0,
+              display: 'flex',
+              visibility: tab.id === activeTabId ? 'visible' : 'hidden',
+              pointerEvents: tab.id === activeTabId ? 'auto' : 'none',
+            }}
+          >
+            <PaneGrid
+              tabId={tab.id}
+              onSplit={handleSplit}
+              onClose={handleClosePane}
+            />
+          </div>
+        ))}
+      </div>
       <StatusBar />
       <CommandPalette
         isOpen={commandPaletteOpen}

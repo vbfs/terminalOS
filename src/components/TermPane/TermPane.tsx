@@ -22,16 +22,12 @@ export const TermPane: React.FC<TermPaneProps> = React.memo(
 
     usePty({ sessionId, containerRef })
 
-    const handleClick = () => {
-      onFocus(paneId)
-    }
-
     if (!session) return null
 
     return (
       <div
         className={`${styles.termPane} ${isActive ? styles.focused : ''}`}
-        onClick={handleClick}
+        onMouseDown={() => onFocus(paneId)}
       >
         <PaneHeader
           session={session}
