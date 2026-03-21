@@ -134,9 +134,16 @@ const NodeRenderer: React.FC<NodeRendererProps> = ({
 
   let aStyle: React.CSSProperties
   let bStyle: React.CSSProperties
+  let containerStyle: React.CSSProperties = {}
 
   if (aMin && bMin) {
-    // Both sides fully minimized — give each side its collapsed size
+    // Both sides fully minimized — collapse container height and give children their sizes
+    const n = countLeaves(node)
+    const collapsedH = isHorizontal
+      ? MIN_H                          // side-by-side: shared row = one header tall
+      : n * MIN_H + (n - 1)            // stacked: sum of all headers + dividers
+    containerStyle = { height: collapsedH }
+
     const aPx = collapsedPx(node.a, isHorizontal)
     const bPx = collapsedPx(node.b, isHorizontal)
     aStyle = isHorizontal
@@ -165,6 +172,7 @@ const NodeRenderer: React.FC<NodeRendererProps> = ({
   return (
     <div
       ref={containerRef}
+      style={containerStyle}
       className={`${styles.splitContainer} ${isHorizontal ? styles.horizontal : styles.vertical}`}
     >
       <div style={aStyle} className={styles.splitChild}>
