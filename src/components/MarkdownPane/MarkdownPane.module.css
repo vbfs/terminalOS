@@ -73,6 +73,25 @@
   transition: opacity var(--dur-fast);
 }
 
+/* Always show actions when minimized */
+.headerActionsMinimized {
+  opacity: 1 !important;
+}
+
+/* Minimized: only header visible */
+.pane.minimized .browser,
+.pane.minimized .editorLayout {
+  display: none;
+}
+
+.pane.minimized .header {
+  border-bottom: none;
+}
+
+.minimizeBtn {
+  font-size: 11px;
+}
+
 .header:hover .headerActions,
 .headerFocused .headerActions {
   opacity: 1;

@@ -27,9 +27,6 @@ export class FsWatcher {
     const result: FsEntry[] = []
 
     for (const entry of entries) {
-      // Skip hidden files
-      if (entry.name.startsWith('.')) continue
-
       const entryPath = path.join(resolved, entry.name)
       const isDirectory = entry.isDirectory()
       const ext = isDirectory ? '' : path.extname(entry.name).slice(1)

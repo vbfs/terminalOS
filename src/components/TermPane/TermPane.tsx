@@ -3,6 +3,7 @@ import styles from './TermPane.module.css'
 import { PaneHeader } from './PaneHeader'
 import { usePty } from '../../hooks/usePty'
 import { useSessionsStore } from '../../store/sessions.store'
+import { useTabsStore } from '../../store/tabs.store'
 import type { SplitDirection } from '../../types/pane'
 
 interface TermPaneProps {
@@ -20,6 +21,8 @@ export const TermPane: React.FC<TermPaneProps> = React.memo(
   ({ sessionId, paneId, isActive, canClose, onSplit, onClose, onFocus, onOpenMd }) => {
     const containerRef = useRef<HTMLDivElement>(null)
     const session = useSessionsStore((s) => s.sessions.get(sessionId))
+    const isMinimized = useTabsStore((s) => s.minimizedPanes.has(paneId))
+    const toggleMinimize = useTabsStore((s) => s.toggleMinimizePane)
 
     usePty({ sessionId, containerRef })
 
@@ -27,7 +30,7 @@ export const TermPane: React.FC<TermPaneProps> = React.memo(
 
     return (
       <div
-        className={`${styles.termPane} ${isActive ? styles.focused : ''}`}
+        className={`${styles.termPane} ${isActive ? styles.focused : ''} ${isMinimized ? styles.minimized : ''}`}
         onMouseDown={() => onFocus(paneId)}
       >
         <PaneHeader
@@ -35,12 +38,14 @@ export const TermPane: React.FC<TermPaneProps> = React.memo(
           isFocused={isActive}
           paneId={paneId}
           canClose={canClose}
+          isMinimized={isMinimized}
           onSplit={onSplit}
           onClose={onClose}
           onOpenMd={onOpenMd}
+          onToggleMinimize={toggleMinimize}
         />
 
-        {session.alertMessage && (
+        {!isMinimized && session.alertMessage && (
           <div className={styles.inlineAlert}>{session.alertMessage}</div>
         )}
 

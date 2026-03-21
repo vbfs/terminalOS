@@ -62,12 +62,40 @@ const NodeRenderer: React.FC<NodeRendererProps> = ({
   }
 
   const isHorizontal = node.direction === 'h'
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  const minimizedPanes = useTabsStore((s) => s.minimizedPanes)
+
+  const isLeaf = (n: PaneNode) => n.type === 'leaf' || n.type === 'md'
+  const aMin = isLeaf(node.a) && minimizedPanes.has(node.a.id)
+  const bMin = isLeaf(node.b) && minimizedPanes.has(node.b.id)
+
+  // Minimized sizes: thin strip in each axis direction
+  const MIN_W = 36   // px – horizontal minimize: narrow strip
+  const MIN_H = 34   // px – vertical minimize: just the header
+
+  let aStyle: React.CSSProperties
+  let bStyle: React.CSSProperties
+
+  if (aMin) {
+    aStyle = isHorizontal
+      ? { flex: 'none', width: MIN_W, minWidth: MIN_W, maxWidth: MIN_W, overflow: 'hidden' }
+      : { flex: 'none', height: MIN_H, minHeight: MIN_H, maxHeight: MIN_H, overflow: 'hidden' }
+    bStyle = { flex: 1 }
+  } else if (bMin) {
+    aStyle = { flex: 1 }
+    bStyle = isHorizontal
+      ? { flex: 'none', width: MIN_W, minWidth: MIN_W, maxWidth: MIN_W, overflow: 'hidden' }
+      : { flex: 'none', height: MIN_H, minHeight: MIN_H, maxHeight: MIN_H, overflow: 'hidden' }
+  } else {
+    aStyle = { flex: node.ratio }
+    bStyle = { flex: 1 - node.ratio }
+  }
 
   return (
     <div
       className={`${styles.splitContainer} ${isHorizontal ? styles.horizontal : styles.vertical}`}
     >
-      <div style={{ flex: node.ratio }} className={styles.splitChild}>
+      <div style={aStyle} className={styles.splitChild}>
         <NodeRenderer
           node={node.a}
           tabId={tabId}
@@ -80,7 +108,7 @@ const NodeRenderer: React.FC<NodeRendererProps> = ({
         />
       </div>
       <div className={`${styles.divider} ${isHorizontal ? styles.dividerH : styles.dividerV}`} />
-      <div style={{ flex: 1 - node.ratio }} className={styles.splitChild}>
+      <div style={bStyle} className={styles.splitChild}>
         <NodeRenderer
           node={node.b}
           tabId={tabId}

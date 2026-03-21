@@ -28,6 +28,7 @@ export interface Tab {
 interface TabsState {
   tabs: Tab[]
   activeTabId: string | null
+  minimizedPanes: Set<string>
   createTab: (name?: string) => string
   closeTab: (tabId: string) => void
   setActiveTab: (tabId: string) => void
@@ -40,6 +41,7 @@ interface TabsState {
   setTabActivePane: (tabId: string, paneId: string) => void
   updateTabRatio: (tabId: string, splitId: string, ratio: number) => void
   getTabPaneIds: (tabId: string) => string[]
+  toggleMinimizePane: (paneId: string) => void
 }
 
 function mapTab(state: TabsState, tabId: string, fn: (t: Tab) => Tab): Partial<TabsState> {
@@ -49,6 +51,7 @@ function mapTab(state: TabsState, tabId: string, fn: (t: Tab) => Tab): Partial<T
 export const useTabsStore = create<TabsState>((set, get) => ({
   tabs: [],
   activeTabId: null,
+  minimizedPanes: new Set(),
 
   createTab: (name) => {
     const id = crypto.randomUUID().slice(0, 8)
@@ -132,15 +135,28 @@ export const useTabsStore = create<TabsState>((set, get) => ({
     cleanupPaneSessions([paneId])
     const leaves = getAllLeaves(newRoot)
     const newActive = tab.activePaneId === paneId ? (leaves[0]?.id ?? null) : tab.activePaneId
-    set((s) =>
-      mapTab(s, tabId, (t) => ({
-        ...t,
-        root: newRoot,
-        activePaneId: newActive,
-        paneCount: t.paneCount - 1,
-      }))
-    )
+    set((s) => {
+      const minimizedPanes = new Set(s.minimizedPanes)
+      minimizedPanes.delete(paneId)
+      return {
+        ...mapTab(s, tabId, (t) => ({
+          ...t,
+          root: newRoot,
+          activePaneId: newActive,
+          paneCount: t.paneCount - 1,
+        })),
+        minimizedPanes,
+      }
+    })
   },
+
+  toggleMinimizePane: (paneId) =>
+    set((s) => {
+      const minimizedPanes = new Set(s.minimizedPanes)
+      if (minimizedPanes.has(paneId)) minimizedPanes.delete(paneId)
+      else minimizedPanes.add(paneId)
+      return { minimizedPanes }
+    }),
 
   setTabActivePane: (tabId, paneId) =>
     set((s) => mapTab(s, tabId, (t) => ({ ...t, activePaneId: paneId }))),

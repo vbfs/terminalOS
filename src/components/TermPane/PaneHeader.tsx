@@ -10,9 +10,11 @@ interface PaneHeaderProps {
   isFocused: boolean
   paneId: string
   canClose: boolean
+  isMinimized?: boolean
   onSplit: (paneId: string, dir: SplitDirection) => void
   onClose: (paneId: string) => void
   onOpenMd?: (paneId: string) => void
+  onToggleMinimize?: (paneId: string) => void
 }
 
 function shortPath(cwd: string): string {
@@ -26,9 +28,11 @@ export const PaneHeader: React.FC<PaneHeaderProps> = ({
   isFocused,
   paneId,
   canClose,
+  isMinimized,
   onSplit,
   onClose,
   onOpenMd,
+  onToggleMinimize,
 }) => {
   const agentType = getAgentType(session)
   const dotState = getDotState(session)
@@ -43,46 +47,45 @@ export const PaneHeader: React.FC<PaneHeaderProps> = ({
         <span className={styles.sessionPath}>{path}</span>
       </div>
 
-      <div className={styles.paneActions}>
-        {onOpenMd && (
+      <div className={`${styles.paneActions} ${isMinimized ? styles.paneActionsMinimized : ''}`}>
+        <button
+          className={`${styles.paneActionBtn} ${styles.minimizeBtn}`}
+          onClick={(e) => { e.stopPropagation(); onToggleMinimize?.(paneId) }}
+          title={isMinimized ? 'Restore pane' : 'Minimize pane'}
+        >
+          {isMinimized ? '⊞' : '⊟'}
+        </button>
+        {!isMinimized && onOpenMd && (
           <button
             className={`${styles.paneActionBtn} ${styles.mdBtn}`}
-            onClick={(e) => {
-              e.stopPropagation()
-              onOpenMd(paneId)
-            }}
+            onClick={(e) => { e.stopPropagation(); onOpenMd(paneId) }}
             title="Open Markdown Editor"
           >
             ◆
           </button>
         )}
-        <button
-          className={styles.paneActionBtn}
-          onClick={(e) => {
-            e.stopPropagation()
-            onSplit(paneId, 'h')
-          }}
-          title="Split right (Cmd+D)"
-        >
-          |
-        </button>
-        <button
-          className={styles.paneActionBtn}
-          onClick={(e) => {
-            e.stopPropagation()
-            onSplit(paneId, 'v')
-          }}
-          title="Split down (Cmd+Shift+D)"
-        >
-          —
-        </button>
-        {canClose && (
+        {!isMinimized && (
+          <button
+            className={styles.paneActionBtn}
+            onClick={(e) => { e.stopPropagation(); onSplit(paneId, 'h') }}
+            title="Split right (Cmd+D)"
+          >
+            |
+          </button>
+        )}
+        {!isMinimized && (
+          <button
+            className={styles.paneActionBtn}
+            onClick={(e) => { e.stopPropagation(); onSplit(paneId, 'v') }}
+            title="Split down (Cmd+Shift+D)"
+          >
+            —
+          </button>
+        )}
+        {!isMinimized && canClose && (
           <button
             className={`${styles.paneActionBtn} ${styles.closePaneBtn}`}
-            onClick={(e) => {
-              e.stopPropagation()
-              onClose(paneId)
-            }}
+            onClick={(e) => { e.stopPropagation(); onClose(paneId) }}
             title="Close pane (Cmd+W)"
           >
             ×

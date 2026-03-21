@@ -17,6 +17,21 @@
   outline-offset: -1px;
 }
 
+/* Minimized: only the header is visible */
+.termPane.minimized .terminal,
+.termPane.minimized .inlineAlert {
+  display: none;
+}
+
+.termPane.minimized .paneHeader {
+  border-bottom: none;
+}
+
+/* When minimized, always show the actions (restore button) */
+.paneActionsMinimized {
+  opacity: 1 !important;
+}
+
 /* Unfocused pane: dim header + terminal overlay */
 .termPane:not(.focused) .paneHeader {
   background: var(--bg);

@@ -2,6 +2,7 @@ import React, { useEffect, useCallback, useRef, useState } from 'react'
 import { marked } from 'marked'
 import styles from './MarkdownPane.module.css'
 import { useMdPaneStore } from '../../store/mdpane.store'
+import { useTabsStore } from '../../store/tabs.store'
 import type { FsEntry } from '../../store/mdpane.store'
 
 // Configure marked for clean output
@@ -206,6 +207,8 @@ export const MarkdownPane: React.FC<MarkdownPaneProps> = React.memo(
   ({ paneId, cwd, isActive, canClose, onClose, onFocus }) => {
     const state = useMdPaneStore((s) => s.panes.get(paneId))
     const { init, destroy } = useMdPaneStore()
+    const isMinimized = useTabsStore((s) => s.minimizedPanes.has(paneId))
+    const toggleMinimize = useTabsStore((s) => s.toggleMinimizePane)
 
     useEffect(() => {
       init(paneId, cwd)
@@ -218,7 +221,7 @@ export const MarkdownPane: React.FC<MarkdownPaneProps> = React.memo(
 
     return (
       <div
-        className={`${styles.pane} ${isActive ? styles.focused : ''}`}
+        className={`${styles.pane} ${isActive ? styles.focused : ''} ${isMinimized ? styles.minimized : ''}`}
         onMouseDown={() => onFocus(paneId)}
       >
         {/* Header */}
@@ -231,8 +234,15 @@ export const MarkdownPane: React.FC<MarkdownPaneProps> = React.memo(
                 : 'Markdown'}
             </span>
           </div>
-          <div className={styles.headerActions}>
-            {canClose && (
+          <div className={`${styles.headerActions} ${isMinimized ? styles.headerActionsMinimized : ''}`}>
+            <button
+              className={`${styles.headerBtn} ${styles.minimizeBtn}`}
+              onClick={(e) => { e.stopPropagation(); toggleMinimize(paneId) }}
+              title={isMinimized ? 'Restore pane' : 'Minimize pane'}
+            >
+              {isMinimized ? '⊞' : '⊟'}
+            </button>
+            {!isMinimized && canClose && (
               <button
                 className={`${styles.headerBtn} ${styles.closeBtn}`}
                 onClick={(e) => { e.stopPropagation(); onClose(paneId) }}
@@ -244,8 +254,8 @@ export const MarkdownPane: React.FC<MarkdownPaneProps> = React.memo(
           </div>
         </div>
 
-        {/* Content */}
-        {state.view === 'browser' || !state.filePath ? (
+        {/* Content – hidden when minimized */}
+        {!isMinimized && (state.view === 'browser' || !state.filePath ? (
           <FileBrowser
             paneId={paneId}
             browsePath={state.browsePath}
@@ -259,7 +269,7 @@ export const MarkdownPane: React.FC<MarkdownPaneProps> = React.memo(
             content={state.content}
             isDirty={isDirty}
           />
-        )}
+        ))}
       </div>
     )
   }
