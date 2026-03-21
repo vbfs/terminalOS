@@ -57,6 +57,16 @@ export class FsWatcher {
     return fs.readFile(resolved, 'utf8')
   }
 
+  async writeFile(filePath: string, content: string): Promise<void> {
+    const resolved = path.resolve(filePath)
+    await fs.writeFile(resolved, content, 'utf8')
+  }
+
+  async mkdir(dirPath: string): Promise<void> {
+    const resolved = path.resolve(dirPath)
+    await fs.mkdir(resolved, { recursive: true })
+  }
+
   setWatchRoot(rootPath: string): void {
     const resolved = path.resolve(rootPath)
 

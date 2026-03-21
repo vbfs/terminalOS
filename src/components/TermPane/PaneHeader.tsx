@@ -12,6 +12,7 @@ interface PaneHeaderProps {
   canClose: boolean
   onSplit: (paneId: string, dir: SplitDirection) => void
   onClose: (paneId: string) => void
+  onOpenMd?: (paneId: string) => void
 }
 
 function shortPath(cwd: string): string {
@@ -27,6 +28,7 @@ export const PaneHeader: React.FC<PaneHeaderProps> = ({
   canClose,
   onSplit,
   onClose,
+  onOpenMd,
 }) => {
   const agentType = getAgentType(session)
   const dotState = getDotState(session)
@@ -42,6 +44,18 @@ export const PaneHeader: React.FC<PaneHeaderProps> = ({
       </div>
 
       <div className={styles.paneActions}>
+        {onOpenMd && (
+          <button
+            className={`${styles.paneActionBtn} ${styles.mdBtn}`}
+            onClick={(e) => {
+              e.stopPropagation()
+              onOpenMd(paneId)
+            }}
+            title="Open Markdown Editor"
+          >
+            ◆
+          </button>
+        )}
         <button
           className={styles.paneActionBtn}
           onClick={(e) => {

@@ -101,6 +101,14 @@ function setupIpcHandlers() {
     return fsWatcher.readFile(filePath)
   })
 
+  ipcMain.handle('fs:writeFile', async (_, filePath: string, content: string) => {
+    return fsWatcher.writeFile(filePath, content)
+  })
+
+  ipcMain.handle('fs:mkdir', async (_, dirPath: string) => {
+    return fsWatcher.mkdir(dirPath)
+  })
+
   ipcMain.on('fs:setWatchRoot', (_, rootPath: string) => {
     fsWatcher.setWatchRoot(rootPath)
   })

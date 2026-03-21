@@ -16,7 +16,7 @@ export const App: React.FC = () => {
   const [commandPaletteOpen, setCommandPaletteOpen] = useState(false)
   const initDoneRef = useRef(false)
   const addSession = useSessionsStore((s) => s.addSession)
-  const { createTab, closeTab, initTabRoot, splitTabPane, closeTabPane } = useTabsStore()
+  const { createTab, closeTab, initTabRoot, splitTabPane, splitMdPane, closeTabPane } = useTabsStore()
   const activeTabId = useTabsStore((s) => s.activeTabId)
   const tabs = useTabsStore((s) => s.tabs)
   const { rootFolder } = useWorkspaceStore()
@@ -62,6 +62,13 @@ export const App: React.FC = () => {
       alertMessage: null,
       createdAt: Date.now(),
     })
+  }
+
+  const handleOpenMdPane = (tabId: string, paneId: string) => {
+    const sessions = useSessionsStore.getState().sessions
+    const session = Array.from(sessions.values()).find((s) => s.paneId === paneId)
+    const cwd = session?.cwd || rootFolder || ''
+    splitMdPane(tabId, paneId, 'h', cwd)
   }
 
   const handleClosePane = (tabId: string, paneId: string) => {
@@ -139,6 +146,7 @@ export const App: React.FC = () => {
               tabId={tab.id}
               onSplit={handleSplit}
               onClose={handleClosePane}
+              onOpenMd={handleOpenMdPane}
             />
           </div>
         ))}
@@ -147,6 +155,7 @@ export const App: React.FC = () => {
       <CommandPalette
         isOpen={commandPaletteOpen}
         onClose={() => setCommandPaletteOpen(false)}
+        onOpenMd={handleOpenMdPane}
       />
     </div>
   )

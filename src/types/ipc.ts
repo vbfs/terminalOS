@@ -37,6 +37,8 @@ export interface IpcApi {
     openFolder: () => Promise<string | null>
     readDir: (path: string) => Promise<FsEntry[]>
     readFile: (path: string) => Promise<string>
+    writeFile: (path: string, content: string) => Promise<void>
+    mkdir: (path: string) => Promise<void>
     setWatchRoot: (path: string) => void
     onWatch: (cb: (event: FsEvent) => void) => Unsubscribe
   }

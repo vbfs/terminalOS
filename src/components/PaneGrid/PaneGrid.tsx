@@ -1,6 +1,7 @@
 import React from 'react'
 import styles from './PaneGrid.module.css'
 import { TermPane } from '../TermPane/TermPane'
+import { MarkdownPane } from '../MarkdownPane/MarkdownPane'
 import { useTabsStore } from '../../store/tabs.store'
 import type { PaneNode, SplitDirection } from '../../types/pane'
 
@@ -8,6 +9,7 @@ interface PaneGridProps {
   tabId: string
   onSplit: (tabId: string, paneId: string, dir: SplitDirection) => void
   onClose: (tabId: string, paneId: string) => void
+  onOpenMd: (tabId: string, paneId: string) => void
 }
 
 interface NodeRendererProps {
@@ -18,6 +20,7 @@ interface NodeRendererProps {
   onSplit: (paneId: string, dir: SplitDirection) => void
   onClose: (paneId: string) => void
   onFocus: (paneId: string) => void
+  onOpenMd: (paneId: string) => void
 }
 
 const NodeRenderer: React.FC<NodeRendererProps> = ({
@@ -28,6 +31,7 @@ const NodeRenderer: React.FC<NodeRendererProps> = ({
   onSplit,
   onClose,
   onFocus,
+  onOpenMd,
 }) => {
   if (node.type === 'leaf') {
     return (
@@ -37,6 +41,20 @@ const NodeRenderer: React.FC<NodeRendererProps> = ({
         isActive={activePaneId === node.id}
         canClose={paneCount > 1}
         onSplit={onSplit}
+        onClose={onClose}
+        onFocus={onFocus}
+        onOpenMd={onOpenMd}
+      />
+    )
+  }
+
+  if (node.type === 'md') {
+    return (
+      <MarkdownPane
+        paneId={node.id}
+        cwd={node.cwd}
+        isActive={activePaneId === node.id}
+        canClose={paneCount > 1}
         onClose={onClose}
         onFocus={onFocus}
       />
@@ -58,6 +76,7 @@ const NodeRenderer: React.FC<NodeRendererProps> = ({
           onSplit={onSplit}
           onClose={onClose}
           onFocus={onFocus}
+          onOpenMd={onOpenMd}
         />
       </div>
       <div className={`${styles.divider} ${isHorizontal ? styles.dividerH : styles.dividerV}`} />
@@ -70,13 +89,14 @@ const NodeRenderer: React.FC<NodeRendererProps> = ({
           onSplit={onSplit}
           onClose={onClose}
           onFocus={onFocus}
+          onOpenMd={onOpenMd}
         />
       </div>
     </div>
   )
 }
 
-export const PaneGrid: React.FC<PaneGridProps> = ({ tabId, onSplit, onClose }) => {
+export const PaneGrid: React.FC<PaneGridProps> = ({ tabId, onSplit, onClose, onOpenMd }) => {
   const tab = useTabsStore((s) => s.tabs.find((t) => t.id === tabId))
   const setTabActivePane = useTabsStore((s) => s.setTabActivePane)
 
@@ -92,6 +112,7 @@ export const PaneGrid: React.FC<PaneGridProps> = ({ tabId, onSplit, onClose }) =
         onSplit={(paneId, dir) => onSplit(tabId, paneId, dir)}
         onClose={(paneId) => onClose(tabId, paneId)}
         onFocus={(paneId) => setTabActivePane(tabId, paneId)}
+        onOpenMd={(paneId) => onOpenMd(tabId, paneId)}
       />
     </div>
   )

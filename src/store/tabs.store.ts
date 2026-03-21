@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import {
-  PaneNode,
+  type PaneNode,
   createLeaf,
   getAllLeaves,
   replacePane,
@@ -35,6 +35,7 @@ interface TabsState {
 
   initTabRoot: (tabId: string, sessionId: string) => string
   splitTabPane: (tabId: string, paneId: string, dir: SplitDirection, sessionId: string) => string
+  splitMdPane: (tabId: string, paneId: string, dir: SplitDirection, cwd: string) => string
   closeTabPane: (tabId: string, paneId: string) => void
   setTabActivePane: (tabId: string, paneId: string) => void
   updateTabRatio: (tabId: string, splitId: string, ratio: number) => void
@@ -102,6 +103,25 @@ export const useTabsStore = create<TabsState>((set, get) => ({
       }))
     )
     return newLeaf.id
+  },
+
+  splitMdPane: (tabId, paneId, dir, cwd) => {
+    const tab = get().tabs.find((t) => t.id === tabId)
+    if (!tab?.root || tab.paneCount >= 8) return ''
+    const existing = getAllLeaves(tab.root).find((l) => l.id === paneId)
+    if (!existing) return ''
+    const newMd: PaneNode = { type: 'md', id: crypto.randomUUID(), cwd }
+    const newSplit = createSplit(dir, existing, newMd)
+    const newRoot = replacePane(tab.root, paneId, newSplit)
+    set((s) =>
+      mapTab(s, tabId, (t) => ({
+        ...t,
+        root: newRoot,
+        activePaneId: newMd.id,
+        paneCount: t.paneCount + 1,
+      }))
+    )
+    return newMd.id
   },
 
   closeTabPane: (tabId, paneId) => {

@@ -13,10 +13,11 @@ interface TermPaneProps {
   onSplit: (paneId: string, dir: SplitDirection) => void
   onClose: (paneId: string) => void
   onFocus: (paneId: string) => void
+  onOpenMd?: (paneId: string) => void
 }
 
 export const TermPane: React.FC<TermPaneProps> = React.memo(
-  ({ sessionId, paneId, isActive, canClose, onSplit, onClose, onFocus }) => {
+  ({ sessionId, paneId, isActive, canClose, onSplit, onClose, onFocus, onOpenMd }) => {
     const containerRef = useRef<HTMLDivElement>(null)
     const session = useSessionsStore((s) => s.sessions.get(sessionId))
 
@@ -36,6 +37,7 @@ export const TermPane: React.FC<TermPaneProps> = React.memo(
           canClose={canClose}
           onSplit={onSplit}
           onClose={onClose}
+          onOpenMd={onOpenMd}
         />
 
         {session.alertMessage && (

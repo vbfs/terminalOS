@@ -43,6 +43,10 @@ const api = {
       ipcRenderer.invoke('fs:readDir', dirPath),
     readFile: (filePath: string): Promise<string> =>
       ipcRenderer.invoke('fs:readFile', filePath),
+    writeFile: (filePath: string, content: string): Promise<void> =>
+      ipcRenderer.invoke('fs:writeFile', filePath, content),
+    mkdir: (dirPath: string): Promise<void> =>
+      ipcRenderer.invoke('fs:mkdir', dirPath),
     setWatchRoot: (rootPath: string): void =>
       ipcRenderer.send('fs:setWatchRoot', rootPath),
     onWatch: (cb: (event: { type: string; path: string }) => void): Unsubscribe => {

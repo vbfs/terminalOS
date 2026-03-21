@@ -35,9 +35,10 @@ function fuzzyScore(str: string, query: string): number {
 interface CommandPaletteProps {
   isOpen: boolean
   onClose: () => void
+  onOpenMd?: (tabId: string, paneId: string) => void
 }
 
-export const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose }) => {
+export const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose, onOpenMd }) => {
   const [query, setQuery] = useState('')
   const [selectedIdx, setSelectedIdx] = useState(0)
   const inputRef = useRef<HTMLInputElement>(null)
@@ -128,6 +129,18 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose 
         if (!activeTab?.activePaneId) return
         const session = Array.from(sessions.values()).find(s => s.paneId === activeTab.activePaneId)
         if (session) window.api.pty.write(session.id, 'aider\n')
+        onClose()
+      },
+    },
+    {
+      id: 'md.openEditor',
+      label: 'Open Markdown Editor',
+      shortcut: '⌘M',
+      icon: '◆',
+      action: () => {
+        if (activeTab?.activePaneId && onOpenMd) {
+          onOpenMd(activeTab.id, activeTab.activePaneId)
+        }
         onClose()
       },
     },

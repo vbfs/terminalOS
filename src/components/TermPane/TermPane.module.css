@@ -107,6 +107,10 @@
   color: var(--red);
 }
 
+.mdBtn:hover {
+  color: var(--amber);
+}
+
 /* ── Inline alert ───────────────────────────────── */
 .inlineAlert {
   background: rgba(248, 113, 113, 0.06);

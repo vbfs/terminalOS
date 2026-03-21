@@ -2,7 +2,10 @@ export type SplitDirection = 'h' | 'v'
 
 export type PaneNode =
   | { type: 'leaf'; id: string; sessionId: string }
+  | { type: 'md'; id: string; cwd: string }
   | { type: 'split'; id: string; direction: SplitDirection; ratio: number; a: PaneNode; b: PaneNode }
+
+export type LeafLike = Extract<PaneNode, { type: 'leaf' | 'md' }>
 
 export interface PaneState {
   root: PaneNode
@@ -31,8 +34,8 @@ export function findPane(root: PaneNode, paneId: string): PaneNode | null {
   return null
 }
 
-export function getAllLeaves(root: PaneNode): Array<{ type: 'leaf'; id: string; sessionId: string }> {
-  if (root.type === 'leaf') return [root]
+export function getAllLeaves(root: PaneNode): LeafLike[] {
+  if (root.type === 'leaf' || root.type === 'md') return [root]
   return [...getAllLeaves(root.a), ...getAllLeaves(root.b)]
 }
 
