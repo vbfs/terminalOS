@@ -2,7 +2,7 @@ import React, { useState, useRef } from "react";
 import styles from "./TabBar.module.css";
 import { useTabsStore } from "../../store/tabs.store";
 import { useSessionsStore } from "../../store/sessions.store";
-import { getAgentType, getDotState } from "../../types/session";
+import { getDotState } from "../../types/session";
 import { getAllLeaves } from "../../types/pane";
 import type { AgentType, DotState } from "../../types/session";
 import { IconX, IconPlus } from "../Icons";
@@ -61,17 +61,10 @@ export const TabBar: React.FC<TabBarProps> = ({ onNewTab, onCloseTab }) => {
     return "idle";
   };
 
-  const getTabAgentType = (tabId: string): AgentType => {
+  const getPaneCount = (tabId: string): number => {
     const tab = tabs.find((t) => t.id === tabId);
-    if (!tab?.root) return "SHELL";
-    const leaves = getAllLeaves(tab.root);
-    const activePaneLeaf =
-      leaves.find((l) => l.id === tab.activePaneId) ?? leaves[0];
-    if (!activePaneLeaf) return "SHELL";
-    for (const session of sessionsMap.values()) {
-      if (session.paneId === activePaneLeaf.id) return getAgentType(session);
-    }
-    return "SHELL";
+    if (!tab?.root) return 0;
+    return getAllLeaves(tab.root).length;
   };
 
   const startRename = (tabId: string, currentName: string) => {
@@ -93,7 +86,7 @@ export const TabBar: React.FC<TabBarProps> = ({ onNewTab, onCloseTab }) => {
         {tabs.map((tab) => {
           const isActive = tab.id === activeTabId;
           const dotState = getTabDotState(tab.id);
-          const agentType = getTabAgentType(tab.id);
+          const paneCount = getPaneCount(tab.id);
 
           return (
             <div
@@ -104,7 +97,9 @@ export const TabBar: React.FC<TabBarProps> = ({ onNewTab, onCloseTab }) => {
               title={tab.name}
             >
               <StatusDot state={dotState} />
-              <AgentBadge type={agentType} />
+              {paneCount > 0 && (
+                <span className={styles.paneCountBadge}>{paneCount}</span>
+              )}
               {editingTabId === tab.id ? (
                 <input
                   ref={editRef}

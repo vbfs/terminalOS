@@ -78,3 +78,16 @@
   font-size: 10px;
   color: var(--muted);
 }
+
+.copiedFlash {
+  font-size: 10px;
+  color: var(--teal);
+  opacity: 1;
+  animation: fadeOut 2s ease-out forwards;
+}
+
+@keyframes fadeOut {
+  0% { opacity: 1; }
+  60% { opacity: 1; }
+  100% { opacity: 0; }
+}

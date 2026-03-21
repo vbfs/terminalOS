@@ -106,11 +106,14 @@
   color: var(--muted);
   cursor: pointer;
   padding: 1px 6px;
-  font-size: 13px;
-  line-height: 1.6;
+  line-height: 1;
   border-radius: 3px;
   transition: color var(--dur-fast), background var(--dur-fast);
   font-family: var(--font-mono);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 22px;
 }
 
 .paneActionBtn:hover {

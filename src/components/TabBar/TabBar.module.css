@@ -97,6 +97,26 @@
   background: var(--muted);
 }
 
+/* ── Pane count badge ──────────────────────────── */
+.paneCountBadge {
+  font-size: 9px;
+  font-weight: 700;
+  font-family: var(--font-ui);
+  padding: 1px 5px;
+  border-radius: 3px;
+  background: var(--bg);
+  color: var(--muted);
+  flex-shrink: 0;
+  line-height: 14px;
+  border: 1px solid var(--border);
+}
+
+.tab.active .paneCountBadge {
+  background: var(--bg2);
+  color: var(--muted2);
+  border-color: var(--border2);
+}
+
 /* ── Agent badge ───────────────────────────────── */
 .agentBadge {
   font-size: 9px;
@@ -149,14 +169,16 @@
   border: none;
   color: var(--muted);
   cursor: pointer;
-  padding: 0 2px;
-  font-size: 14px;
+  padding: 2px 3px;
   line-height: 1;
   border-radius: 3px;
   flex-shrink: 0;
   opacity: 0;
   transition: color var(--dur-fast), opacity var(--dur-fast);
   margin-left: 2px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .tab:hover .closeTabBtn,
@@ -189,8 +211,6 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 18px;
-  line-height: 1;
   color: var(--muted);
   cursor: pointer;
   border: none;

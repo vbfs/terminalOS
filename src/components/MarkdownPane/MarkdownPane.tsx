@@ -1,5 +1,6 @@
-import React, { useEffect, useCallback, useRef, useState } from "react";
+import React, { useEffect, useCallback, useRef, useState, useMemo } from "react";
 import { marked } from "marked";
+import hljs from "highlight.js";
 import styles from "./MarkdownPane.module.css";
 import { useMdPaneStore } from "../../store/mdpane.store";
 import { useTabsStore } from "../../store/tabs.store";
@@ -16,6 +17,39 @@ import {
   IconFile,
   IconMarkdownDoc,
 } from "../Icons";
+
+// ── Language detection ─────────────────────────────────────────
+const LANG_MAP: Record<string, string> = {
+  ts: "typescript", tsx: "typescript",
+  js: "javascript", jsx: "javascript", mjs: "javascript", cjs: "javascript",
+  py: "python", rs: "rust", go: "go",
+  css: "css", scss: "scss", less: "less",
+  json: "json", jsonc: "json",
+  html: "html", htm: "html", xml: "xml", svg: "xml",
+  sh: "bash", bash: "bash", zsh: "bash",
+  yaml: "yaml", yml: "yaml", toml: "toml",
+  cpp: "cpp", cxx: "cpp", cc: "cpp", c: "c", h: "c", hpp: "cpp",
+  java: "java", kt: "kotlin", swift: "swift",
+  rb: "ruby", php: "php", cs: "csharp",
+  sql: "sql", graphql: "graphql",
+  lua: "lua",
+  dockerfile: "dockerfile",
+};
+
+function getLang(filePath: string): string | null {
+  const base = (filePath.split("/").pop() ?? "").toLowerCase();
+  if (base === "dockerfile") return "dockerfile";
+  if (base === "makefile") return "makefile";
+  const ext = base.split(".").pop() ?? "";
+  return LANG_MAP[ext] ?? null;
+}
+
+function escapeHtml(text: string): string {
+  return text
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+}
 
 // Configure marked for clean output
 marked.setOptions({ gfm: true, breaks: true });
@@ -173,6 +207,56 @@ const FileBrowser: React.FC<FileBrowserProps> = ({
   );
 };
 
+// ── Code Editor (syntax-highlighted overlay) ──────────────────
+
+interface CodeEditorProps {
+  content: string;
+  language: string | null;
+  onChange: (val: string) => void;
+  onKeyDown: (e: React.KeyboardEvent<HTMLTextAreaElement>) => void;
+}
+
+const CodeEditor: React.FC<CodeEditorProps> = ({ content, language, onChange, onKeyDown }) => {
+  const taRef = useRef<HTMLTextAreaElement>(null);
+  const preRef = useRef<HTMLPreElement>(null);
+
+  const highlighted = useMemo(() => {
+    if (!language) return escapeHtml(content);
+    try {
+      return hljs.highlight(content, { language }).value;
+    } catch {
+      return escapeHtml(content);
+    }
+  }, [content, language]);
+
+  const syncScroll = () => {
+    if (taRef.current && preRef.current) {
+      preRef.current.scrollTop = taRef.current.scrollTop;
+      preRef.current.scrollLeft = taRef.current.scrollLeft;
+    }
+  };
+
+  return (
+    <div className={styles.codeWrap}>
+      <pre ref={preRef} className={styles.codePre} aria-hidden="true">
+        <code dangerouslySetInnerHTML={{ __html: highlighted + "\n" }} />
+      </pre>
+      <textarea
+        ref={taRef}
+        className={styles.codeTextarea}
+        value={content}
+        onChange={(e) => onChange(e.target.value)}
+        onKeyDown={onKeyDown}
+        onScroll={syncScroll}
+        spellCheck={false}
+        autoCorrect="off"
+        autoCapitalize="off"
+        autoComplete="off"
+      />
+    </div>
+  );
+};
+
 // ── Editor ────────────────────────────────────────────────────
 
 interface EditorProps {
@@ -190,10 +274,10 @@ const Editor: React.FC<EditorProps> = ({
 }) => {
   const { setContent, save, closeFile } = useMdPaneStore();
   const previewRef = useRef<HTMLDivElement>(null);
-  const scrollRef = useRef<{ preview: number }>({ preview: 0 });
 
   const filename = filePath.split("/").pop() ?? filePath;
   const isMarkdown = filePath.endsWith(".md") || filePath.endsWith(".mdx");
+  const language = isMarkdown ? null : getLang(filePath);
 
   const html = isMarkdown ? (marked.parse(content) as string) : "";
 
@@ -206,6 +290,11 @@ const Editor: React.FC<EditorProps> = ({
 
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setContent(paneId, e.target.value);
+    triggerAutoSave();
+  };
+
+  const handleCodeChange = (val: string) => {
+    setContent(paneId, val);
     triggerAutoSave();
   };
 
@@ -245,19 +334,19 @@ const Editor: React.FC<EditorProps> = ({
       </div>
 
       <div className={styles.editorBody}>
-        <div className={styles.editorSide}>
-          <textarea
-            className={styles.textarea}
-            value={content}
-            onChange={handleChange}
-            onKeyDown={handleKeyDown}
-            spellCheck={false}
-            autoCorrect="off"
-            autoCapitalize="off"
-          />
-        </div>
-        {isMarkdown && (
+        {isMarkdown ? (
           <>
+            <div className={styles.editorSide}>
+              <textarea
+                className={styles.textarea}
+                value={content}
+                onChange={handleChange}
+                onKeyDown={handleKeyDown}
+                spellCheck={false}
+                autoCorrect="off"
+                autoCapitalize="off"
+              />
+            </div>
             <div className={styles.editorDivider} />
             <div
               ref={previewRef}
@@ -265,6 +354,13 @@ const Editor: React.FC<EditorProps> = ({
               dangerouslySetInnerHTML={{ __html: html }}
             />
           </>
+        ) : (
+          <CodeEditor
+            content={content}
+            language={language}
+            onChange={handleCodeChange}
+            onKeyDown={handleKeyDown}
+          />
         )}
       </div>
     </div>

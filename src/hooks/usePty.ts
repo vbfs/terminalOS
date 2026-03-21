@@ -4,6 +4,7 @@ import { FitAddon } from '@xterm/addon-fit'
 import { WebLinksAddon } from '@xterm/addon-web-links'
 import { SearchAddon } from '@xterm/addon-search'
 import { useSessionsStore } from '../store/sessions.store'
+import { useUiStore } from '../store/ui.store'
 
 const termTheme = {
   background: '#0a0a0c',
@@ -186,6 +187,19 @@ export function usePty({ sessionId, containerRef, onReady }: UsePtyOptions) {
 
     ro.observe(container)
 
+    // Copy selection on mouseup, then clear it
+    const handleMouseUp = () => {
+      const term = termRef.current
+      if (!term) return
+      const selection = term.getSelection()
+      if (!selection) return
+      navigator.clipboard.writeText(selection).then(() => {
+        useUiStore.getState().setCopied('Copied!')
+      })
+      setTimeout(() => term.clearSelection(), 80)
+    }
+    document.addEventListener('mouseup', handleMouseUp)
+
     const unsubData = window.api.pty.onData((id, data) => {
       if (id !== sessionId) return
 
@@ -222,6 +236,7 @@ export function usePty({ sessionId, containerRef, onReady }: UsePtyOptions) {
 
     return () => {
       ro.disconnect()
+      document.removeEventListener('mouseup', handleMouseUp)
       unsubData()
       unsubExit()
       unsubAiDetected()

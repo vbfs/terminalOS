@@ -103,11 +103,14 @@
   color: var(--muted);
   cursor: pointer;
   padding: 1px 6px;
-  font-size: 13px;
-  line-height: 1.6;
+  line-height: 1;
   border-radius: 3px;
   transition: color var(--dur-fast), background var(--dur-fast);
   font-family: var(--font-mono);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 22px;
 }
 
 .headerBtn:hover {
@@ -144,13 +147,14 @@
   border: none;
   color: var(--muted);
   cursor: pointer;
-  font-size: 13px;
-  line-height: 1;
   padding: 2px 5px;
   border-radius: 3px;
   font-family: var(--font-mono);
   transition: color var(--dur-fast), background var(--dur-fast);
   flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .upBtn:hover {
@@ -185,6 +189,9 @@
   border-radius: 3px;
   transition: color var(--dur-fast), background var(--dur-fast);
   white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
 }
 
 .createBtn:hover {
@@ -629,4 +636,146 @@
 .preview :global(input[type='checkbox']) {
   accent-color: var(--amber);
   margin-right: 5px;
+}
+
+/* ── Code Editor (syntax-highlighted overlay) ─────── */
+.codeWrap {
+  position: relative;
+  flex: 1;
+  overflow: hidden;
+  background: var(--bg);
+}
+
+/* Pre behind textarea — shows highlighted code */
+.codePre {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  padding: 16px 14px;
+  font-size: 13px;
+  font-family: var(--font-mono);
+  line-height: 1.65;
+  overflow: hidden;
+  pointer-events: none;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  tab-size: 2;
+  background: transparent;
+  color: var(--text);
+  border: none;
+  outline: none;
+}
+
+.codePre code {
+  font-family: inherit;
+  font-size: inherit;
+  background: none;
+  padding: 0;
+  border: none;
+  color: inherit;
+  display: block;
+}
+
+/* Textarea on top — transparent text, visible cursor */
+.codeTextarea {
+  position: absolute;
+  inset: 0;
+  resize: none;
+  background: transparent;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  caret-color: var(--amber);
+  border: none;
+  outline: none;
+  font-size: 13px;
+  font-family: var(--font-mono);
+  line-height: 1.65;
+  padding: 16px 14px;
+  overflow-y: auto;
+  overflow-x: auto;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  tab-size: 2;
+  z-index: 1;
+}
+
+.codeTextarea::selection {
+  background: rgba(232, 164, 74, 0.22);
+  -webkit-text-fill-color: transparent;
+}
+
+.codeTextarea::-webkit-scrollbar { width: 4px; height: 4px; }
+.codeTextarea::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+
+/* ── Highlight.js token colors (dark terminal theme) ── */
+.codePre :global(.hljs-keyword),
+.codePre :global(.hljs-selector-tag),
+.codePre :global(.hljs-built_in),
+.codePre :global(.hljs-name) {
+  color: #c792ea;
+}
+
+.codePre :global(.hljs-string),
+.codePre :global(.hljs-template-string),
+.codePre :global(.hljs-selector-attr),
+.codePre :global(.hljs-addition) {
+  color: #c3e88d;
+}
+
+.codePre :global(.hljs-number),
+.codePre :global(.hljs-literal),
+.codePre :global(.hljs-selector-class) {
+  color: #f78c6c;
+}
+
+.codePre :global(.hljs-comment),
+.codePre :global(.hljs-quote),
+.codePre :global(.hljs-deletion) {
+  color: var(--muted);
+  font-style: italic;
+}
+
+.codePre :global(.hljs-title),
+.codePre :global(.hljs-title\.class_),
+.codePre :global(.hljs-title\.function_),
+.codePre :global(.hljs-section) {
+  color: #82aaff;
+}
+
+.codePre :global(.hljs-type),
+.codePre :global(.hljs-class .hljs-title) {
+  color: #ffcb6b;
+}
+
+.codePre :global(.hljs-attr),
+.codePre :global(.hljs-attribute),
+.codePre :global(.hljs-symbol) {
+  color: #ffcb6b;
+}
+
+.codePre :global(.hljs-params),
+.codePre :global(.hljs-variable) {
+  color: #f07178;
+}
+
+.codePre :global(.hljs-operator),
+.codePre :global(.hljs-punctuation) {
+  color: #89ddff;
+}
+
+.codePre :global(.hljs-regexp) {
+  color: #f2ff00;
+}
+
+.codePre :global(.hljs-meta),
+.codePre :global(.hljs-meta .hljs-string) {
+  color: var(--muted2);
+}
+
+.codePre :global(.hljs-tag) {
+  color: #f07178;
+}
+
+.codePre :global(.hljs-subst) {
+  color: var(--text);
 }

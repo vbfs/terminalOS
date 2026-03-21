@@ -1,6 +1,7 @@
 import React, { useMemo } from "react";
 import styles from "./StatusBar.module.css";
 import { useSessionsStore } from "../../store/sessions.store";
+import { useUiStore } from "../../store/ui.store";
 import { getAgentType } from "../../types/session";
 import type { Session } from "../../types/session";
 
@@ -12,6 +13,7 @@ function formatTokens(n: number): string {
 export const StatusBar: React.FC = () => {
   const sessionOrder = useSessionsStore((s) => s.sessionOrder);
   const sessionsMap = useSessionsStore((s) => s.sessions);
+  const copiedFlash = useUiStore((s) => s.copiedFlash);
   const sessions = useMemo(
     () =>
       sessionOrder
@@ -54,6 +56,9 @@ export const StatusBar: React.FC = () => {
       </div>
 
       <div className={styles.right}>
+        {copiedFlash && (
+          <span className={styles.copiedFlash}>{copiedFlash}</span>
+        )}
         <span className={styles.version}>v0.1.0</span>
       </div>
     </div>
