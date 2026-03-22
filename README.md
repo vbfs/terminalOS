@@ -43,13 +43,13 @@ aiTerm is a **desktop terminal multiplexer purpose-built for AI coding workflows
 Every terminal pane detects when an AI coding tool is running. A live badge shows which tool is active (`Claude`, `Aider`, `OpenCode`, `Continue`) with instant visual feedback when a session starts or ends. No more guessing if your AI is still processing.
 
 ### Real-Time Token Tracking
-aiTerm parses token usage directly from CLI output — no API key required, no external service. Token counts are surfaced in the status bar as you work, so you always know your approximate spend per session.
+aiTerm parses token usage directly from CLI output — no API key required, no external service. Token counts and estimated USD cost are surfaced in the status bar as you work, so you always know your exact spend per session.
 
 ### API Error Alerts
 Detects and surfaces common AI API errors (invalid keys, model not found, auth conflicts) as visual alerts inside the pane — before they silently fail and waste your time.
 
 ### Multi-Pane Workspace
-Split your workspace horizontally or vertically. Run Claude in one pane, your test suite in another, and a markdown doc in a third — all in a single window. The layout persists across sessions.
+Split your workspace horizontally or vertically. Run Claude in one pane, your test suite in another, and a markdown doc in a third — all in a single window. The full layout — tabs, pane splits, ratios, and active pane — is automatically saved and restored on every launch.
 
 ### Integrated Markdown Editor
 A built-in file editor with live preview — designed for reviewing AI-generated docs, writing prompts, and editing code without leaving your terminal. Supports Markdown and source files with syntax highlighting.
@@ -178,7 +178,6 @@ npm run dist       # Package for your platform
 
 The following are areas actively being explored based on developer feedback:
 
-- [ ] **Session cost estimation** — translate tokens to USD per session
 - [ ] **Multi-model token display** — differentiate input vs. output token costs
 - [ ] **Session history and replay** — review past AI sessions
 - [ ] **Prompt scratchpad** — dedicated pane for drafting and reusing prompts

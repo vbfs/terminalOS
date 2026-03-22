@@ -42,6 +42,7 @@ interface TabsState {
   updateTabRatio: (tabId: string, splitId: string, ratio: number) => void
   getTabPaneIds: (tabId: string) => string[]
   toggleMinimizePane: (paneId: string) => void
+  restoreTabRoot: (tabId: string, root: PaneNode, activePaneId: string | null) => void
 }
 
 function mapTab(state: TabsState, tabId: string, fn: (t: Tab) => Tab): Partial<TabsState> {
@@ -177,5 +178,17 @@ export const useTabsStore = create<TabsState>((set, get) => ({
     const tab = get().tabs.find((t) => t.id === tabId)
     if (!tab?.root) return []
     return getAllLeaves(tab.root).map((l) => l.id)
+  },
+
+  restoreTabRoot: (tabId, root, activePaneId) => {
+    const leaves = getAllLeaves(root)
+    set((s) =>
+      mapTab(s, tabId, (t) => ({
+        ...t,
+        root,
+        activePaneId: activePaneId ?? leaves[0]?.id ?? null,
+        paneCount: leaves.length,
+      }))
+    )
   },
 }))
