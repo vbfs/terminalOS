@@ -39,6 +39,7 @@ export const TermPane: React.FC<TermPaneProps> = React.memo(
   }) => {
     const containerRef = useRef<HTMLDivElement>(null);
     const session = useSessionsStore((s) => s.sessions.get(sessionId));
+    const setAlert = useSessionsStore((s) => s.setAlert);
     const isMinimized = useTabsStore((s) => s.minimizedPanes.has(paneId));
     const toggleMinimize = useTabsStore((s) => s.toggleMinimizePane);
     const [ctxMenu, setCtxMenu] = useState<{ x: number; y: number } | null>(
@@ -165,7 +166,10 @@ export const TermPane: React.FC<TermPaneProps> = React.memo(
         />
 
         {!isMinimized && session.alertMessage && (
-          <div className={styles.inlineAlert}>{session.alertMessage}</div>
+          <div className={styles.inlineAlert}>
+            <span>{session.alertMessage}</span>
+            <button className={styles.alertDismiss} onClick={() => setAlert(sessionId, null)}>×</button>
+          </div>
         )}
 
         <div ref={containerRef} className={styles.terminal} />

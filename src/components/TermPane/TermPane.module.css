@@ -165,6 +165,26 @@
   font-family: var(--font-ui);
   color: var(--red);
   flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.alertDismiss {
+  background: none;
+  border: none;
+  color: var(--red);
+  opacity: 0.5;
+  cursor: pointer;
+  font-size: 14px;
+  line-height: 1;
+  padding: 0;
+  flex-shrink: 0;
+}
+
+.alertDismiss:hover {
+  opacity: 1;
 }
 
 /* ── Terminal ───────────────────────────────────── */

@@ -11,7 +11,7 @@ const AI_SIGNATURES: Array<{ pattern: RegExp; name: string; color: string }> = [
   { pattern: /\$\s*claude\b/,    name: 'claude code',  color: '#D4A27F' },
 ]
 
-const SHELL_PROMPT_PATTERN = /\$\s*$/
+const SHELL_PROMPT_PATTERN = /[$%❯>]\s*$/
 
 export class ProcessDetector {
   private slidingWindow = ''
