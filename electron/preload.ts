@@ -39,7 +39,7 @@ const api = {
   fs: {
     openFolder: (): Promise<string | null> =>
       ipcRenderer.invoke('fs:openFolder'),
-    readDir: (dirPath: string): Promise<Array<{ name: string; path: string; isDirectory: boolean; ext: string }>> =>
+    readDir: (dirPath: string): Promise<Array<{ name: string; path: string; isDirectory: boolean; ext: string; size?: number }>> =>
       ipcRenderer.invoke('fs:readDir', dirPath),
     readFile: (filePath: string): Promise<string> =>
       ipcRenderer.invoke('fs:readFile', filePath),

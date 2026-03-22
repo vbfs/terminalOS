@@ -8,6 +8,7 @@ export interface FsEntry {
   path: string
   isDirectory: boolean
   ext: string
+  size?: number
 }
 
 export interface FsEvent {

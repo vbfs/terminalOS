@@ -8,6 +8,7 @@ interface FsEntry {
   path: string
   isDirectory: boolean
   ext: string
+  size?: number
 }
 
 export class FsWatcher {
@@ -30,12 +31,14 @@ export class FsWatcher {
       const entryPath = path.join(resolved, entry.name)
       const isDirectory = entry.isDirectory()
       const ext = isDirectory ? '' : path.extname(entry.name).slice(1)
+      const stat = isDirectory ? null : await fs.stat(entryPath).catch(() => null)
 
       result.push({
         name: entry.name,
         path: entryPath,
         isDirectory,
         ext,
+        size: stat?.size,
       })
     }
 

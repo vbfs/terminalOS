@@ -157,6 +157,11 @@ const FileBrowser: React.FC<FileBrowserProps> = ({
   const isMd = (e: FsEntry) =>
     !e.isDirectory && (e.ext === "md" || e.ext === "mdx");
 
+  const fmtTokens = (size: number) => {
+    const t = Math.ceil(size / 4);
+    return t >= 1000 ? `~${(t / 1000).toFixed(1)}k tokens` : `~${t} tokens`;
+  };
+
   return (
     <div className={styles.browser}>
       <div className={styles.browserPath}>
@@ -234,7 +239,9 @@ const FileBrowser: React.FC<FileBrowserProps> = ({
               )}
             </span>
             <span className={styles.entryName}>{entry.name}</span>
-            {isMd(entry) && <span className={styles.mdBadge}>md</span>}
+            {isMd(entry) && entry.size != null && (
+              <span className={styles.tokenCount}>{fmtTokens(entry.size)}</span>
+            )}
           </div>
         ))}
       </div>

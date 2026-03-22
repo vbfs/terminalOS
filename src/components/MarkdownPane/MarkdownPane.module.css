@@ -285,18 +285,12 @@
   white-space: nowrap;
 }
 
-.mdBadge {
-  font-size: 9px;
+.tokenCount {
+  font-size: 11px;
   font-family: var(--font-ui);
-  color: var(--amber);
-  background: var(--accent-dim);
-  border: 1px solid var(--accent-border);
-  border-radius: 2px;
-  padding: 0 4px;
-  line-height: 1.6;
+  color: var(--muted);
   flex-shrink: 0;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
+  white-space: nowrap;
 }
 
 /* ── New entry input ──────────────────────────────── */
