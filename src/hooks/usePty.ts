@@ -109,7 +109,7 @@ export function usePty({ sessionId, containerRef, onReady }: UsePtyOptions) {
         const terminal = new Terminal({
           fontFamily: '"JetBrains Mono", "MesloLGS NF", "Hack Nerd Font", "Cascadia Code", monospace',
           fontSize: 13,
-          lineHeight: 1.5,
+          lineHeight: 1.0,
           letterSpacing: 0,
           theme: termTheme,
           allowTransparency: false,
@@ -232,6 +232,7 @@ export function usePty({ sessionId, containerRef, onReady }: UsePtyOptions) {
     const unsubAiExited = window.api.pty.onAiExited((id) => {
       if (id !== sessionId) return
       setAiProcess(sessionId, null)
+      setAlert(sessionId, null)
     })
 
     return () => {
