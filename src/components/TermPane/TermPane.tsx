@@ -1,37 +1,156 @@
-import React, { useRef } from 'react'
-import styles from './TermPane.module.css'
-import { PaneHeader } from './PaneHeader'
-import { usePty } from '../../hooks/usePty'
-import { useSessionsStore } from '../../store/sessions.store'
-import { useTabsStore } from '../../store/tabs.store'
-import type { SplitDirection } from '../../types/pane'
+import React, { useRef, useState, useCallback } from "react";
+import styles from "./TermPane.module.css";
+import { PaneHeader } from "./PaneHeader";
+import { usePty } from "../../hooks/usePty";
+import { useSessionsStore } from "../../store/sessions.store";
+import { useTabsStore } from "../../store/tabs.store";
+import { ContextMenu, isMac } from "../ContextMenu/ContextMenu";
+import type { SplitDirection } from "../../types/pane";
+
+const mod = isMac ? "⌘" : "Ctrl+";
+const sh = isMac ? "⇧" : "Shift+";
+const ctrl = isMac ? "⌃" : "Ctrl+";
 
 interface TermPaneProps {
-  sessionId: string
-  paneId: string
-  isActive: boolean
-  canClose: boolean
-  onSplit: (paneId: string, dir: SplitDirection) => void
-  onClose: (paneId: string) => void
-  onFocus: (paneId: string) => void
-  onOpenMd?: (paneId: string) => void
+  sessionId: string;
+  paneId: string;
+  isActive: boolean;
+  canClose: boolean;
+  onSplit: (paneId: string, dir: SplitDirection) => void;
+  onClose: (paneId: string) => void;
+  onFocus: (paneId: string) => void;
+  onOpenMd?: (paneId: string) => void;
+  onCommandPalette?: () => void;
+  onNewTab?: () => void;
 }
 
 export const TermPane: React.FC<TermPaneProps> = React.memo(
-  ({ sessionId, paneId, isActive, canClose, onSplit, onClose, onFocus, onOpenMd }) => {
-    const containerRef = useRef<HTMLDivElement>(null)
-    const session = useSessionsStore((s) => s.sessions.get(sessionId))
-    const isMinimized = useTabsStore((s) => s.minimizedPanes.has(paneId))
-    const toggleMinimize = useTabsStore((s) => s.toggleMinimizePane)
+  ({
+    sessionId,
+    paneId,
+    isActive,
+    canClose,
+    onSplit,
+    onClose,
+    onFocus,
+    onOpenMd,
+    onCommandPalette,
+    onNewTab,
+  }) => {
+    const containerRef = useRef<HTMLDivElement>(null);
+    const session = useSessionsStore((s) => s.sessions.get(sessionId));
+    const isMinimized = useTabsStore((s) => s.minimizedPanes.has(paneId));
+    const toggleMinimize = useTabsStore((s) => s.toggleMinimizePane);
+    const [ctxMenu, setCtxMenu] = useState<{ x: number; y: number } | null>(
+      null,
+    );
 
-    usePty({ sessionId, containerRef })
+    usePty({ sessionId, containerRef });
 
-    if (!session) return null
+    const handleContextMenu = useCallback((e: React.MouseEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      setCtxMenu({ x: e.clientX, y: e.clientY });
+    }, []);
+
+    if (!session) return null;
+
+    const hasSelection = !!window.getSelection()?.toString();
+
+    const ctxGroups = [
+      // ── Clipboard ──────────────────────────────────
+      {
+        items: [
+          {
+            icon: "⊡",
+            label: "Copy",
+            shortcut: `${mod}C`,
+            disabled: !hasSelection,
+            onClick: () => {
+              const sel = window.getSelection()?.toString();
+              if (sel) navigator.clipboard.writeText(sel);
+            },
+          },
+          {
+            icon: "⊞",
+            label: "Paste",
+            shortcut: `${mod}V`,
+            onClick: async () => {
+              const text = await navigator.clipboard.readText();
+              if (text) window.api.pty.write(sessionId, text);
+            },
+          },
+          {
+            icon: "⌫",
+            label: "Clear",
+            shortcut: `${ctrl}L`,
+            onClick: () => window.api.pty.write(sessionId, "\x0c"),
+          },
+        ],
+      },
+      // ── Pane management ────────────────────────────
+      {
+        items: [
+          {
+            icon: "⊞",
+            label: "Split Right",
+            shortcut: `${mod}D`,
+            onClick: () => onSplit(paneId, "h"),
+          },
+          {
+            icon: "⊟",
+            label: "Split Below",
+            shortcut: `${mod}${sh}D`,
+            onClick: () => onSplit(paneId, "v"),
+          },
+          {
+            icon: isMinimized ? "⊟" : "–",
+            label: isMinimized ? "Restore Pane" : "Minimize Pane",
+            onClick: () => toggleMinimize(paneId),
+          },
+          ...(canClose
+            ? [
+                {
+                  icon: "✕",
+                  label: "Close Pane",
+                  shortcut: `${mod}W`,
+                  danger: true,
+                  onClick: () => onClose(paneId),
+                },
+              ]
+            : []),
+        ],
+      },
+      // ── App ────────────────────────────────────────
+      {
+        items: [
+          {
+            icon: "◆",
+            label: "Open Markdown Editor",
+            shortcut: `${mod}${sh}M`,
+            onClick: () => onOpenMd?.(paneId),
+          },
+          {
+            icon: "⌘",
+            label: "Command Palette",
+            shortcut: `${mod}K`,
+            onClick: () => onCommandPalette?.(),
+          },
+          {
+            icon: "+",
+            label: "New Workspace",
+            shortcut: `${mod}T`,
+            onClick: () => onNewTab?.(),
+          },
+        ],
+      },
+    ];
 
     return (
       <div
-        className={`${styles.termPane} ${isActive ? styles.focused : ''} ${isMinimized ? styles.minimized : ''}`}
+        className={`${styles.termPane} ${isActive ? styles.focused : ""} ${isMinimized ? styles.minimized : ""}`}
         onMouseDown={() => onFocus(paneId)}
+        onContextMenu={handleContextMenu}
       >
         <PaneHeader
           session={session}
@@ -50,9 +169,18 @@ export const TermPane: React.FC<TermPaneProps> = React.memo(
         )}
 
         <div ref={containerRef} className={styles.terminal} />
-      </div>
-    )
-  }
-)
 
-TermPane.displayName = 'TermPane'
+        {ctxMenu && (
+          <ContextMenu
+            x={ctxMenu.x}
+            y={ctxMenu.y}
+            groups={ctxGroups}
+            onClose={() => setCtxMenu(null)}
+          />
+        )}
+      </div>
+    );
+  },
+);
+
+TermPane.displayName = "TermPane";

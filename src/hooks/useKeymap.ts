@@ -6,6 +6,7 @@ import { useSessionsStore } from '../store/sessions.store'
 interface KeymapHandlers {
   onCommandPalette?: () => void
   onNewTab?: () => void
+  onOpenMd?: () => void
 }
 
 function matchesShortcut(e: KeyboardEvent, shortcut: string): boolean {
@@ -80,6 +81,13 @@ export function useKeymap(handlers: KeymapHandlers = {}) {
         if (activeTab && activePaneId) {
           tabsStore.closeTabPane(activeTab.id, activePaneId)
         }
+        return
+      }
+
+      // Open Markdown Editor
+      if (matchesShortcut(e, 'CmdOrCtrl+Shift+M')) {
+        e.preventDefault()
+        handlers.onOpenMd?.()
         return
       }
 

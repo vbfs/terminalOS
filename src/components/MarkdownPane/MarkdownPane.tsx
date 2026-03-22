@@ -1,4 +1,10 @@
-import React, { useEffect, useCallback, useRef, useState, useMemo } from "react";
+import React, {
+  useEffect,
+  useCallback,
+  useRef,
+  useState,
+  useMemo,
+} from "react";
 import { marked } from "marked";
 import hljs from "highlight.js";
 import styles from "./MarkdownPane.module.css";
@@ -20,18 +26,44 @@ import {
 
 // ── Language detection ─────────────────────────────────────────
 const LANG_MAP: Record<string, string> = {
-  ts: "typescript", tsx: "typescript",
-  js: "javascript", jsx: "javascript", mjs: "javascript", cjs: "javascript",
-  py: "python", rs: "rust", go: "go",
-  css: "css", scss: "scss", less: "less",
-  json: "json", jsonc: "json",
-  html: "html", htm: "html", xml: "xml", svg: "xml",
-  sh: "bash", bash: "bash", zsh: "bash",
-  yaml: "yaml", yml: "yaml", toml: "toml",
-  cpp: "cpp", cxx: "cpp", cc: "cpp", c: "c", h: "c", hpp: "cpp",
-  java: "java", kt: "kotlin", swift: "swift",
-  rb: "ruby", php: "php", cs: "csharp",
-  sql: "sql", graphql: "graphql",
+  ts: "typescript",
+  tsx: "typescript",
+  js: "javascript",
+  jsx: "javascript",
+  mjs: "javascript",
+  cjs: "javascript",
+  py: "python",
+  rs: "rust",
+  go: "go",
+  css: "css",
+  scss: "scss",
+  less: "less",
+  json: "json",
+  jsonc: "json",
+  html: "html",
+  htm: "html",
+  xml: "xml",
+  svg: "xml",
+  sh: "bash",
+  bash: "bash",
+  zsh: "bash",
+  yaml: "yaml",
+  yml: "yaml",
+  toml: "toml",
+  cpp: "cpp",
+  cxx: "cpp",
+  cc: "cpp",
+  c: "c",
+  h: "c",
+  hpp: "cpp",
+  java: "java",
+  kt: "kotlin",
+  swift: "swift",
+  rb: "ruby",
+  php: "php",
+  cs: "csharp",
+  sql: "sql",
+  graphql: "graphql",
   lua: "lua",
   dockerfile: "dockerfile",
 };
@@ -219,7 +251,12 @@ interface CodeEditorProps {
   onKeyDown: (e: React.KeyboardEvent<HTMLTextAreaElement>) => void;
 }
 
-const CodeEditor: React.FC<CodeEditorProps> = ({ content, language, onChange, onKeyDown }) => {
+const CodeEditor: React.FC<CodeEditorProps> = ({
+  content,
+  language,
+  onChange,
+  onKeyDown,
+}) => {
   const taRef = useRef<HTMLTextAreaElement>(null);
   const preRef = useRef<HTMLPreElement>(null);
 
@@ -288,10 +325,13 @@ const Editor: React.FC<EditorProps> = ({
     if (!isMarkdown) return "";
     const raw = marked.parse(content) as string;
     // Resolve relative image paths to absolute file:// URLs
-    return raw.replace(/(<img\s[^>]*src=")([^"]+)(")/gi, (_, pre, src, post) => {
-      if (/^(https?:|data:|file:|\/)/i.test(src)) return pre + src + post;
-      return pre + "file://" + fileDir + "/" + src + post;
-    });
+    return raw.replace(
+      /(<img\s[^>]*src=")([^"]+)(")/gi,
+      (_, pre, src, post) => {
+        if (/^(https?:|data:|file:|\/)/i.test(src)) return pre + src + post;
+        return pre + "file://" + fileDir + "/" + src + post;
+      },
+    );
   }, [content, isMarkdown, fileDir]);
 
   // Auto-save debounce

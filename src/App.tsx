@@ -146,6 +146,11 @@ export const App: React.FC = () => {
   useKeymap({
     onCommandPalette: () => setCommandPaletteOpen(true),
     onNewTab: handleNewTab,
+    onOpenMd: () => {
+      const { tabs, activeTabId } = useTabsStore.getState()
+      const activeTab = tabs.find((t) => t.id === activeTabId)
+      if (activeTab?.activePaneId) handleOpenMdPane(activeTab.id, activeTab.activePaneId)
+    },
   });
 
   return (
@@ -176,6 +181,8 @@ export const App: React.FC = () => {
               onSplit={handleSplit}
               onClose={handleClosePane}
               onOpenMd={handleOpenMdPane}
+              onCommandPalette={() => setCommandPaletteOpen(true)}
+              onNewTab={handleNewTab}
             />
           </div>
         ))}

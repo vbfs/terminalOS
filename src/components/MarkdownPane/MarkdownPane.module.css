@@ -12,13 +12,22 @@
   cursor: default;
 }
 
+.sessionPath {
+  font-size: 11px;
+  font-family: var(--font-ui);
+  color: var(--muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .pane.focused {
   outline: 1px solid rgba(232, 164, 74, 0.3);
   outline-offset: -1px;
 }
 
 .pane:not(.focused)::after {
-  content: '';
+  content: "";
   position: absolute;
   inset: 0;
   background: rgba(0, 0, 0, 0.14);
@@ -105,7 +114,9 @@
   padding: 1px 6px;
   line-height: 1;
   border-radius: 3px;
-  transition: color var(--dur-fast), background var(--dur-fast);
+  transition:
+    color var(--dur-fast),
+    background var(--dur-fast);
   font-family: var(--font-mono);
   display: inline-flex;
   align-items: center;
@@ -150,7 +161,9 @@
   padding: 2px 5px;
   border-radius: 3px;
   font-family: var(--font-mono);
-  transition: color var(--dur-fast), background var(--dur-fast);
+  transition:
+    color var(--dur-fast),
+    background var(--dur-fast);
   flex-shrink: 0;
   display: inline-flex;
   align-items: center;
@@ -187,7 +200,9 @@
   font-family: var(--font-ui);
   padding: 2px 6px;
   border-radius: 3px;
-  transition: color var(--dur-fast), background var(--dur-fast);
+  transition:
+    color var(--dur-fast),
+    background var(--dur-fast);
   white-space: nowrap;
   display: inline-flex;
   align-items: center;
@@ -348,7 +363,9 @@
   padding: 2px 5px;
   border-radius: 3px;
   font-family: var(--font-mono);
-  transition: color var(--dur-fast), background var(--dur-fast);
+  transition:
+    color var(--dur-fast),
+    background var(--dur-fast);
   flex-shrink: 0;
 }
 
@@ -389,7 +406,9 @@
   font-family: var(--font-ui);
   padding: 2px 8px;
   border-radius: 3px;
-  transition: color var(--dur-fast), border-color var(--dur-fast);
+  transition:
+    color var(--dur-fast),
+    border-color var(--dur-fast);
   flex-shrink: 0;
 }
 
@@ -633,7 +652,7 @@
   border: 1px solid var(--border);
 }
 
-.preview :global(input[type='checkbox']) {
+.preview :global(input[type="checkbox"]) {
   accent-color: var(--amber);
   margin-right: 5px;
 }
@@ -704,8 +723,14 @@
   -webkit-text-fill-color: transparent;
 }
 
-.codeTextarea::-webkit-scrollbar { width: 4px; height: 4px; }
-.codeTextarea::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+.codeTextarea::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+.codeTextarea::-webkit-scrollbar-thumb {
+  background: var(--border2);
+  border-radius: 2px;
+}
 
 /* ── Highlight.js token colors (dark terminal theme) ── */
 .codePre :global(.hljs-keyword),

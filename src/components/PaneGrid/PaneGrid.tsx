@@ -34,6 +34,8 @@ interface PaneGridProps {
   onSplit: (tabId: string, paneId: string, dir: SplitDirection) => void
   onClose: (tabId: string, paneId: string) => void
   onOpenMd: (tabId: string, paneId: string) => void
+  onCommandPalette?: () => void
+  onNewTab?: () => void
 }
 
 interface NodeRendererProps {
@@ -45,6 +47,8 @@ interface NodeRendererProps {
   onClose: (paneId: string) => void
   onFocus: (paneId: string) => void
   onOpenMd: (paneId: string) => void
+  onCommandPalette?: () => void
+  onNewTab?: () => void
 }
 
 // ── NodeRenderer ───────────────────────────────────────────────
@@ -58,6 +62,8 @@ const NodeRenderer: React.FC<NodeRendererProps> = ({
   onClose,
   onFocus,
   onOpenMd,
+  onCommandPalette,
+  onNewTab,
 }) => {
   // All hooks must be unconditional — before any early returns
   const minimizedPanes = useTabsStore((s) => s.minimizedPanes)
@@ -110,6 +116,8 @@ const NodeRenderer: React.FC<NodeRendererProps> = ({
         onClose={onClose}
         onFocus={onFocus}
         onOpenMd={onOpenMd}
+        onCommandPalette={onCommandPalette}
+        onNewTab={onNewTab}
       />
     )
   }
@@ -185,6 +193,8 @@ const NodeRenderer: React.FC<NodeRendererProps> = ({
           onClose={onClose}
           onFocus={onFocus}
           onOpenMd={onOpenMd}
+          onCommandPalette={onCommandPalette}
+          onNewTab={onNewTab}
         />
       </div>
       <div
@@ -201,13 +211,15 @@ const NodeRenderer: React.FC<NodeRendererProps> = ({
           onClose={onClose}
           onFocus={onFocus}
           onOpenMd={onOpenMd}
+          onCommandPalette={onCommandPalette}
+          onNewTab={onNewTab}
         />
       </div>
     </div>
   )
 }
 
-export const PaneGrid: React.FC<PaneGridProps> = ({ tabId, onSplit, onClose, onOpenMd }) => {
+export const PaneGrid: React.FC<PaneGridProps> = ({ tabId, onSplit, onClose, onOpenMd, onCommandPalette, onNewTab }) => {
   const tab = useTabsStore((s) => s.tabs.find((t) => t.id === tabId))
   const setTabActivePane = useTabsStore((s) => s.setTabActivePane)
 
@@ -224,6 +236,8 @@ export const PaneGrid: React.FC<PaneGridProps> = ({ tabId, onSplit, onClose, onO
         onClose={(paneId) => onClose(tabId, paneId)}
         onFocus={(paneId) => setTabActivePane(tabId, paneId)}
         onOpenMd={(paneId) => onOpenMd(tabId, paneId)}
+        onCommandPalette={onCommandPalette}
+        onNewTab={onNewTab}
       />
     </div>
   )
