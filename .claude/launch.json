@@ -3,7 +3,7 @@
   "configurations": [
     {
       "name": "ai-terminal-dev",
-      "runtimeExecutable": "npm",
+      "runtimeExecutable": "/opt/homebrew/bin/npm",
       "runtimeArgs": ["run", "dev"],
       "port": 5173
     },

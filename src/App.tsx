@@ -45,6 +45,7 @@ export const App: React.FC = () => {
       model: null,
       costUsd: 0,
       alertMessage: null,
+      condaEnv: null,
       createdAt: Date.now(),
     });
   };
@@ -75,6 +76,7 @@ export const App: React.FC = () => {
       model: null,
       costUsd: 0,
       alertMessage: null,
+      condaEnv: null,
       createdAt: Date.now(),
     });
   };
@@ -134,6 +136,7 @@ export const App: React.FC = () => {
         model: null,
         costUsd: 0,
         alertMessage: null,
+        condaEnv: null,
         createdAt: Date.now(),
       });
     };

@@ -11,6 +11,7 @@ interface SessionsState {
   removeSession: (sessionId: string) => void
   updateStatus: (sessionId: string, status: ProcessStatus, exitCode?: number) => void
   updateCwd: (sessionId: string, cwd: string) => void
+  updateCondaEnv: (sessionId: string, condaEnv: string | null) => void
   setAiProcess: (sessionId: string, ai: AIProcess | null) => void
   updateTokens: (sessionId: string, tokens: number, costUsd: number) => void
   updateModel: (sessionId: string, model: string) => void
@@ -65,6 +66,15 @@ export const useSessionsStore = create<SessionsState>((set, get) => ({
       if (!session) return state
       const next = new Map(state.sessions)
       next.set(sessionId, { ...session, cwd })
+      return { sessions: next }
+    }),
+
+  updateCondaEnv: (sessionId, condaEnv) =>
+    set((state) => {
+      const session = state.sessions.get(sessionId)
+      if (!session) return state
+      const next = new Map(state.sessions)
+      next.set(sessionId, { ...session, condaEnv })
       return { sessions: next }
     }),
 

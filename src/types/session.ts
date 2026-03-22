@@ -7,6 +7,7 @@ export interface Session {
   paneId: string
   name: string
   cwd: string
+  condaEnv: string | null
   status: ProcessStatus
   exitCode?: number
   aiProcess: AIProcess | null

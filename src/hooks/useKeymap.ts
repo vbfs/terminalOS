@@ -56,7 +56,7 @@ export function useKeymap(handlers: KeymapHandlers = {}) {
           const cwd = activeSession?.cwd || workspaceStore.rootFolder || undefined
           const sessionId = await window.api.pty.create({ cwd })
           const newPaneId = tabsStore.splitTabPane(activeTab.id, activePaneId, 'h', sessionId)
-          sessionsStore.addSession({ id: sessionId, paneId: newPaneId, name: 'Session', cwd: cwd ?? '', status: 'running', aiProcess: null, tokens: 0, model: null, costUsd: 0, alertMessage: null, createdAt: Date.now() })
+          sessionsStore.addSession({ id: sessionId, paneId: newPaneId, name: 'Session', cwd: cwd ?? '', status: 'running', aiProcess: null, tokens: 0, model: null, costUsd: 0, alertMessage: null, condaEnv: null, createdAt: Date.now() })
         }
         return
       }
@@ -69,7 +69,7 @@ export function useKeymap(handlers: KeymapHandlers = {}) {
           const cwd = activeSession?.cwd || workspaceStore.rootFolder || undefined
           const sessionId = await window.api.pty.create({ cwd })
           const newPaneId = tabsStore.splitTabPane(activeTab.id, activePaneId, 'v', sessionId)
-          sessionsStore.addSession({ id: sessionId, paneId: newPaneId, name: 'Session', cwd: cwd ?? '', status: 'running', aiProcess: null, tokens: 0, model: null, costUsd: 0, alertMessage: null, createdAt: Date.now() })
+          sessionsStore.addSession({ id: sessionId, paneId: newPaneId, name: 'Session', cwd: cwd ?? '', status: 'running', aiProcess: null, tokens: 0, model: null, costUsd: 0, alertMessage: null, condaEnv: null, createdAt: Date.now() })
         }
         return
       }

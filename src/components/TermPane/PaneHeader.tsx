@@ -1,7 +1,5 @@
 import React from 'react'
 import styles from './TermPane.module.css'
-import { AgentBadge, StatusDot } from '../TabBar/TabBar'
-import { getAgentType, getDotState } from '../../types/session'
 function formatTokens(n: number): string {
   if (n >= 1000) return `${(n / 1000).toFixed(1)}k`
   return String(n)
@@ -39,19 +37,20 @@ export const PaneHeader: React.FC<PaneHeaderProps> = ({
   onOpenMd,
   onToggleMinimize,
 }) => {
-  const agentType = getAgentType(session)
-  const dotState = getDotState(session)
   const path = shortPath(session.cwd)
 
   return (
     <div className={`${styles.paneHeader} ${isFocused ? styles.focused : ''}`}>
       <div className={styles.paneHeaderLeft}>
-        <StatusDot state={dotState} />
-        {session.tokens > 0
-          ? <span className={styles.paneCost}>{formatTokens(session.tokens)}</span>
-          : <AgentBadge type={agentType} small />
-        }
-        <span className={styles.sessionName}>{session.name}</span>
+        {session.tokens > 0 && (
+          <span className={styles.paneCost}>{formatTokens(session.tokens)}</span>
+        )}
+        {session.condaEnv && (
+          <span className={styles.envBadge}>
+            <span className={styles.envIcon}>›</span>
+            <span className={styles.envName}>{session.condaEnv}</span>
+          </span>
+        )}
         <span className={styles.sessionPath}>{path}</span>
       </div>
 

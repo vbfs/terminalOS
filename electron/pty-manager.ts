@@ -1,7 +1,31 @@
 import { BrowserWindow } from 'electron'
+import * as fs from 'fs'
+import * as os from 'os'
+import * as path from 'path'
 import * as pty from 'node-pty'
 import { v4 as uuidv4 } from 'uuid'
 import { ProcessDetector } from './process-detector'
+
+function createZdotdir(): string {
+  const zdotdir = fs.mkdtempSync(path.join(os.tmpdir(), 'aiterm-'))
+  const zshrc = [
+    '# aiTerm: source real .zshrc first',
+    'unset ZDOTDIR',
+    '[ -f "$HOME/.zshrc" ] && source "$HOME/.zshrc"',
+    '',
+    '# Add our hook as the LAST precmd so it wins over oh-my-zsh/conda/starship',
+    '_aiterm_precmd() {',
+    '  PROMPT=" "',
+    '  RPROMPT=""',
+    '  printf "\\033]9001;%s\\007" "${CONDA_DEFAULT_ENV:-}"',
+    '}',
+    'precmd_functions+=(_aiterm_precmd)',
+    'PROMPT=" "',
+    'RPROMPT=""',
+  ].join('\n')
+  fs.writeFileSync(path.join(zdotdir, '.zshrc'), zshrc)
+  return zdotdir
+}
 
 interface Session {
   id: string
@@ -28,6 +52,11 @@ export class PtyManager {
 
     const cwd = opts.cwd ?? process.env.HOME ?? '/'
 
+    const isZsh = shell.endsWith('zsh')
+    const promptEnv = isZsh
+      ? { ZDOTDIR: createZdotdir() }
+      : { PS1: ' ', PROMPT: ' ' }
+
     const ptyProcess = pty.spawn(shell, [], {
       name: 'xterm-256color',
       cols: 80,
@@ -37,6 +66,7 @@ export class PtyManager {
         ...process.env,
         TERM: 'xterm-256color',
         COLORTERM: 'truecolor',
+        ...promptEnv,
         ...opts.env,
       },
     })

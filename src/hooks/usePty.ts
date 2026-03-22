@@ -134,7 +134,7 @@ export function usePty({ sessionId, containerRef, onReady }: UsePtyOptions) {
   const resizeDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const lastSizeRef = useRef({ cols: 0, rows: 0 })
 
-  const { updateStatus, updateCwd, setAiProcess, updateTokens, updateModel, setAlert, getSession } = useSessionsStore()
+  const { updateStatus, updateCwd, updateCondaEnv, setAiProcess, updateTokens, updateModel, setAlert, getSession } = useSessionsStore()
 
   const flushData = useCallback(() => {
     if (pendingDataRef.current.length === 0) return
@@ -218,6 +218,12 @@ export function usePty({ sessionId, containerRef, onReady }: UsePtyOptions) {
           } catch {
             if (data && !data.startsWith('file://')) updateCwd(sessionId, data)
           }
+          return true
+        })
+
+        // OSC 9001: track conda/virtual env changes (emitted by aiTerm precmd hook)
+        terminal.parser.registerOscHandler(9001, (data) => {
+          updateCondaEnv(sessionId, data || null)
           return true
         })
 
