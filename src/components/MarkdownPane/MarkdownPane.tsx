@@ -78,30 +78,33 @@ const FileBrowser: React.FC<FileBrowserProps> = ({
   entries,
   isLoading,
 }) => {
-  const { browse, openFile, goUp } = useMdPaneStore();
+  const { browse, openFile, goUp, newFile, newDir } = useMdPaneStore();
   const [newName, setNewName] = useState("");
   const [creating, setCreating] = useState<"file" | "dir" | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const isSubmittingRef = useRef(false);
 
   useEffect(() => {
     if (creating) setTimeout(() => inputRef.current?.focus(), 30);
   }, [creating]);
 
-  const { newFile, newDir } = useMdPaneStore();
-
   const handleCreate = async () => {
-    if (!newName.trim()) {
-      setCreating(null);
-      return;
-    }
+    if (isSubmittingRef.current) return;
     const name = newName.trim();
+    const creatingType = creating;
     setCreating(null);
     setNewName("");
-    if (creating === "file") {
-      const fileName = name.includes(".") ? name : name + ".md";
-      await newFile(paneId, fileName);
-    } else {
-      await newDir(paneId, name);
+    if (!name || !creatingType) return;
+    isSubmittingRef.current = true;
+    try {
+      if (creatingType === "file") {
+        const fileName = name.includes(".") ? name : name + ".md";
+        await newFile(paneId, fileName);
+      } else {
+        await newDir(paneId, name);
+      }
+    } finally {
+      isSubmittingRef.current = false;
     }
   };
 
@@ -279,7 +282,17 @@ const Editor: React.FC<EditorProps> = ({
   const isMarkdown = filePath.endsWith(".md") || filePath.endsWith(".mdx");
   const language = isMarkdown ? null : getLang(filePath);
 
-  const html = isMarkdown ? (marked.parse(content) as string) : "";
+  const fileDir = filePath.split("/").slice(0, -1).join("/");
+
+  const html = useMemo(() => {
+    if (!isMarkdown) return "";
+    const raw = marked.parse(content) as string;
+    // Resolve relative image paths to absolute file:// URLs
+    return raw.replace(/(<img\s[^>]*src=")([^"]+)(")/gi, (_, pre, src, post) => {
+      if (/^(https?:|data:|file:|\/)/i.test(src)) return pre + src + post;
+      return pre + "file://" + fileDir + "/" + src + post;
+    });
+  }, [content, isMarkdown, fileDir]);
 
   // Auto-save debounce
   const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);

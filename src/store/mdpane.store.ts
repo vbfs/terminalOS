@@ -139,7 +139,6 @@ export const useMdPaneStore = create<MdPaneStoreState>((set, get) => ({
     const filePath = pane.browsePath + '/' + name
     await window.api.fs.writeFile(filePath, '')
     await get().browse(paneId, pane.browsePath)
-    await get().openFile(paneId, filePath)
   },
 
   newDir: async (paneId, name) => {
