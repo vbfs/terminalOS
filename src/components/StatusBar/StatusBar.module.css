@@ -6,88 +6,126 @@
   align-items: center;
   padding: 0 12px;
   flex-shrink: 0;
-  gap: 0;
   font-family: var(--font-ui);
   font-size: 11px;
 }
 
+/* ── Layout ─────────────────────────────────────── */
 .left {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   flex: 1;
   min-width: 0;
+  overflow: hidden;
 }
 
 .right {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 2px;
+  flex-shrink: 0;
+  margin-left: 16px;
+}
+
+/* ── Conda env tag ─────────────────────────────── */
+.envTag {
+  display: flex;
+  align-items: center;
+  gap: 3px;
   flex-shrink: 0;
 }
 
-.runningDot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--green);
-  flex-shrink: 0;
+.envArrow {
+  color: var(--muted);
 }
 
-.item {
+.envName {
   color: var(--muted2);
-  white-space: nowrap;
+  font-weight: 500;
 }
 
-.muted {
+/* ── CWD ───────────────────────────────────────── */
+.cwd {
   color: var(--muted);
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex-shrink: 1;
+  min-width: 0;
 }
 
-.tealItem {
-  color: var(--teal);
-  white-space: nowrap;
-}
-
+/* ── Separator ─────────────────────────────────── */
 .sep {
   color: var(--border2);
   padding: 0 2px;
+  flex-shrink: 0;
   user-select: none;
 }
 
-.broadcastBtn {
-  font-size: 11px;
-  font-family: var(--font-ui);
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  color: var(--purple);
-  background: #1a1730;
-  border: 1px solid #3b3260;
-  border-radius: 3px;
-  padding: 2px 8px;
-  cursor: pointer;
-  line-height: 1.4;
-  transition: background var(--dur-fast);
-}
-
-.broadcastBtn:hover {
-  background: #221f3a;
-}
-
-.version {
-  font-size: 10px;
+/* ── Labels & values ───────────────────────────── */
+.label {
   color: var(--muted);
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
+.value {
+  color: var(--muted2);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* ── Workspace tokens (right side) ─────────────── */
+.workspaceTokens {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  margin-right: 12px;
+}
+
+/* ── Copied flash ──────────────────────────────── */
 .copiedFlash {
   font-size: 10px;
   color: var(--teal);
   opacity: 1;
   animation: fadeOut 2s ease-out forwards;
+  flex-shrink: 0;
 }
 
 @keyframes fadeOut {
-  0% { opacity: 1; }
-  60% { opacity: 1; }
+  0%   { opacity: 1; }
+  60%  { opacity: 1; }
   100% { opacity: 0; }
+}
+
+/* ── Window controls (Windows only) ───────────── */
+.windowControls {
+  display: flex;
+  align-items: center;
+  gap: 1px;
+}
+
+.winBtn {
+  width: 28px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--muted2);
+  transition: color var(--dur-fast), background var(--dur-fast);
+  border-radius: 3px;
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+
+.winBtn:hover {
+  background: var(--bg3);
+  color: var(--text);
+}
+
+.closeBtn:hover {
+  background: #c42b1c;
+  color: #fff;
 }
