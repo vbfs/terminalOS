@@ -12,7 +12,8 @@ interface SessionsState {
   updateStatus: (sessionId: string, status: ProcessStatus, exitCode?: number) => void
   updateCwd: (sessionId: string, cwd: string) => void
   setAiProcess: (sessionId: string, ai: AIProcess | null) => void
-  updateTokens: (sessionId: string, tokens: number) => void
+  updateTokens: (sessionId: string, tokens: number, costUsd: number) => void
+  updateModel: (sessionId: string, model: string) => void
   setAlert: (sessionId: string, message: string | null) => void
   updateName: (sessionId: string, name: string) => void
   setFocusedSession: (sessionId: string) => void
@@ -76,12 +77,21 @@ export const useSessionsStore = create<SessionsState>((set, get) => ({
       return { sessions: next }
     }),
 
-  updateTokens: (sessionId, tokens) =>
+  updateTokens: (sessionId, tokens, costUsd) =>
     set((state) => {
       const session = state.sessions.get(sessionId)
       if (!session) return state
       const next = new Map(state.sessions)
-      next.set(sessionId, { ...session, tokens })
+      next.set(sessionId, { ...session, tokens, costUsd })
+      return { sessions: next }
+    }),
+
+  updateModel: (sessionId, model) =>
+    set((state) => {
+      const session = state.sessions.get(sessionId)
+      if (!session) return state
+      const next = new Map(state.sessions)
+      next.set(sessionId, { ...session, model })
       return { sessions: next }
     }),
 

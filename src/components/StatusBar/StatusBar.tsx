@@ -1,6 +1,7 @@
 import React, { useMemo } from "react";
 import styles from "./StatusBar.module.css";
 import { useSessionsStore } from "../../store/sessions.store";
+import { useTabsStore } from "../../store/tabs.store";
 import { useUiStore } from "../../store/ui.store";
 import { getAgentType } from "../../types/session";
 import type { Session } from "../../types/session";
@@ -14,12 +15,28 @@ export const StatusBar: React.FC = () => {
   const sessionOrder = useSessionsStore((s) => s.sessionOrder);
   const sessionsMap = useSessionsStore((s) => s.sessions);
   const copiedFlash = useUiStore((s) => s.copiedFlash);
-  const sessions = useMemo(
+  const activeTabId = useTabsStore((s) => s.activeTabId);
+  const tabs = useTabsStore((s) => s.tabs);
+  const getTabPaneIds = useTabsStore((s) => s.getTabPaneIds);
+
+  const allSessions = useMemo(
     () =>
       sessionOrder
         .map((id) => sessionsMap.get(id))
         .filter((s): s is Session => s !== undefined),
     [sessionOrder, sessionsMap],
+  );
+
+  // Sessions belonging to the active workspace (tab) only
+  const activePaneIds = useMemo(
+    () => (activeTabId ? getTabPaneIds(activeTabId) : []),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [activeTabId, tabs],
+  );
+
+  const sessions = useMemo(
+    () => allSessions.filter((s) => activePaneIds.includes(s.paneId)),
+    [allSessions, activePaneIds],
   );
 
   const running = sessions.filter((s) => s.status === "running");
@@ -42,7 +59,7 @@ export const StatusBar: React.FC = () => {
           <>
             <span className={styles.sep}>|</span>
             <span className={styles.muted}>tokens</span>
-            <span className={styles.item}>{formatTokens(totalTokens)} ↑</span>
+            <span className={styles.item}>{formatTokens(totalTokens)}</span>
           </>
         )}
 

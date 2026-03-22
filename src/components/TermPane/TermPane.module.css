@@ -67,6 +67,14 @@
   flex: 1;
 }
 
+.paneCost {
+  font-size: 10px;
+  font-family: var(--font-ui);
+  color: var(--teal);
+  opacity: 0.85;
+  flex-shrink: 0;
+}
+
 .sessionName {
   font-size: 13px;
   font-family: var(--font-mono);

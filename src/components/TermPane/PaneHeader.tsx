@@ -2,6 +2,10 @@ import React from 'react'
 import styles from './TermPane.module.css'
 import { AgentBadge, StatusDot } from '../TabBar/TabBar'
 import { getAgentType, getDotState } from '../../types/session'
+function formatTokens(n: number): string {
+  if (n >= 1000) return `${(n / 1000).toFixed(1)}k`
+  return String(n)
+}
 import type { Session } from '../../types/session'
 import type { SplitDirection } from '../../types/pane'
 import { IconX, IconMinus, IconRestore, IconPanelRight, IconPanelBottom, IconMarkdownDoc } from '../Icons'
@@ -43,7 +47,10 @@ export const PaneHeader: React.FC<PaneHeaderProps> = ({
     <div className={`${styles.paneHeader} ${isFocused ? styles.focused : ''}`}>
       <div className={styles.paneHeaderLeft}>
         <StatusDot state={dotState} />
-        <AgentBadge type={agentType} small />
+        {session.tokens > 0
+          ? <span className={styles.paneCost}>{formatTokens(session.tokens)}</span>
+          : <AgentBadge type={agentType} small />
+        }
         <span className={styles.sessionName}>{session.name}</span>
         <span className={styles.sessionPath}>{path}</span>
       </div>

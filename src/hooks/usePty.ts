@@ -5,6 +5,7 @@ import { WebLinksAddon } from '@xterm/addon-web-links'
 import { SearchAddon } from '@xterm/addon-search'
 import { useSessionsStore } from '../store/sessions.store'
 import { useUiStore } from '../store/ui.store'
+import { estimateCost, normalizeModel } from '../utils/pricing'
 
 const termTheme = {
   background: '#0a0a0c',
@@ -35,7 +36,12 @@ function parseTokens(data: string): number | null {
   // Pattern: ↑ 2.4k tokens  or  ↑ 2,400 tokens
   const m1 = data.match(/↑\s*([\d.,]+)(k)?\s*tokens/i)
   if (m1) {
-    const val = parseFloat(m1[1].replace(',', '.'))
+    const raw = m1[1]
+    // comma followed by exactly 3 digits = thousands separator (2,400 → 2400)
+    // otherwise treat as decimal (European format: 2,4 → 2.4)
+    const val = /,\d{3}$/.test(raw)
+      ? parseFloat(raw.replace(',', ''))
+      : parseFloat(raw.replace(',', '.'))
     return m1[2] ? Math.round(val * 1000) : Math.round(val)
   }
   // Pattern: tokens used: 18234
@@ -44,8 +50,55 @@ function parseTokens(data: string): number | null {
   // Pattern: "5.2k tokens" in parentheses
   const m3 = data.match(/\(\s*([\d.,]+)(k)?\s*tokens\s*\)/i)
   if (m3) {
-    const val = parseFloat(m3[1].replace(',', '.'))
+    const raw = m3[1]
+    const val = /,\d{3}$/.test(raw)
+      ? parseFloat(raw.replace(',', ''))
+      : parseFloat(raw.replace(',', '.'))
     return m3[2] ? Math.round(val * 1000) : Math.round(val)
+  }
+  // Pattern: OpenCode / generic — "11,458 tokens" or "11458 tokens"
+  // Negative lookbehind prevents matching mid-number (e.g. "459" inside "11,459")
+  const m4 = data.match(/(?<![,\d])([\d,]+)\s+tokens\b/i)
+  if (m4) {
+    const n = parseInt(m4[1].replace(/,/g, ''))
+    if (n > 0) return n
+  }
+  return null
+}
+
+// Parse model name from PTY stdout (Claude Code startup banners, status lines)
+function parseModel(data: string): string | null {
+  const patterns = [
+    // "claude-sonnet-4-5-20251001" or "(claude-opus-4)" style
+    /\(?(claude-(?:opus|sonnet|haiku)[a-z0-9-]*)\)?/i,
+    // "Model: claude-sonnet-4-5" or "model claude-opus-4"
+    /model[:\s]+([a-z][a-z0-9._-]{4,40})/i,
+    // "Using model claude-3-7-sonnet-20250219"
+    /using\s+(?:model\s+)?([a-z][a-z0-9._-]{5,40})/i,
+  ]
+  for (const p of patterns) {
+    const m = data.match(p)
+    if (m?.[1]) {
+      const slug = normalizeModel(m[1])
+      if (slug) return slug
+    }
+  }
+  return null
+}
+
+// Parse cost directly from PTY stdout (Claude Code session summaries)
+function parseCostUsd(data: string): number | null {
+  const patterns = [
+    /(?:total\s+)?cost[:\s]+\$?([\d.]+)/i,
+    /session\s+cost[:\s]+\$?([\d.]+)/i,
+    /~\$\s*([\d.]+)/,
+  ]
+  for (const p of patterns) {
+    const m = data.match(p)
+    if (m?.[1]) {
+      const v = parseFloat(m[1])
+      if (!isNaN(v) && v >= 0 && v < 1000) return v
+    }
   }
   return null
 }
@@ -81,7 +134,7 @@ export function usePty({ sessionId, containerRef, onReady }: UsePtyOptions) {
   const resizeDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const lastSizeRef = useRef({ cols: 0, rows: 0 })
 
-  const { updateStatus, updateCwd, setAiProcess, updateTokens, setAlert } = useSessionsStore()
+  const { updateStatus, updateCwd, setAiProcess, updateTokens, updateModel, setAlert, getSession } = useSessionsStore()
 
   const flushData = useCallback(() => {
     if (pendingDataRef.current.length === 0) return
@@ -203,9 +256,22 @@ export function usePty({ sessionId, containerRef, onReady }: UsePtyOptions) {
     const unsubData = window.api.pty.onData((id, data) => {
       if (id !== sessionId) return
 
-      // Token parsing
+      // Model detection (update first so cost estimation uses it)
+      const model = parseModel(data)
+      if (model !== null) updateModel(sessionId, model)
+
+      // Token + cost parsing — only update if new value is larger (avoids
+      // per-message counts overwriting the cumulative context total)
       const tokens = parseTokens(data)
-      if (tokens !== null) updateTokens(sessionId, tokens)
+      if (tokens !== null) {
+        const session = getSession(sessionId)
+        if (tokens >= (session?.tokens ?? 0)) {
+          const parsedCost = parseCostUsd(data)
+          const effectiveModel = model ?? session?.model ?? null
+          const costUsd = parsedCost ?? estimateCost(tokens, effectiveModel)
+          updateTokens(sessionId, tokens, costUsd)
+        }
+      }
 
       // Alert parsing
       const alert = parseAlert(data)
@@ -225,6 +291,8 @@ export function usePty({ sessionId, containerRef, onReady }: UsePtyOptions) {
     const unsubAiDetected = window.api.pty.onAiDetected((id, aiProcess) => {
       if (id !== sessionId) return
       setAiProcess(sessionId, aiProcess)
+      // Reset tokens and cost when a new AI session starts
+      updateTokens(sessionId, 0, 0)
       // Clear alert when AI starts fresh
       setAlert(sessionId, null)
     })

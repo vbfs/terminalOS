@@ -42,6 +42,8 @@ export const App: React.FC = () => {
       status: "running",
       aiProcess: null,
       tokens: 0,
+      model: null,
+      costUsd: 0,
       alertMessage: null,
       createdAt: Date.now(),
     });
@@ -70,6 +72,8 @@ export const App: React.FC = () => {
       status: "running",
       aiProcess: null,
       tokens: 0,
+      model: null,
+      costUsd: 0,
       alertMessage: null,
       createdAt: Date.now(),
     });
@@ -127,6 +131,8 @@ export const App: React.FC = () => {
         status: "running",
         aiProcess: null,
         tokens: 0,
+        model: null,
+        costUsd: 0,
         alertMessage: null,
         createdAt: Date.now(),
       });

@@ -11,6 +11,8 @@ export interface Session {
   exitCode?: number
   aiProcess: AIProcess | null
   tokens: number
+  model: string | null
+  costUsd: number
   alertMessage: string | null
   createdAt: number
 }
