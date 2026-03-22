@@ -5,31 +5,9 @@ import { WebLinksAddon } from '@xterm/addon-web-links'
 import { SearchAddon } from '@xterm/addon-search'
 import { useSessionsStore } from '../store/sessions.store'
 import { useUiStore } from '../store/ui.store'
+import { usePreferencesStore } from '../store/preferences.store'
+import { getThemeById } from '../themes'
 import { estimateCost, normalizeModel } from '../utils/pricing'
-
-const termTheme = {
-  background: '#0a0a0c',
-  foreground: '#dddbd4',
-  cursor: '#e8a44a',
-  cursorAccent: '#0a0a0c',
-  selectionBackground: 'rgba(221, 219, 212, 0.15)',
-  black: '#1e1e26',
-  brightBlack: '#5a5a62',
-  red: '#f87171',
-  brightRed: '#f87171',
-  green: '#4ade80',
-  brightGreen: '#4ade80',
-  yellow: '#e8a44a',
-  brightYellow: '#e8a44a',
-  blue: '#60a5fa',
-  brightBlue: '#60a5fa',
-  magenta: '#7b6ef6',
-  brightMagenta: '#7b6ef6',
-  cyan: '#2dd4bf',
-  brightCyan: '#2dd4bf',
-  white: '#dddbd4',
-  brightWhite: '#ffffff',
-}
 
 // Parse token count from PTY stdout
 function parseTokens(data: string): number | null {
@@ -134,6 +112,7 @@ export function usePty({ sessionId, containerRef, onReady }: UsePtyOptions) {
   const resizeDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const lastSizeRef = useRef({ cols: 0, rows: 0 })
 
+  const themeId = usePreferencesStore((s) => s.themeId)
   const { updateStatus, updateCwd, updateCondaEnv, setAiProcess, updateTokens, updateModel, setAlert, getSession } = useSessionsStore()
 
   const flushData = useCallback(() => {
@@ -164,7 +143,7 @@ export function usePty({ sessionId, containerRef, onReady }: UsePtyOptions) {
           fontSize: 13,
           lineHeight: 1.0,
           letterSpacing: 0,
-          theme: termTheme,
+          theme: getThemeById(usePreferencesStore.getState().themeId).term,
           allowTransparency: false,
           fastScrollModifier: 'alt',
           scrollback: 5000,
@@ -325,6 +304,13 @@ export function usePty({ sessionId, containerRef, onReady }: UsePtyOptions) {
       lastSizeRef.current = { cols: 0, rows: 0 }
     }
   }, [sessionId]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Apply theme changes to an already-initialized terminal
+  useEffect(() => {
+    if (termRef.current) {
+      termRef.current.options.theme = getThemeById(themeId).term
+    }
+  }, [themeId])
 
   const search = useCallback((query: string) => {
     searchAddonRef.current?.findNext(query)

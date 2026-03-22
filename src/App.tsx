@@ -4,13 +4,16 @@ import { TabBar } from "./components/TabBar/TabBar";
 import { PaneGrid } from "./components/PaneGrid/PaneGrid";
 import { StatusBar } from "./components/StatusBar/StatusBar";
 import { CommandPalette } from "./components/CommandPalette/CommandPalette";
+import { Settings } from "./components/Settings/Settings";
 import { useSessionsStore } from "./store/sessions.store";
 import { useTabsStore } from "./store/tabs.store";
 import { useWorkspaceStore } from "./store/workspace.store";
 import { useLayoutStore, type SavedNode } from "./store/layout.store";
+import { usePreferencesStore } from "./store/preferences.store";
 import type { SavedTab } from "./store/layout.store";
 import { useKeymap } from "./hooks/useKeymap";
 import { getAllLeaves } from "./types/pane";
+import { getThemeById } from "./themes";
 import type { PaneNode } from "./types/pane";
 import styles from "./App.module.css";
 import type { SplitDirection } from "./types/pane";
@@ -75,7 +78,17 @@ async function restorePaneTree(
 
 export const App: React.FC = () => {
   const [commandPaletteOpen, setCommandPaletteOpen] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
   const initDoneRef = useRef(false);
+  const themeId = usePreferencesStore((s) => s.themeId);
+
+  // Apply CSS vars whenever theme changes
+  useEffect(() => {
+    const theme = getThemeById(themeId);
+    Object.entries(theme.vars).forEach(([key, val]) =>
+      document.documentElement.style.setProperty(key, val)
+    );
+  }, [themeId]);
   const addSession = useSessionsStore((s) => s.addSession);
   const sessions = useSessionsStore((s) => s.sessions);
   const {
@@ -295,7 +308,9 @@ export const App: React.FC = () => {
         isOpen={commandPaletteOpen}
         onClose={() => setCommandPaletteOpen(false)}
         onOpenMd={handleOpenMdPane}
+        onOpenSettings={() => { setCommandPaletteOpen(false); setSettingsOpen(true); }}
       />
+      <Settings isOpen={settingsOpen} onClose={() => setSettingsOpen(false)} />
     </div>
   );
 };

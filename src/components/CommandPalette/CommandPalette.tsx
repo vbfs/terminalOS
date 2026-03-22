@@ -39,12 +39,14 @@ interface CommandPaletteProps {
   isOpen: boolean;
   onClose: () => void;
   onOpenMd?: (tabId: string, paneId: string) => void;
+  onOpenSettings?: () => void;
 }
 
 export const CommandPalette: React.FC<CommandPaletteProps> = ({
   isOpen,
   onClose,
   onOpenMd,
+  onOpenSettings,
 }) => {
   const [query, setQuery] = useState("");
   const [selectedIdx, setSelectedIdx] = useState(0);
@@ -220,6 +222,15 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
         const folder = await window.api.fs.openFolder();
         if (folder) setRootFolder(folder);
         onClose();
+      },
+    },
+    {
+      id: "app.settings",
+      label: "Open Settings",
+      shortcut: "⌘,",
+      icon: "⚙",
+      action: () => {
+        onOpenSettings?.();
       },
     },
     ...(canClosePane
