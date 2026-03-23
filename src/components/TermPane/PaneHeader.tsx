@@ -1,5 +1,6 @@
 import React from "react";
 import styles from "./TermPane.module.css";
+import { useUiStore } from "../../store/ui.store";
 function formatTokens(n: number): string {
   if (n >= 1000) return `${(n / 1000).toFixed(1)}k`;
   return String(n);
@@ -50,6 +51,7 @@ export const PaneHeader: React.FC<PaneHeaderProps> = ({
   onToggleMinimize,
 }) => {
   const path = shortPath(session.cwd);
+  const copiedFlash = useUiStore((s) => s.copiedFlash);
 
   const handleOpenFolder = async (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -75,11 +77,17 @@ export const PaneHeader: React.FC<PaneHeaderProps> = ({
 
         <>
           <span className={styles.sessionPath}>|</span>
-          <span className={styles.sessionPath}>session tokens:</span>
-          <span className={styles.sessionPath}>
-            {"~"}
-            {formatTokens(session.tokens || 0)}
-          </span>
+          {isFocused && copiedFlash ? (
+            <span className={styles.copiedFlash}>{copiedFlash}</span>
+          ) : (
+            <>
+              <span className={styles.sessionPath}>session tokens:</span>
+              <span className={styles.sessionPath}>
+                {"~"}
+                {formatTokens(session.tokens || 0)}
+              </span>
+            </>
+          )}
         </>
       </div>
 

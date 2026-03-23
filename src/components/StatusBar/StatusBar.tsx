@@ -2,7 +2,6 @@ import React, { useMemo, useState } from "react";
 import styles from "./StatusBar.module.css";
 import { useSessionsStore } from "../../store/sessions.store";
 import { useTabsStore } from "../../store/tabs.store";
-import { useUiStore } from "../../store/ui.store";
 
 function formatTokens(n: number): string {
   if (n >= 1000) return `~${(n / 1000).toFixed(1)}k`;
@@ -24,7 +23,6 @@ export const StatusBar: React.FC = () => {
 
   const focusedSessionId = useSessionsStore((s) => s.focusedSessionId);
   const sessionsMap = useSessionsStore((s) => s.sessions);
-  const copiedFlash = useUiStore((s) => s.copiedFlash);
   const activeTabId = useTabsStore((s) => s.activeTabId);
   const tabs = useTabsStore((s) => s.tabs);
   const getTabPaneIds = useTabsStore((s) => s.getTabPaneIds);
@@ -89,9 +87,6 @@ export const StatusBar: React.FC = () => {
           </span>
         </>
 
-        {copiedFlash && (
-          <span className={styles.copiedFlash}>{copiedFlash}</span>
-        )}
       </div>
 
       {/* ── Right: workspace tokens + window controls ── */}

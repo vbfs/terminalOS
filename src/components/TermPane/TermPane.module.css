@@ -101,6 +101,14 @@
   line-height: 1;
 }
 
+.copiedFlash {
+  font-size: 11px;
+  font-family: var(--font-ui);
+  color: var(--teal);
+  opacity: 0.85;
+  flex-shrink: 0;
+}
+
 .sessionPath {
   font-size: 11px;
   font-family: var(--font-ui);
