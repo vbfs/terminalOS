@@ -295,9 +295,6 @@ export function usePty({ sessionId, containerRef, onReady }: UsePtyOptions) {
     const unsubAiDetected = window.api.pty.onAiDetected((id, aiProcess) => {
       if (id !== sessionId) return
       setAiProcess(sessionId, aiProcess)
-      // Reset tokens and cost when a new AI session starts
-      updateTokens(sessionId, 0, 0)
-      // Clear alert when AI starts fresh
       setAlert(sessionId, null)
     })
 
