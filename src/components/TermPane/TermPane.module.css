@@ -110,6 +110,32 @@
   white-space: nowrap;
 }
 
+.pathBtn {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  font-family: var(--font-ui);
+  color: var(--muted);
+  overflow: hidden;
+  min-width: 0;
+  transition: color var(--dur-fast);
+}
+
+.pathBtn span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pathBtn:hover {
+  color: var(--fg);
+}
+
 /* ── Pane action buttons ────────────────────────── */
 .paneActions {
   display: flex;

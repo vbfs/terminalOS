@@ -13,6 +13,7 @@ import {
   IconPanelRight,
   IconPanelBottom,
   IconMarkdownDoc,
+  IconFolder,
 } from "../Icons";
 
 interface PaneHeaderProps {
@@ -46,6 +47,14 @@ export const PaneHeader: React.FC<PaneHeaderProps> = ({
 }) => {
   const path = shortPath(session.cwd);
 
+  const handleOpenFolder = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const folder = await window.api.fs.openFolder();
+    if (folder) {
+      window.api.pty.write(session.id, `cd "${folder}"\n`);
+    }
+  };
+
   return (
     <div className={`${styles.paneHeader} ${isFocused ? styles.focused : ""}`}>
       <div className={styles.paneHeaderLeft}>
@@ -55,7 +64,10 @@ export const PaneHeader: React.FC<PaneHeaderProps> = ({
             <span className={styles.envName}>{session.condaEnv}</span>
           </span>
         )}
-        <span className={styles.sessionPath}>{path}</span>
+        <button className={styles.pathBtn} onClick={handleOpenFolder} title="Open folder">
+          <IconFolder size={11} />
+          <span>{path}</span>
+        </button>
 
         <>
           <span className={styles.sessionPath}>|</span>
