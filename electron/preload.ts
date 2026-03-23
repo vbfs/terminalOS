@@ -49,6 +49,8 @@ const api = {
       ipcRenderer.invoke('fs:mkdir', dirPath),
     rename: (src: string, dest: string): Promise<void> =>
       ipcRenderer.invoke('fs:rename', src, dest),
+    copyExternal: (srcPath: string, destDir: string): Promise<void> =>
+      ipcRenderer.invoke('fs:copyExternal', srcPath, destDir),
     setWatchRoot: (rootPath: string): void =>
       ipcRenderer.send('fs:setWatchRoot', rootPath),
     onWatch: (cb: (event: { type: string; path: string }) => void): Unsubscribe => {

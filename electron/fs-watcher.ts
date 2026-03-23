@@ -73,6 +73,12 @@ export class FsWatcher {
     await fs.rename(src, dest)
   }
 
+  async copyExternal(srcPath: string, destDir: string): Promise<void> {
+    const src = path.resolve(srcPath)
+    const dest = path.join(path.resolve(destDir), path.basename(src))
+    await fs.cp(src, dest, { recursive: true })
+  }
+
   setWatchRoot(rootPath: string): void {
     const resolved = path.resolve(rootPath)
 

@@ -113,6 +113,10 @@ function setupIpcHandlers() {
     return fsWatcher.rename(src, dest)
   })
 
+  ipcMain.handle('fs:copyExternal', async (_, srcPath: string, destDir: string) => {
+    return fsWatcher.copyExternal(srcPath, destDir)
+  })
+
   ipcMain.on('fs:setWatchRoot', (_, rootPath: string) => {
     fsWatcher.setWatchRoot(rootPath)
   })
