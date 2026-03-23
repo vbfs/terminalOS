@@ -112,11 +112,13 @@ const FileBrowser: React.FC<FileBrowserProps> = ({
   entries,
   isLoading,
 }) => {
-  const { browse, openFile, goUp, newFile, newDir } = useMdPaneStore();
+  const { browse, openFile, goUp, newFile, newDir, moveEntry } = useMdPaneStore();
   const [newName, setNewName] = useState("");
   const [creating, setCreating] = useState<"file" | "dir" | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const isSubmittingRef = useRef(false);
+  const [draggingPath, setDraggingPath] = useState<string | null>(null);
+  const [dragOverTarget, setDragOverTarget] = useState<string | null>(null);
 
   useEffect(() => {
     if (creating) setTimeout(() => inputRef.current?.focus(), 30);
@@ -220,7 +222,32 @@ const FileBrowser: React.FC<FileBrowserProps> = ({
         </div>
       )}
 
-      <div className={styles.entries}>
+      <div
+        className={`${styles.entries} ${dragOverTarget === "__root__" ? styles.dragOver : ""}`}
+        onDragOver={(e) => {
+          if (draggingPath) {
+            e.preventDefault();
+            setDragOverTarget("__root__");
+          }
+        }}
+        onDragLeave={(e) => {
+          // Only clear if leaving the entries container itself
+          if (!e.currentTarget.contains(e.relatedTarget as Node)) {
+            setDragOverTarget(null);
+          }
+        }}
+        onDrop={(e) => {
+          e.preventDefault();
+          if (draggingPath) {
+            const parentDir = draggingPath.split("/").slice(0, -1).join("/");
+            if (parentDir !== browsePath) {
+              moveEntry(paneId, draggingPath, browsePath);
+            }
+          }
+          setDraggingPath(null);
+          setDragOverTarget(null);
+        }}
+      >
         {isLoading && <div className={styles.loadingMsg}>loading…</div>}
         {!isLoading && entries.length === 0 && (
           <div className={styles.emptyMsg}>empty directory</div>
@@ -228,8 +255,36 @@ const FileBrowser: React.FC<FileBrowserProps> = ({
         {entries.map((entry) => (
           <div
             key={entry.path}
-            className={`${styles.entry} ${isMd(entry) ? styles.mdEntry : ""} ${entry.isDirectory ? styles.dirEntry : ""}`}
+            className={`${styles.entry} ${isMd(entry) ? styles.mdEntry : ""} ${entry.isDirectory ? styles.dirEntry : ""} ${dragOverTarget === entry.path ? styles.dragOver : ""}`}
+            style={{ opacity: draggingPath === entry.path ? 0.4 : 1 }}
             onClick={() => handleEntryClick(entry)}
+            draggable
+            onDragStart={() => setDraggingPath(entry.path)}
+            onDragEnd={() => {
+              setDraggingPath(null);
+              setDragOverTarget(null);
+            }}
+            onDragOver={(e) => {
+              if (entry.isDirectory && draggingPath && draggingPath !== entry.path) {
+                e.preventDefault();
+                e.stopPropagation();
+                setDragOverTarget(entry.path);
+              }
+            }}
+            onDragLeave={(e) => {
+              if (dragOverTarget === entry.path && !e.currentTarget.contains(e.relatedTarget as Node)) {
+                setDragOverTarget(null);
+              }
+            }}
+            onDrop={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              if (entry.isDirectory && draggingPath && draggingPath !== entry.path) {
+                moveEntry(paneId, draggingPath, entry.path);
+              }
+              setDraggingPath(null);
+              setDragOverTarget(null);
+            }}
           >
             <span className={styles.entryIcon}>
               {entry.isDirectory ? (

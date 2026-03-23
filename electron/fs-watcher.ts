@@ -67,6 +67,12 @@ export class FsWatcher {
     await fs.mkdir(resolved, { recursive: true })
   }
 
+  async rename(srcPath: string, destPath: string): Promise<void> {
+    const src = path.resolve(srcPath)
+    const dest = path.resolve(destPath)
+    await fs.rename(src, dest)
+  }
+
   setWatchRoot(rootPath: string): void {
     const resolved = path.resolve(rootPath)
 

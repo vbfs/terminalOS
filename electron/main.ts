@@ -109,6 +109,10 @@ function setupIpcHandlers() {
     return fsWatcher.mkdir(dirPath)
   })
 
+  ipcMain.handle('fs:rename', async (_, src: string, dest: string) => {
+    return fsWatcher.rename(src, dest)
+  })
+
   ipcMain.on('fs:setWatchRoot', (_, rootPath: string) => {
     fsWatcher.setWatchRoot(rootPath)
   })
