@@ -11,7 +11,12 @@ const AI_SIGNATURES: Array<{ pattern: RegExp; name: string; color: string }> = [
   { pattern: /\$\s*claude\b/,    name: 'claude code',  color: '#D4A27F' },
 ]
 
-const SHELL_PROMPT_PATTERN = /[$%❯>]\s*$/
+// Strip ANSI escape sequences before testing for shell prompt
+const ANSI_RE = /\x1b\[[0-9;]*[mGKHFABCDJsu]|\x1b\][^\x07]*\x07|\x1b[()][AB012]/g
+
+// Prompt character must be at the start of a line (with only optional surrounding whitespace).
+// This prevents false positives from `>` in code examples, `$` in cost strings, etc.
+const SHELL_PROMPT_PATTERN = /(?:^|\n)\s{0,6}[$%❯>]\s{0,2}$/
 
 export class ProcessDetector {
   private slidingWindow = ''
@@ -31,8 +36,9 @@ export class ProcessDetector {
         }
       }
     } else {
-      // Check if returned to shell prompt
-      const lastLines = this.slidingWindow.split('\n').slice(-3).join('\n')
+      // Check if returned to shell prompt — strip ANSI first to avoid false matches
+      const plain = this.slidingWindow.replace(ANSI_RE, '')
+      const lastLines = plain.split('\n').slice(-3).join('\n')
       if (SHELL_PROMPT_PATTERN.test(lastLines)) {
         this.currentAI = null
         this.hasAI = false

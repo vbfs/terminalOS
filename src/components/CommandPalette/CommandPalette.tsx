@@ -220,7 +220,30 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
       icon: "⌁",
       action: async () => {
         const folder = await window.api.fs.openFolder();
-        if (folder) setRootFolder(folder);
+        if (folder && activeTab?.activePaneId) {
+          setRootFolder(folder);
+          const sessionId = await window.api.pty.create({ cwd: folder });
+          const newPaneId = tabsStore.splitTabPane(
+            activeTab.id,
+            activeTab.activePaneId,
+            "v",
+            sessionId,
+          );
+          addSession({
+            id: sessionId,
+            paneId: newPaneId,
+            name: "Session",
+            cwd: folder,
+            status: "running",
+            aiProcess: null,
+            tokens: 0,
+            model: null,
+            costUsd: 0,
+            alertMessage: null,
+            condaEnv: null,
+            createdAt: Date.now(),
+          });
+        }
         onClose();
       },
     },
@@ -252,8 +275,30 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
       id: `recent:${folder}`,
       label: `Open ${folder.split("/").pop()}`,
       icon: "↺",
-      action: () => {
+      action: async () => {
+        if (!activeTab?.activePaneId) return;
         setRootFolder(folder);
+        const sessionId = await window.api.pty.create({ cwd: folder });
+        const newPaneId = tabsStore.splitTabPane(
+          activeTab.id,
+          activeTab.activePaneId,
+          "v",
+          sessionId,
+        );
+        addSession({
+          id: sessionId,
+          paneId: newPaneId,
+          name: "Session",
+          cwd: folder,
+          status: "running",
+          aiProcess: null,
+          tokens: 0,
+          model: null,
+          costUsd: 0,
+          alertMessage: null,
+          condaEnv: null,
+          createdAt: Date.now(),
+        });
         onClose();
       },
     })),
