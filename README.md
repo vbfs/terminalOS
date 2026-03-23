@@ -1,8 +1,8 @@
 <div align="center">
 
-<img src="build/icon.png" alt="aiTerm Logo" width="96" />
+<img src="build/icon.png" alt="terminalOS Logo" width="96" />
 
-# aiTerm
+# terminalOS
 
 **The terminal built for AI-native developers.**
 
@@ -29,9 +29,9 @@ You're using a 1980s tool to run 2025 software.
 
 ---
 
-## What aiTerm Does
+## What terminalOS Does
 
-aiTerm is a **desktop terminal multiplexer purpose-built for AI coding workflows**. It understands AI tools natively — detecting when they're running, tracking how much you're spending, and giving you a workspace that matches the way AI-assisted development actually works.
+terminalOS is a **desktop terminal multiplexer purpose-built for AI coding workflows**. It understands AI tools natively — detecting when they're running, tracking how much you're spending, and giving you a workspace that matches the way AI-assisted development actually works.
 
 > Think iTerm2, but redesigned from scratch around Claude Code, Aider, and OpenCode.
 
@@ -40,24 +40,31 @@ aiTerm is a **desktop terminal multiplexer purpose-built for AI coding workflows
 ## Core Features
 
 ### AI-Aware Sessions
+
 Every terminal pane detects when an AI coding tool is running. A live badge shows which tool is active (`Claude`, `Aider`, `OpenCode`, `Continue`) with instant visual feedback when a session starts or ends. No more guessing if your AI is still processing.
 
 ### Real-Time Token Tracking
-aiTerm parses token usage directly from CLI output — no API key required, no external service. Token counts and estimated USD cost are surfaced in the status bar as you work, so you always know your exact spend per session.
+
+terminalOS parses token usage directly from CLI output — no API key required, no external service. Token counts and estimated USD cost are surfaced in the status bar as you work, so you always know your exact spend per session.
 
 ### API Error Alerts
+
 Detects and surfaces common AI API errors (invalid keys, model not found, auth conflicts) as visual alerts inside the pane — before they silently fail and waste your time.
 
 ### Multi-Pane Workspace
+
 Split your workspace horizontally or vertically. Run Claude in one pane, your test suite in another, and a markdown doc in a third — all in a single window. The full layout — tabs, pane splits, ratios, and active pane — is automatically saved and restored on every launch.
 
 ### Integrated Markdown Editor
+
 A built-in file editor with live preview — designed for reviewing AI-generated docs, writing prompts, and editing code without leaving your terminal. Supports Markdown and source files with syntax highlighting.
 
 ### Command Palette
+
 Open anything instantly with `⌘K`. Launch AI tools, split panes, switch tabs, open folders — all from a fuzzy-search command palette without touching the mouse.
 
 ### Workspace Management
+
 Set a root folder and get a persistent file browser, git branch tracking in the status bar, and quick access to recent workspaces. Your context is always one click away.
 
 ---
@@ -70,13 +77,14 @@ Developers who use AI coding tools **every day** as a core part of their workflo
 
 **Their pain:** Standard terminals weren't built for this. They're duct-taping iTerm + Notes + a browser tab to manage their AI sessions.
 
-**Why aiTerm:** One purpose-built workspace that gives them visibility and control over AI sessions without changing their terminal habits.
+**Why terminalOS:** One purpose-built workspace that gives them visibility and control over AI sessions without changing their terminal habits.
 
 ---
 
 ### Secondary Audience — Engineering Teams Adopting AI Tooling
 
 Team leads and senior engineers rolling out AI coding tools across their org. They care about:
+
 - **Cost predictability**: Token tracking helps engineers self-regulate API usage.
 - **Workflow consistency**: A shared tool creates a consistent AI dev experience across the team.
 - **Onboarding**: Built-in AI launchers lower the barrier for engineers new to CLI-based AI tools.
@@ -87,23 +95,23 @@ Team leads and senior engineers rolling out AI coding tools across their org. Th
 
 - Developers who only use AI through browser-based IDEs (Cursor, GitHub Copilot in VS Code).
 - Non-technical users — this is a power-user terminal tool.
-- Teams already satisfied with Warp AI or Ghostty — though aiTerm goes deeper on AI-specific tooling.
+- Teams already satisfied with Warp AI or Ghostty — though terminalOS goes deeper on AI-specific tooling.
 
 ---
 
-## Why aiTerm vs. Alternatives
+## Why terminalOS vs. Alternatives
 
-| | aiTerm | iTerm2 / Warp | VS Code Terminal | AI IDEs (Cursor) |
-|---|---|---|---|---|
-| Native AI tool detection | ✅ | ❌ | ❌ | Partial |
-| Real-time token tracking | ✅ | ❌ | ❌ | ❌ |
-| API error alerts | ✅ | ❌ | ❌ | ❌ |
-| Multi-pane AI sessions | ✅ | Manual | Manual | ❌ |
-| Integrated markdown editor | ✅ | ❌ | Extension | ❌ |
-| Built for CLI AI tools | ✅ | ❌ | ❌ | ❌ |
-| Works with any AI tool | ✅ | — | — | ❌ (locked in) |
+|                            | terminalOS | iTerm2 / Warp | VS Code Terminal | AI IDEs (Cursor) |
+| -------------------------- | ---------- | ------------- | ---------------- | ---------------- |
+| Native AI tool detection   | ✅         | ❌            | ❌               | Partial          |
+| Real-time token tracking   | ✅         | ❌            | ❌               | ❌               |
+| API error alerts           | ✅         | ❌            | ❌               | ❌               |
+| Multi-pane AI sessions     | ✅         | Manual        | Manual           | ❌               |
+| Integrated markdown editor | ✅         | ❌            | Extension        | ❌               |
+| Built for CLI AI tools     | ✅         | ❌            | ❌               | ❌               |
+| Works with any AI tool     | ✅         | —             | —                | ❌ (locked in)   |
 
-The key distinction: Warp and others add AI **to** a terminal. aiTerm is a terminal built **for** AI.
+The key distinction: Warp and others add AI **to** a terminal. terminalOS is a terminal built **for** AI.
 
 ---
 
@@ -113,19 +121,19 @@ The key distinction: Warp and others add AI **to** a terminal. aiTerm is a termi
 
 Download the latest release for your platform from the [Releases page]().
 
-| Platform | Download |
-|----------|----------|
+| Platform                      | Download                |
+| ----------------------------- | ----------------------- |
 | macOS (Apple Silicon + Intel) | `.dmg` universal binary |
-| Windows | `.exe` NSIS installer |
-| Linux | `.AppImage` |
+| Windows                       | `.exe` NSIS installer   |
+| Linux                         | `.AppImage`             |
 
 ### Build from Source
 
 **Requirements:** Node.js 18+, npm 9+
 
 ```bash
-git clone https://github.com/your-org/aiterm
-cd aiterm
+git clone https://github.com/your-org/terminalOS
+cd terminalOS
 npm install
 npm run rebuild    # Compiles native terminal module
 npm run build      # Production build
@@ -138,7 +146,7 @@ npm run dist       # Package for your platform
 
 1. **Open a folder** — use `⌘O` or the command palette to set your workspace root.
 2. **Launch an AI tool** — press `⌘⇧C` for Claude Code, `⌘⇧O` for OpenCode, or type the command manually.
-3. **Watch the badge appear** — aiTerm detects the AI process and shows a live status indicator.
+3. **Watch the badge appear** — terminalOS detects the AI process and shows a live status indicator.
 4. **Split your workspace** — `⌘D` to split right, `⌘↓` to split below. Run your tests alongside AI.
 5. **Track tokens** — token usage appears in the status bar as your AI session runs.
 
@@ -146,18 +154,18 @@ npm run dist       # Package for your platform
 
 ## Keyboard Shortcuts
 
-| Shortcut | Action |
-|----------|--------|
-| `⌘K` | Open command palette |
-| `⌘T` | New tab |
-| `⌘D` | Split pane right |
-| `⌘↓` | Split pane below |
-| `⌘W` | Close pane |
-| `⌘M` | Open markdown editor |
-| `⌘⇧C` | Launch Claude Code |
-| `⌘⇧O` | Launch OpenCode |
-| `⌘O` | Open folder |
-| `⌘S` | Save file (in editor) |
+| Shortcut | Action                |
+| -------- | --------------------- |
+| `⌘K`     | Open command palette  |
+| `⌘T`     | New tab               |
+| `⌘D`     | Split pane right      |
+| `⌘↓`     | Split pane below      |
+| `⌘W`     | Close pane            |
+| `⌘M`     | Open markdown editor  |
+| `⌘⇧C`    | Launch Claude Code    |
+| `⌘⇧O`    | Launch OpenCode       |
+| `⌘O`     | Open folder           |
+| `⌘S`     | Save file (in editor) |
 
 > On Windows/Linux, replace `⌘` with `Ctrl`.
 
@@ -182,7 +190,7 @@ The following are areas actively being explored based on developer feedback:
 - [ ] **Session history and replay** — review past AI sessions
 - [ ] **Prompt scratchpad** — dedicated pane for drafting and reusing prompts
 - [ ] **Team token budgets** — per-project spend limits with alerts
-- [ ] **Plugin API** — extend aiTerm with custom AI tool integrations
+- [ ] **Plugin API** — extend terminalOS with custom AI tool integrations
 
 ---
 
@@ -198,7 +206,7 @@ npm run dev    # Start development environment with hot reload
 
 ## License
 
-MIT © aiTerm
+MIT © terminalOS
 
 ---
 
