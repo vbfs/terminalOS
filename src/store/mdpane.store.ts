@@ -32,6 +32,7 @@ interface MdPaneStoreState {
   newDir: (paneId: string, name: string) => Promise<void>
   goUp: (paneId: string) => Promise<void>
   moveEntry: (paneId: string, srcPath: string, destDir: string) => Promise<void>
+  copyExternal: (paneId: string, srcPaths: string[], destDir: string) => Promise<void>
 }
 
 function patchPane(
@@ -167,6 +168,14 @@ export const useMdPaneStore = create<MdPaneStoreState>((set, get) => ({
     const dest = destDir + '/' + name
     if (dest === srcPath) return
     await window.api.fs.rename(srcPath, dest)
+    const pane = get().panes.get(paneId)
+    if (pane) await get().browse(paneId, pane.browsePath)
+  },
+
+  copyExternal: async (paneId, srcPaths, destDir) => {
+    for (const src of srcPaths) {
+      await window.api.fs.copyExternal(src, destDir)
+    }
     const pane = get().panes.get(paneId)
     if (pane) await get().browse(paneId, pane.browsePath)
   },

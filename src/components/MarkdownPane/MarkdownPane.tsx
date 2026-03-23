@@ -112,7 +112,7 @@ const FileBrowser: React.FC<FileBrowserProps> = ({
   entries,
   isLoading,
 }) => {
-  const { browse, openFile, goUp, newFile, newDir, moveEntry } = useMdPaneStore();
+  const { browse, openFile, goUp, newFile, newDir, moveEntry, copyExternal } = useMdPaneStore();
   const [newName, setNewName] = useState("");
   const [creating, setCreating] = useState<"file" | "dir" | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -225,7 +225,7 @@ const FileBrowser: React.FC<FileBrowserProps> = ({
       <div
         className={`${styles.entries} ${dragOverTarget === "__root__" ? styles.dragOver : ""}`}
         onDragOver={(e) => {
-          if (draggingPath) {
+          if (draggingPath || e.dataTransfer.types.includes("Files")) {
             e.preventDefault();
             setDragOverTarget("__root__");
           }
@@ -243,6 +243,11 @@ const FileBrowser: React.FC<FileBrowserProps> = ({
             if (parentDir !== browsePath) {
               moveEntry(paneId, draggingPath, browsePath);
             }
+          } else if (e.dataTransfer.files.length > 0) {
+            const paths = Array.from(e.dataTransfer.files)
+              .map((f) => (f as any).path as string)
+              .filter(Boolean);
+            if (paths.length > 0) copyExternal(paneId, paths, browsePath);
           }
           setDraggingPath(null);
           setDragOverTarget(null);
@@ -265,7 +270,8 @@ const FileBrowser: React.FC<FileBrowserProps> = ({
               setDragOverTarget(null);
             }}
             onDragOver={(e) => {
-              if (entry.isDirectory && draggingPath && draggingPath !== entry.path) {
+              const isExternalFile = !draggingPath && e.dataTransfer.types.includes("Files");
+              if (entry.isDirectory && (draggingPath !== entry.path) && (draggingPath || isExternalFile)) {
                 e.preventDefault();
                 e.stopPropagation();
                 setDragOverTarget(entry.path);
@@ -281,6 +287,11 @@ const FileBrowser: React.FC<FileBrowserProps> = ({
               e.stopPropagation();
               if (entry.isDirectory && draggingPath && draggingPath !== entry.path) {
                 moveEntry(paneId, draggingPath, entry.path);
+              } else if (entry.isDirectory && !draggingPath && e.dataTransfer.files.length > 0) {
+                const paths = Array.from(e.dataTransfer.files)
+                  .map((f) => (f as any).path as string)
+                  .filter(Boolean);
+                if (paths.length > 0) copyExternal(paneId, paths, entry.path);
               }
               setDraggingPath(null);
               setDragOverTarget(null);
