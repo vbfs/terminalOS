@@ -49,7 +49,7 @@ export const TermPane: React.FC<TermPaneProps> = React.memo(
     );
     const [hasInteracted, setHasInteracted] = useState(false);
 
-    usePty({ sessionId, containerRef });
+    const { paste } = usePty({ sessionId, containerRef });
 
     const handleContextMenu = useCallback((e: React.MouseEvent) => {
       e.preventDefault();
@@ -81,7 +81,7 @@ export const TermPane: React.FC<TermPaneProps> = React.memo(
             shortcut: `${mod}V`,
             onClick: async () => {
               const text = await navigator.clipboard.readText();
-              if (text) window.api.pty.write(sessionId, text);
+              if (text) paste(text);
             },
           },
           {

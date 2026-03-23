@@ -320,5 +320,9 @@ export function usePty({ sessionId, containerRef, onReady }: UsePtyOptions) {
     fitAddonRef.current?.fit()
   }, [])
 
-  return { termRef, search, fit }
+  const paste = useCallback((text: string) => {
+    termRef.current?.paste(text)
+  }, [])
+
+  return { termRef, search, fit, paste }
 }
