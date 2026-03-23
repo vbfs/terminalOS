@@ -23,6 +23,10 @@ export class ProcessDetector {
   private readonly windowSize = 2048
   private currentAI: AIProcess | null = null
   private hasAI = false
+  private detectedAt: number = 0
+  // Grace period after detection before checking for exit. Prevents AI TUI input
+  // prompts (e.g. opencode's "> " or "❯ ") from being misread as shell prompts.
+  private readonly gracePeriodMs = 3000
 
   detect(data: string): 'detected' | 'exited' | null {
     this.slidingWindow = (this.slidingWindow + data).slice(-this.windowSize)
@@ -32,10 +36,15 @@ export class ProcessDetector {
         if (sig.pattern.test(this.slidingWindow)) {
           this.currentAI = { name: sig.name, color: sig.color }
           this.hasAI = true
+          this.detectedAt = Date.now()
           return 'detected'
         }
       }
     } else {
+      // Don't check for exit too soon after detection — AI TUI apps render their
+      // own input prompts ("> ", "❯ ") immediately on startup, which would otherwise
+      // trigger a false exit and cause a re-detect → token reset cycle.
+      if (Date.now() - this.detectedAt < this.gracePeriodMs) return null
       // Check if returned to shell prompt — strip ANSI first to avoid false matches
       const plain = this.slidingWindow.replace(ANSI_RE, '')
       const lastLines = plain.split('\n').slice(-3).join('\n')

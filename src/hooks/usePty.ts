@@ -10,10 +10,14 @@ import { getThemeById } from '../themes'
 import { estimateCost, normalizeModel } from '../utils/pricing'
 import { saveTerminal, takeTerminal, disposeTerminal } from '../lib/terminal-registry'
 
+// Strip ANSI escape sequences before regex matching so colorized output parses correctly
+const ANSI_STRIP_RE = /\x1b\[[0-9;]*[mGKHFABCDJsu]|\x1b\][^\x07]*\x07|\x1b[()][AB012]/g
+
 // Parse token count from PTY stdout
 function parseTokens(data: string): number | null {
+  const clean = data.replace(ANSI_STRIP_RE, '')
   // Pattern: ↑ 2.4k tokens  or  ↑ 2,400 tokens
-  const m1 = data.match(/↑\s*([\d.,]+)(k)?\s*tokens/i)
+  const m1 = clean.match(/↑\s*([\d.,]+)(k)?\s*tokens/i)
   if (m1) {
     const raw = m1[1]
     // comma followed by exactly 3 digits = thousands separator (2,400 → 2400)
@@ -24,10 +28,10 @@ function parseTokens(data: string): number | null {
     return m1[2] ? Math.round(val * 1000) : Math.round(val)
   }
   // Pattern: tokens used: 18234
-  const m2 = data.match(/tokens\s+used:\s*([\d,]+)/i)
+  const m2 = clean.match(/tokens\s+used:\s*([\d,]+)/i)
   if (m2) return parseInt(m2[1].replace(/,/g, ''))
   // Pattern: "5.2k tokens" in parentheses
-  const m3 = data.match(/\(\s*([\d.,]+)(k)?\s*tokens\s*\)/i)
+  const m3 = clean.match(/\(\s*([\d.,]+)(k)?\s*tokens\s*\)/i)
   if (m3) {
     const raw = m3[1]
     const val = /,\d{3}$/.test(raw)
@@ -37,7 +41,7 @@ function parseTokens(data: string): number | null {
   }
   // Pattern: OpenCode / generic — "11,458 tokens" or "11458 tokens"
   // Negative lookbehind prevents matching mid-number (e.g. "459" inside "11,459")
-  const m4 = data.match(/(?<![,\d])([\d,]+)\s+tokens\b/i)
+  const m4 = clean.match(/(?<![,\d])([\d,]+)\s+tokens\b/i)
   if (m4) {
     const n = parseInt(m4[1].replace(/,/g, ''))
     if (n > 0) return n
@@ -295,10 +299,11 @@ export function usePty({ sessionId, containerRef, onReady }: UsePtyOptions) {
     const unsubAiDetected = window.api.pty.onAiDetected((id, aiProcess) => {
       if (id !== sessionId) return
       setAiProcess(sessionId, aiProcess)
-      // Reset tokens and cost when a new AI session starts
-      updateTokens(sessionId, 0, 0)
       // Clear alert when AI starts fresh
       setAlert(sessionId, null)
+      // Note: tokens are NOT reset here — counting belongs to the PTY session lifetime,
+      // not to individual AI invocations. Resetting on re-detection caused visible
+      // "up then down" behavior when the ProcessDetector falsely re-detected AI mid-session.
     })
 
     const unsubAiExited = window.api.pty.onAiExited((id) => {
