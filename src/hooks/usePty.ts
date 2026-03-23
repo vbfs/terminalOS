@@ -8,6 +8,7 @@ import { useUiStore } from '../store/ui.store'
 import { usePreferencesStore } from '../store/preferences.store'
 import { getThemeById } from '../themes'
 import { estimateCost, normalizeModel } from '../utils/pricing'
+import { saveTerminal, takeTerminal, disposeTerminal } from '../lib/terminal-registry'
 
 // Parse token count from PTY stdout
 function parseTokens(data: string): number | null {
@@ -138,75 +139,92 @@ export function usePty({ sessionId, containerRef, onReady }: UsePtyOptions) {
       if (!initializedRef.current) {
         initializedRef.current = true
 
-        const terminal = new Terminal({
-          fontFamily: '"JetBrains Mono", "MesloLGS NF", "Hack Nerd Font", "Cascadia Code", monospace',
-          fontSize: 13,
-          lineHeight: 1.0,
-          letterSpacing: 0,
-          theme: getThemeById(usePreferencesStore.getState().themeId).term,
-          allowTransparency: false,
-          fastScrollModifier: 'alt',
-          scrollback: 5000,
-          macOptionIsMeta: true,
-          cursorBlink: true,
-          cursorStyle: 'block',
-        })
-
-        const fitAddon = new FitAddon()
-        const webLinksAddon = new WebLinksAddon()
-        const searchAddon = new SearchAddon()
-
-        terminal.loadAddon(fitAddon)
-        terminal.loadAddon(webLinksAddon)
-        terminal.loadAddon(searchAddon)
-
-        terminal.attachCustomKeyEventHandler((e) => {
-          // Let Cmd+* combos through to global keymap
-          if (e.metaKey) return false
-          return true
-        })
-
-        terminal.open(container)
-        fitAddon.fit()
-
-        termRef.current = terminal
-        fitAddonRef.current = fitAddon
-        searchAddonRef.current = searchAddon
-
-        const { cols, rows } = terminal
-        lastSizeRef.current = { cols, rows }
-        setTimeout(() => {
-          if (!termRef.current) return
-          window.api.pty.resize(sessionId, cols, rows)
-          // Ctrl+L: clears screen and redraws prompt atomically (avoids duplicate prompt)
-          setTimeout(() => {
-            window.api.pty.write(sessionId, '\x0c')
-          }, 30)
-        }, 50)
-
-        // Forward any direct terminal input to PTY (fallback)
-        terminal.onData((data) => {
-          window.api.pty.write(sessionId, data)
-        })
-
-        // OSC 7: track CWD changes
-        terminal.parser.registerOscHandler(7, (data) => {
-          try {
-            const url = new URL(data)
-            updateCwd(sessionId, decodeURIComponent(url.pathname))
-          } catch {
-            if (data && !data.startsWith('file://')) updateCwd(sessionId, data)
+        const cached = takeTerminal(sessionId)
+        if (cached) {
+          // Reattach existing terminal — preserves scrollback, no Ctrl+L
+          container.appendChild(cached.term.element!)
+          termRef.current = cached.term
+          fitAddonRef.current = cached.fitAddon
+          searchAddonRef.current = cached.searchAddon
+          lastSizeRef.current = cached.lastSize
+          cached.fitAddon.fit()
+          const { cols, rows } = cached.term
+          if (cols !== cached.lastSize.cols || rows !== cached.lastSize.rows) {
+            lastSizeRef.current = { cols, rows }
+            window.api.pty.resize(sessionId, cols, rows)
           }
-          return true
-        })
+          onReady?.()
+        } else {
+          const terminal = new Terminal({
+            fontFamily: '"JetBrains Mono", "MesloLGS NF", "Hack Nerd Font", "Cascadia Code", monospace',
+            fontSize: 13,
+            lineHeight: 1.0,
+            letterSpacing: 0,
+            theme: getThemeById(usePreferencesStore.getState().themeId).term,
+            allowTransparency: false,
+            fastScrollModifier: 'alt',
+            scrollback: 5000,
+            macOptionIsMeta: true,
+            cursorBlink: true,
+            cursorStyle: 'block',
+          })
 
-        // OSC 9001: track conda/virtual env changes (emitted by aiTerm precmd hook)
-        terminal.parser.registerOscHandler(9001, (data) => {
-          updateCondaEnv(sessionId, data || null)
-          return true
-        })
+          const fitAddon = new FitAddon()
+          const webLinksAddon = new WebLinksAddon()
+          const searchAddon = new SearchAddon()
 
-        onReady?.()
+          terminal.loadAddon(fitAddon)
+          terminal.loadAddon(webLinksAddon)
+          terminal.loadAddon(searchAddon)
+
+          terminal.attachCustomKeyEventHandler((e) => {
+            // Let Cmd+* combos through to global keymap
+            if (e.metaKey) return false
+            return true
+          })
+
+          terminal.open(container)
+          fitAddon.fit()
+
+          termRef.current = terminal
+          fitAddonRef.current = fitAddon
+          searchAddonRef.current = searchAddon
+
+          const { cols, rows } = terminal
+          lastSizeRef.current = { cols, rows }
+          setTimeout(() => {
+            if (!termRef.current) return
+            window.api.pty.resize(sessionId, cols, rows)
+            // Ctrl+L: clears screen and redraws prompt atomically (avoids duplicate prompt)
+            setTimeout(() => {
+              window.api.pty.write(sessionId, '\x0c')
+            }, 30)
+          }, 50)
+
+          // Forward any direct terminal input to PTY (fallback)
+          terminal.onData((data) => {
+            window.api.pty.write(sessionId, data)
+          })
+
+          // OSC 7: track CWD changes
+          terminal.parser.registerOscHandler(7, (data) => {
+            try {
+              const url = new URL(data)
+              updateCwd(sessionId, decodeURIComponent(url.pathname))
+            } catch {
+              if (data && !data.startsWith('file://')) updateCwd(sessionId, data)
+            }
+            return true
+          })
+
+          // OSC 9001: track conda/virtual env changes (emitted by aiTerm precmd hook)
+          terminal.parser.registerOscHandler(9001, (data) => {
+            updateCondaEnv(sessionId, data || null)
+            return true
+          })
+
+          onReady?.()
+        }
       } else {
         if (resizeDebounceRef.current) clearTimeout(resizeDebounceRef.current)
         resizeDebounceRef.current = setTimeout(() => {
@@ -271,6 +289,7 @@ export function usePty({ sessionId, containerRef, onReady }: UsePtyOptions) {
     const unsubExit = window.api.pty.onExit((id, code) => {
       if (id !== sessionId) return
       updateStatus(sessionId, code === 0 ? 'exited' : 'error', code)
+      disposeTerminal(sessionId)
     })
 
     const unsubAiDetected = window.api.pty.onAiDetected((id, aiProcess) => {
@@ -297,7 +316,18 @@ export function usePty({ sessionId, containerRef, onReady }: UsePtyOptions) {
       unsubAiExited()
       if (rafRef.current !== null) cancelAnimationFrame(rafRef.current)
       if (resizeDebounceRef.current) clearTimeout(resizeDebounceRef.current)
-      termRef.current?.dispose()
+      // Save to registry instead of disposing — preserves scrollback across remounts
+      if (termRef.current && fitAddonRef.current && searchAddonRef.current) {
+        if (termRef.current.element?.parentElement) {
+          termRef.current.element.parentElement.removeChild(termRef.current.element)
+        }
+        saveTerminal(sessionId, {
+          term: termRef.current,
+          fitAddon: fitAddonRef.current,
+          searchAddon: searchAddonRef.current,
+          lastSize: lastSizeRef.current,
+        })
+      }
       termRef.current = null
       fitAddonRef.current = null
       initializedRef.current = false
