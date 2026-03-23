@@ -14,7 +14,7 @@ export const Titlebar: React.FC = () => {
       {isMac && <div className={styles.trafficLights} />}
 
       <div className={styles.center}>
-        <span className={styles.title}>TerminalOS</span>
+        <span className={styles.title}>terminalOS</span>
       </div>
 
       <div className={styles.right}>

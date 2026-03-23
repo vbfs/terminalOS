@@ -1,5 +1,5 @@
 {
-  "name": "ai-terminal",
+  "name": "terminalOS",
   "version": "0.1.0",
   "description": "AI-focused terminal multiplexer for developers running AI coding CLIs",
   "main": "electron/main.js",
@@ -7,7 +7,8 @@
     "dev": "npm run build:electron && concurrently \"vite\" \"wait-on http://localhost:5173 && electron .\" \"tsc -p electron/tsconfig.json --watch --preserveWatchOutput\"",
     "build:electron": "tsc -p electron/tsconfig.json",
     "build": "vite build && tsc -p electron/tsconfig.json",
-    "dist": "npm run build && electron-builder",
+    "icons": "python3 scripts/generate-icons.py && cp build/icon.icns resources/ && cp build/icon.ico resources/ && cp -r build/icons resources/",
+    "dist": "npm run icons && npm run build && sh -c 'CXXFLAGS=\"-I$(xcrun --show-sdk-path)/usr/include/c++/v1\" electron-builder'",
     "rebuild": "sh -c 'CXXFLAGS=\"-I$(xcrun --show-sdk-path)/usr/include/c++/v1\" electron-rebuild -f -w node-pty'",
     "postinstall": "npm run rebuild 2>/dev/null || electron-builder install-app-deps || true"
   },
@@ -43,8 +44,8 @@
     "zustand": "^5.0.0"
   },
   "build": {
-    "appId": "dev.aiterminal.app",
-    "productName": "AI Terminal",
+    "appId": "dev.terminalos.app",
+    "productName": "terminalOS",
     "directories": {
       "output": "dist"
     },
@@ -54,18 +55,19 @@
       "node_modules/**"
     ],
     "mac": {
-      "target": "dmg",
-      "arch": [
-        "x64",
-        "arm64"
+      "target": [
+        { "target": "dmg", "arch": ["x64", "arm64"] }
       ],
-      "category": "public.app-category.developer-tools"
+      "category": "public.app-category.developer-tools",
+      "icon": "resources/icon.icns"
     },
     "win": {
-      "target": "nsis"
+      "target": "nsis",
+      "icon": "resources/icon.ico"
     },
     "linux": {
-      "target": "AppImage"
+      "target": "AppImage",
+      "icon": "resources/icons"
     }
   }
 }
