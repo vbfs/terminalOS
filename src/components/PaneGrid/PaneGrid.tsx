@@ -43,6 +43,7 @@ interface NodeRendererProps {
   tabId: string
   activePaneId: string | null
   paneCount: number
+  restoreDirection?: 'up' | 'left' | 'right'
   onSplit: (paneId: string, dir: SplitDirection) => void
   onClose: (paneId: string) => void
   onFocus: (paneId: string) => void
@@ -58,6 +59,7 @@ const NodeRenderer: React.FC<NodeRendererProps> = ({
   tabId,
   activePaneId,
   paneCount,
+  restoreDirection,
   onSplit,
   onClose,
   onFocus,
@@ -112,6 +114,7 @@ const NodeRenderer: React.FC<NodeRendererProps> = ({
         paneId={node.id}
         isActive={activePaneId === node.id}
         canClose={paneCount > 1}
+        restoreDirection={restoreDirection}
         onSplit={onSplit}
         onClose={onClose}
         onFocus={onFocus}
@@ -129,6 +132,7 @@ const NodeRenderer: React.FC<NodeRendererProps> = ({
         cwd={node.cwd}
         isActive={activePaneId === node.id}
         canClose={paneCount > 1}
+        restoreDirection={restoreDirection}
         onClose={onClose}
         onFocus={onFocus}
       />
@@ -177,6 +181,9 @@ const NodeRenderer: React.FC<NodeRendererProps> = ({
     bStyle = { flex: 1 - node.ratio }
   }
 
+  const aRestoreDir = isHorizontal ? 'right' : 'up'
+  const bRestoreDir = isHorizontal ? 'left' : 'up'
+
   return (
     <div
       ref={containerRef}
@@ -189,6 +196,7 @@ const NodeRenderer: React.FC<NodeRendererProps> = ({
           tabId={tabId}
           activePaneId={activePaneId}
           paneCount={paneCount}
+          restoreDirection={aRestoreDir}
           onSplit={onSplit}
           onClose={onClose}
           onFocus={onFocus}
@@ -207,6 +215,7 @@ const NodeRenderer: React.FC<NodeRendererProps> = ({
           tabId={tabId}
           activePaneId={activePaneId}
           paneCount={paneCount}
+          restoreDirection={bRestoreDir}
           onSplit={onSplit}
           onClose={onClose}
           onFocus={onFocus}

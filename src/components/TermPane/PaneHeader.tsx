@@ -10,6 +10,8 @@ import {
   IconX,
   IconMinus,
   IconRestore,
+  IconArrowLeft,
+  IconArrowRight,
   IconPanelRight,
   IconPanelBottom,
   IconMarkdownDoc,
@@ -22,6 +24,7 @@ interface PaneHeaderProps {
   paneId: string;
   canClose: boolean;
   isMinimized?: boolean;
+  restoreDirection?: 'up' | 'left' | 'right';
   onSplit: (paneId: string, dir: SplitDirection) => void;
   onClose: (paneId: string) => void;
   onOpenMd?: (paneId: string) => void;
@@ -40,6 +43,7 @@ export const PaneHeader: React.FC<PaneHeaderProps> = ({
   paneId,
   canClose,
   isMinimized,
+  restoreDirection = 'up',
   onSplit,
   onClose,
   onOpenMd,
@@ -90,7 +94,14 @@ export const PaneHeader: React.FC<PaneHeaderProps> = ({
           }}
           title={isMinimized ? "Restore pane" : "Minimize pane"}
         >
-          {isMinimized ? <IconRestore size={10} /> : <IconMinus size={10} />}
+          {isMinimized
+            ? restoreDirection === 'left'
+              ? <IconArrowLeft size={10} />
+              : restoreDirection === 'right'
+                ? <IconArrowRight size={10} />
+                : <IconRestore size={10} />
+            : <IconMinus size={10} />
+          }
         </button>
         {!isMinimized && onOpenMd && (
           <button

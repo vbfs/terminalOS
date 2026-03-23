@@ -16,6 +16,7 @@ interface TermPaneProps {
   paneId: string;
   isActive: boolean;
   canClose: boolean;
+  restoreDirection?: 'up' | 'left' | 'right';
   onSplit: (paneId: string, dir: SplitDirection) => void;
   onClose: (paneId: string) => void;
   onFocus: (paneId: string) => void;
@@ -30,6 +31,7 @@ export const TermPane: React.FC<TermPaneProps> = React.memo(
     paneId,
     isActive,
     canClose,
+    restoreDirection,
     onSplit,
     onClose,
     onFocus,
@@ -159,6 +161,7 @@ export const TermPane: React.FC<TermPaneProps> = React.memo(
           paneId={paneId}
           canClose={canClose}
           isMinimized={isMinimized}
+          restoreDirection={restoreDirection}
           onSplit={onSplit}
           onClose={onClose}
           onOpenMd={onOpenMd}

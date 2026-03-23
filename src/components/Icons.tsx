@@ -58,6 +58,13 @@ export const IconArrowLeft: React.FC<P> = ({ size = 12, className }) => (
   </svg>
 )
 
+export const IconArrowRight: React.FC<P> = ({ size = 12, className }) => (
+  <svg width={size} height={size} viewBox="0 0 12 12" fill="none" className={className}>
+    <line x1="2" y1="6" x2="10" y2="6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+    <polyline points="7,3 10,6 7,9" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+)
+
 export const IconPlus: React.FC<P> = ({ size = 12, className }) => (
   <svg width={size} height={size} viewBox="0 0 12 12" fill="none" className={className}>
     <line x1="6" y1="2" x2="6" y2="10" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />

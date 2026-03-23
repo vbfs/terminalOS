@@ -17,6 +17,7 @@ import {
   IconRestore,
   IconArrowUp,
   IconArrowLeft,
+  IconArrowRight,
   IconFilePlus,
   IconFolderPlus,
   IconFolder,
@@ -91,6 +92,7 @@ interface MarkdownPaneProps {
   cwd: string;
   isActive: boolean;
   canClose: boolean;
+  restoreDirection?: 'up' | 'left' | 'right';
   onClose: (paneId: string) => void;
   onFocus: (paneId: string) => void;
 }
@@ -430,7 +432,7 @@ const Editor: React.FC<EditorProps> = ({
 // ── Main MarkdownPane ─────────────────────────────────────────
 
 export const MarkdownPane: React.FC<MarkdownPaneProps> = React.memo(
-  ({ paneId, cwd, isActive, canClose, onClose, onFocus }) => {
+  ({ paneId, cwd, isActive, canClose, restoreDirection = 'up', onClose, onFocus }) => {
     const state = useMdPaneStore((s) => s.panes.get(paneId));
     const { init, destroy } = useMdPaneStore();
     const isMinimized = useTabsStore((s) => s.minimizedPanes.has(paneId));
@@ -472,7 +474,11 @@ export const MarkdownPane: React.FC<MarkdownPaneProps> = React.memo(
               title={isMinimized ? "Restore pane" : "Minimize pane"}
             >
               {isMinimized ? (
-                <IconRestore size={10} />
+                restoreDirection === 'left'
+                  ? <IconArrowLeft size={10} />
+                  : restoreDirection === 'right'
+                    ? <IconArrowRight size={10} />
+                    : <IconRestore size={10} />
               ) : (
                 <IconMinus size={10} />
               )}
