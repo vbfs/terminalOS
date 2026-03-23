@@ -16,7 +16,7 @@ interface TermPaneProps {
   paneId: string;
   isActive: boolean;
   canClose: boolean;
-  restoreDirection?: 'up' | 'left' | 'right';
+  restoreDirection?: "up" | "left" | "right";
   onSplit: (paneId: string, dir: SplitDirection) => void;
   onClose: (paneId: string) => void;
   onFocus: (paneId: string) => void;
@@ -172,7 +172,12 @@ export const TermPane: React.FC<TermPaneProps> = React.memo(
         {!isMinimized && session.alertMessage && (
           <div className={styles.inlineAlert}>
             <span>{session.alertMessage}</span>
-            <button className={styles.alertDismiss} onClick={() => setAlert(sessionId, null)}>×</button>
+            <button
+              className={styles.alertDismiss}
+              onClick={() => setAlert(sessionId, null)}
+            >
+              ×
+            </button>
           </div>
         )}
 
@@ -182,11 +187,8 @@ export const TermPane: React.FC<TermPaneProps> = React.memo(
           onMouseDown={() => setHasInteracted(true)}
         >
           {!hasInteracted && (
-            <div className={`${styles.placeholder} ${isActive ? styles.placeholderActive : ""}`}>
-              Select a folder from the header, or press{" "}
-              <kbd className={styles.kbd}>{isMac ? "⌘K" : "Ctrl+K"}</kbd>
-              {" "}to open the Command Palette
-              <span className={styles.cursor}>▌</span>
+            <div className={styles.placeholder}>
+              {`Type  ·   Select a folder  ·  ${isMac ? "⌘K" : "Ctrl+K"} to open Command Palette`}
             </div>
           )}
         </div>
