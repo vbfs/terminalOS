@@ -213,6 +213,49 @@
   opacity: 1;
 }
 
+/* ── Placeholder / empty state ──────────────────── */
+.placeholder {
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  display: flex;
+  align-items: center;
+  gap: 0;
+  pointer-events: none;
+  z-index: 1;
+  user-select: none;
+  font-size: 13px;
+  font-family: "JetBrains Mono", "MesloLGS NF", "Hack Nerd Font", "Cascadia Code", monospace;
+  color: var(--muted);
+  opacity: 0.35;
+  white-space: nowrap;
+}
+
+.kbd {
+  background: transparent;
+  border: none;
+  padding: 0;
+  font-family: inherit;
+  font-size: inherit;
+  color: inherit;
+  opacity: 1;
+}
+
+.cursor {
+  opacity: 0;
+  margin-left: 1px;
+}
+
+.placeholderActive .cursor {
+  animation: termCursorBlink 1s step-start infinite;
+  opacity: 1;
+}
+
+@keyframes termCursorBlink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0; }
+}
+
 /* ── Terminal ───────────────────────────────────── */
 .terminal {
   flex: 1;

@@ -47,6 +47,7 @@ export const TermPane: React.FC<TermPaneProps> = React.memo(
     const [ctxMenu, setCtxMenu] = useState<{ x: number; y: number } | null>(
       null,
     );
+    const [hasInteracted, setHasInteracted] = useState(false);
 
     usePty({ sessionId, containerRef });
 
@@ -175,7 +176,20 @@ export const TermPane: React.FC<TermPaneProps> = React.memo(
           </div>
         )}
 
-        <div ref={containerRef} className={styles.terminal} />
+        <div
+          ref={containerRef}
+          className={styles.terminal}
+          onMouseDown={() => setHasInteracted(true)}
+        >
+          {!hasInteracted && (
+            <div className={`${styles.placeholder} ${isActive ? styles.placeholderActive : ""}`}>
+              Select a folder from the header, or press{" "}
+              <kbd className={styles.kbd}>{isMac ? "⌘K" : "Ctrl+K"}</kbd>
+              {" "}to open the Command Palette
+              <span className={styles.cursor}>▌</span>
+            </div>
+          )}
+        </div>
 
         {ctxMenu && (
           <ContextMenu
