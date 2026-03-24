@@ -1,0 +1,54 @@
+.promptBar {
+  height: 32px;
+  background: var(--bg2);
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  flex-shrink: 0;
+  gap: 6px;
+}
+
+.left {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+.envBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(232, 164, 74, 0.08);
+  border: 1px solid rgba(232, 164, 74, 0.2);
+  border-radius: var(--radius-sm);
+  padding: 1px 7px 1px 5px;
+  flex-shrink: 0;
+}
+
+.envIcon {
+  font-size: 11px;
+  color: var(--amber);
+  font-family: var(--font-mono);
+  line-height: 1;
+  font-weight: 600;
+}
+
+.envName {
+  font-size: 11px;
+  font-family: var(--font-mono);
+  color: var(--amber);
+  line-height: 1;
+  letter-spacing: 0.01em;
+}
+
+.pathBadge {
+  font-size: 11px;
+  font-family: var(--font-mono);
+  color: var(--muted2);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
