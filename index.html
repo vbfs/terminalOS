@@ -6,7 +6,7 @@
     <title>terminalOS — The Terminal Built for AI-Native builders</title>
     <meta
       name="description"
-      content="terminalOS is the terminal built for AI coding workflows. Real-time token tracking, Claude Code detection, multi-pane workspace — all in one window. Free forever, MIT licensed."
+      content="terminalOS is the terminal built for AI coding workflows. Real-time token tracking, Claude Code detection, multi-pane workspace — all in one window. Free forever."
     />
     <meta
       name="robots"
@@ -291,7 +291,7 @@
             "name": "Is terminalOS free?",
             "acceptedAnswer": {
               "@type": "Answer",
-              "text": "Yes. Free forever under the MIT license. No account required."
+              "text": "Yes. Free forever. No account required."
             }
           },
           {
@@ -429,7 +429,8 @@
     <main id="main-content">
       <!-- ─── HERO ──────────────────────────────────────── -->
       <section
-        class="relative flex flex-col items-center justify-center text-center px-6 pt-28 pb-24 overflow-hidden"
+        class="relative flex flex-col items-center justify-center text-center px-6 overflow-hidden"
+        style="min-height: calc(100vh - 56px)"
         aria-labelledby="hero-heading"
       >
         <!-- Radial glow -->
@@ -481,13 +482,13 @@
 
         <!-- CTAs -->
         <div
-          class="h-anim-4 flex flex-wrap items-center justify-center gap-3 mb-5"
+          class="h-anim-4 flex items-center justify-center mb-5"
         >
           <a
             href="#install"
             id="hero-dl"
-            class="inline-flex items-center gap-2 bg-white text-black font-medium rounded px-7 py-3.5 hover:opacity-85 transition-opacity"
-            style="font-size: 14px"
+            class="inline-flex items-center gap-2 bg-white text-black font-medium rounded px-8 py-4 hover:opacity-85 transition-opacity"
+            style="font-size: 15px"
           >
             <svg
               width="14"
@@ -506,34 +507,11 @@
             </svg>
             Download free
           </a>
-          <a
-            href="#features"
-            class="inline-flex items-center gap-2 text-g40 border border-hair rounded px-7 py-3.5 hover:border-white/25 hover:text-white transition-all duration-150"
-            style="font-size: 14px"
-          >
-            See what's inside
-            <svg
-              width="13"
-              height="13"
-              viewBox="0 0 13 13"
-              fill="none"
-              aria-hidden="true"
-            >
-              <path
-                d="M2 6.5h9M6.5 2l4.5 4.5L6.5 11"
-                stroke="currentColor"
-                stroke-width="1.5"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              />
-            </svg>
-          </a>
         </div>
 
         <!-- Trust micro-copy -->
         <p class="h-anim-4 font-mono text-g30 mb-14" style="font-size: 11px">
-          No account required &nbsp;·&nbsp; MIT License &nbsp;·&nbsp; macOS ·
-          Windows · Linux
+          No account required &nbsp;·&nbsp; macOS · Windows · Linux
         </p>
 
         <!-- Terminal mockup -->
@@ -853,6 +831,35 @@
               silent session that was failing the entire time.
             </div>
           </article>
+
+          <article
+            class="reveal grid md:grid-cols-[80px_1fr_1fr] items-start bg-black hover:bg-g06 transition-colors duration-200"
+            role="listitem"
+          >
+            <div
+              class="font-mono text-g20 p-9 pt-10 hidden md:block"
+              style="font-size: 11px"
+              aria-hidden="true"
+            >
+              07
+            </div>
+            <div class="border-r border-hair2 py-9 pl-6 md:pl-0 pr-10">
+              <h3
+                class="text-white font-normal leading-snug"
+                style="font-size: 17px; letter-spacing: -0.02em"
+              >
+                14 themes, including your favorites
+              </h3>
+            </div>
+            <div
+              class="text-g40 py-9 px-8 leading-relaxed font-light"
+              style="font-size: 13px"
+            >
+              Dracula, Tokyo Night, Nord, Gruvbox, Catppuccin, Rosé Pine,
+              Solarized, and more. Live preview before applying — switch
+              instantly without restarting.
+            </div>
+          </article>
         </div>
       </section>
 
@@ -885,12 +892,12 @@
             </p>
           </div>
           <div class="p-8 md:p-10 text-center" style="background: #060606">
-            <div class="stat-num mb-2">500ms</div>
+            <div class="stat-num mb-2">14</div>
             <p
               class="text-g40 font-mono uppercase tracking-widest"
               style="font-size: 10px"
             >
-              Layout autosave interval
+              Built-in themes
             </p>
           </div>
           <div class="p-8 md:p-10 text-center" style="background: #060606">
@@ -899,7 +906,7 @@
               class="text-g40 font-mono uppercase tracking-widest"
               style="font-size: 10px"
             >
-              Forever. MIT licensed.
+              Forever free.
             </p>
           </div>
         </div>
@@ -1388,7 +1395,7 @@
               Universal · Apple Silicon + Intel
             </p>
             <a
-              href="/downloads/terminalOS-0.2.0-arm64.dmg"
+              href="https://github.com/vbfs/terminalOS/releases/download/v0.2.0/terminalOS-0.2.0-arm64.dmg"
               class="inline-flex items-center gap-2 border border-hair text-g40 rounded px-4 py-2 font-mono group-hover:border-white/25 group-hover:text-white transition-all duration-150"
               style="font-size: 12px"
               aria-label="Download terminalOS for macOS"
@@ -1421,7 +1428,7 @@
               NSIS installer · Windows 10/11
             </p>
             <a
-              href="/downloads/terminalOS%20Setup%200.2.0.exe"
+              href="https://github.com/vbfs/terminalOS/releases/download/v0.2.0/terminalOS.Setup.0.2.0.exe"
               class="inline-flex items-center gap-2 border border-hair text-g40 rounded px-4 py-2 font-mono group-hover:border-white/25 group-hover:text-white transition-all duration-150"
               style="font-size: 12px"
               aria-label="Download terminalOS for Windows"
@@ -1532,8 +1539,7 @@
               class="font-mono text-g30 mb-10"
               style="font-size: 11px; letter-spacing: 0.06em"
             >
-              v0.2.0 &nbsp;·&nbsp; MIT License &nbsp;·&nbsp; Free forever
-              &nbsp;·&nbsp; No account required
+              v0.2.0 &nbsp;·&nbsp; Free forever &nbsp;·&nbsp; No account required
             </p>
 
             <div class="flex flex-wrap items-center justify-center gap-3">
@@ -1594,14 +1600,6 @@
             >Releases</a
           >
         </li>
-        <li>
-          <a
-            href="https://opensource.org/licenses/MIT"
-            rel="noopener noreferrer"
-            class="font-mono text-g20 hover:text-white transition-colors"
-            >MIT</a
-          >
-        </li>
       </ul>
     </footer>
 
@@ -1617,11 +1615,11 @@
         var href, label;
         if (mac) {
           href = arm
-            ? "/downloads/terminalOS-0.2.0-arm64.dmg"
-            : "/downloads/terminalOS-0.2.0.dmg";
+            ? "https://github.com/vbfs/terminalOS/releases/download/v0.2.0/terminalOS-0.2.0-arm64.dmg"
+            : "https://github.com/vbfs/terminalOS/releases/download/v0.2.0/terminalOS-0.2.0.dmg";
           label = "Download for Mac";
         } else if (win) {
-          href = "/downloads/terminalOS%20Setup%200.2.0.exe";
+          href = "https://github.com/vbfs/terminalOS/releases/download/v0.2.0/terminalOS.Setup.0.2.0.exe";
           label = "Download for Windows";
         } else {
           href = "#install";

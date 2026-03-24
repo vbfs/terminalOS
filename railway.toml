@@ -2,6 +2,5 @@
 builder = "RAILPACK"
 
 [deploy]
-startCommand = "sh startup.sh"
 healthcheckPath = "/"
 
