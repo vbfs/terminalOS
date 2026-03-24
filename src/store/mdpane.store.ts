@@ -33,6 +33,8 @@ interface MdPaneStoreState {
   goUp: (paneId: string) => Promise<void>
   moveEntry: (paneId: string, srcPath: string, destDir: string) => Promise<void>
   copyExternal: (paneId: string, srcPaths: string[], destDir: string) => Promise<void>
+  deleteEntry: (paneId: string, entryPath: string) => Promise<void>
+  renameEntry: (paneId: string, entryPath: string, newName: string) => Promise<void>
 }
 
 function patchPane(
@@ -178,5 +180,27 @@ export const useMdPaneStore = create<MdPaneStoreState>((set, get) => ({
     }
     const pane = get().panes.get(paneId)
     if (pane) await get().browse(paneId, pane.browsePath)
+  },
+
+  deleteEntry: async (paneId, entryPath) => {
+    await window.api.fs.delete(entryPath)
+    const pane = get().panes.get(paneId)
+    if (!pane) return
+    if (pane.filePath === entryPath) {
+      get().closeFile(paneId)
+    }
+    await get().browse(paneId, pane.browsePath)
+  },
+
+  renameEntry: async (paneId, entryPath, newName) => {
+    const dir = entryPath.split('/').slice(0, -1).join('/')
+    const dest = dir + '/' + newName
+    await window.api.fs.rename(entryPath, dest)
+    const pane = get().panes.get(paneId)
+    if (!pane) return
+    if (pane.filePath === entryPath) {
+      set((s) => ({ panes: patchPane(s.panes, paneId, { filePath: dest }) }))
+    }
+    await get().browse(paneId, pane.browsePath)
   },
 }))

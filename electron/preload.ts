@@ -53,6 +53,8 @@ const api = {
       ipcRenderer.invoke('fs:rename', src, dest),
     copyExternal: (srcPath: string, destDir: string): Promise<void> =>
       ipcRenderer.invoke('fs:copyExternal', srcPath, destDir),
+    delete: (targetPath: string): Promise<void> =>
+      ipcRenderer.invoke('fs:delete', targetPath),
     setWatchRoot: (rootPath: string): void =>
       ipcRenderer.send('fs:setWatchRoot', rootPath),
     onWatch: (cb: (event: { type: string; path: string }) => void): Unsubscribe => {
@@ -83,6 +85,7 @@ const api = {
   },
   shell: {
     openPath: (filePath: string): void => ipcRenderer.send('shell:openPath', filePath),
+    openInFinder: (folderPath: string): void => ipcRenderer.send('shell:openInFinder', folderPath),
   },
 }
 

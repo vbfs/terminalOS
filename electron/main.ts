@@ -127,6 +127,10 @@ function setupIpcHandlers() {
     return fsWatcher.copyExternal(srcPath, destDir)
   })
 
+  ipcMain.handle('fs:delete', async (_, targetPath: string) => {
+    return fsWatcher.delete(targetPath)
+  })
+
   ipcMain.handle('fs:writeBinaryFile', async (_, filePath: string, data: ArrayBuffer) => {
     const { promises: fs } = await import('fs')
     await fs.writeFile(filePath, Buffer.from(data))
@@ -165,6 +169,10 @@ function setupIpcHandlers() {
   // Shell operations
   ipcMain.on('shell:openPath', (_, filePath: string) => {
     shell.showItemInFolder(filePath)
+  })
+
+  ipcMain.on('shell:openInFinder', (_, folderPath: string) => {
+    shell.openPath(folderPath)
   })
 }
 

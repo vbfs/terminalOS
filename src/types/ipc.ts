@@ -41,6 +41,7 @@ export interface IpcApi {
     writeFile: (path: string, content: string) => Promise<void>
     mkdir: (path: string) => Promise<void>
     writeBinaryFile: (filePath: string, data: ArrayBuffer) => Promise<void>
+    delete: (path: string) => Promise<void>
     setWatchRoot: (path: string) => void
     onWatch: (cb: (event: FsEvent) => void) => Unsubscribe
   }
@@ -57,6 +58,7 @@ export interface IpcApi {
   }
   shell: {
     openPath: (path: string) => void
+    openInFinder: (path: string) => void
   }
 }
 

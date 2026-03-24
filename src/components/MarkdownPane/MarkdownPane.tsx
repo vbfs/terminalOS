@@ -25,6 +25,7 @@ import {
   IconMarkdownDoc,
   IconFilePdf,
 } from "../Icons";
+import { ContextMenu } from "../ContextMenu/ContextMenu";
 
 // ── Language detection ─────────────────────────────────────────
 const LANG_MAP: Record<string, string> = {
@@ -113,13 +114,33 @@ const FileBrowser: React.FC<FileBrowserProps> = ({
   entries,
   isLoading,
 }) => {
-  const { browse, openFile, goUp, newFile, newDir, moveEntry, copyExternal } = useMdPaneStore();
+  const { browse, openFile, goUp, newFile, newDir, moveEntry, copyExternal, deleteEntry, renameEntry } = useMdPaneStore();
   const [newName, setNewName] = useState("");
   const [creating, setCreating] = useState<"file" | "dir" | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const isSubmittingRef = useRef(false);
   const [draggingPath, setDraggingPath] = useState<string | null>(null);
   const [dragOverTarget, setDragOverTarget] = useState<string | null>(null);
+  const [ctxMenu, setCtxMenu] = useState<{ x: number; y: number; entry: FsEntry } | null>(null);
+  const [renamingPath, setRenamingPath] = useState<string | null>(null);
+  const [renameValue, setRenameValue] = useState("");
+  const renameInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (renamingPath) setTimeout(() => renameInputRef.current?.focus(), 30);
+  }, [renamingPath]);
+
+  const handleRenameSubmit = async () => {
+    if (!renamingPath) return;
+    const name = renameValue.trim();
+    const path = renamingPath;
+    setRenamingPath(null);
+    setRenameValue("");
+    if (!name) return;
+    const currentName = path.split("/").pop() ?? "";
+    if (name === currentName) return;
+    await renameEntry(paneId, path, name);
+  };
 
   useEffect(() => {
     if (creating) setTimeout(() => inputRef.current?.focus(), 30);
@@ -176,6 +197,13 @@ const FileBrowser: React.FC<FileBrowserProps> = ({
           title="Go up"
         >
           <IconArrowUp size={11} />
+        </button>
+        <button
+          className={styles.upBtn}
+          onClick={() => window.api.shell.openInFinder(browsePath)}
+          title="Open in Finder"
+        >
+          <IconFolder size={11} />
         </button>
         <span className={styles.pathText}>{shortPath(browsePath)}</span>
         <div className={styles.createBtns}>
@@ -263,8 +291,12 @@ const FileBrowser: React.FC<FileBrowserProps> = ({
             key={entry.path}
             className={`${styles.entry} ${isMd(entry) ? styles.mdEntry : ""} ${entry.isDirectory ? styles.dirEntry : ""} ${dragOverTarget === entry.path ? styles.dragOver : ""}`}
             style={{ opacity: draggingPath === entry.path ? 0.4 : 1 }}
-            onClick={() => handleEntryClick(entry)}
-            draggable
+            onClick={() => renamingPath !== entry.path && handleEntryClick(entry)}
+            onContextMenu={(e) => {
+              e.preventDefault();
+              setCtxMenu({ x: e.clientX, y: e.clientY, entry });
+            }}
+            draggable={renamingPath !== entry.path}
             onDragStart={() => setDraggingPath(entry.path)}
             onDragEnd={() => {
               setDraggingPath(null);
@@ -307,13 +339,75 @@ const FileBrowser: React.FC<FileBrowserProps> = ({
                 <IconFile size={11} />
               )}
             </span>
-            <span className={styles.entryName}>{entry.name}</span>
-            {isMd(entry) && entry.size != null && (
-              <span className={styles.tokenCount}>{fmtTokens(entry.size)}</span>
+            {renamingPath === entry.path ? (
+              <input
+                ref={renameInputRef}
+                className={styles.newEntryInput}
+                value={renameValue}
+                onChange={(e) => setRenameValue(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") handleRenameSubmit();
+                  if (e.key === "Escape") {
+                    setRenamingPath(null);
+                    setRenameValue("");
+                  }
+                }}
+                onBlur={handleRenameSubmit}
+                onClick={(e) => e.stopPropagation()}
+              />
+            ) : (
+              <>
+                <span className={styles.entryName}>{entry.name}</span>
+                {isMd(entry) && entry.size != null && (
+                  <span className={styles.tokenCount}>{fmtTokens(entry.size)}</span>
+                )}
+              </>
             )}
           </div>
         ))}
       </div>
+
+      {ctxMenu && (
+        <ContextMenu
+          x={ctxMenu.x}
+          y={ctxMenu.y}
+          groups={[
+            {
+              items: [
+                {
+                  icon: "✏",
+                  label: "Rename",
+                  onClick: () => {
+                    setRenamingPath(ctxMenu.entry.path);
+                    setRenameValue(ctxMenu.entry.name);
+                  },
+                },
+                {
+                  icon: "⎆",
+                  label: "Open in Finder",
+                  onClick: () => {
+                    const target = ctxMenu.entry.isDirectory
+                      ? ctxMenu.entry.path
+                      : ctxMenu.entry.path.split("/").slice(0, -1).join("/");
+                    window.api.shell.openInFinder(target);
+                  },
+                },
+              ],
+            },
+            {
+              items: [
+                {
+                  icon: "✕",
+                  label: "Delete",
+                  danger: true,
+                  onClick: () => deleteEntry(paneId, ctxMenu.entry.path),
+                },
+              ],
+            },
+          ]}
+          onClose={() => setCtxMenu(null)}
+        />
+      )}
     </div>
   );
 };
@@ -389,6 +483,7 @@ const Editor: React.FC<EditorProps> = ({
   isDirty,
 }) => {
   const { setContent, save, closeFile } = useMdPaneStore();
+  const toggleMinimize = useTabsStore((s) => s.toggleMinimizePane);
   const previewRef = useRef<HTMLDivElement>(null);
 
   const filename = filePath.split("/").pop() ?? filePath;
@@ -488,6 +583,13 @@ const Editor: React.FC<EditorProps> = ({
             <IconFilePdf size={12} /> export pdf
           </button>
         )}
+        <button
+          className={`${styles.headerBtn} ${styles.minimizeBtn}`}
+          onClick={() => toggleMinimize(paneId)}
+          title="Minimize pane"
+        >
+          <IconMinus size={10} />
+        </button>
       </div>
 
       <div className={styles.editorBody}>

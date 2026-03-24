@@ -79,6 +79,11 @@ export class FsWatcher {
     await fs.cp(src, dest, { recursive: true })
   }
 
+  async delete(targetPath: string): Promise<void> {
+    const resolved = path.resolve(targetPath)
+    await fs.rm(resolved, { recursive: true, force: true })
+  }
+
   setWatchRoot(rootPath: string): void {
     const resolved = path.resolve(rootPath)
 
