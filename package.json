@@ -1,0 +1,82 @@
+{
+  "name": "terminalOS",
+  "version": "0.2.0",
+  "description": "AI-focused terminal multiplexer for developers running AI coding CLIs",
+  "main": "electron/main.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "npm run build:electron && concurrently \"vite\" \"wait-on http://localhost:5173 && electron .\" \"tsc -p electron/tsconfig.json --watch --preserveWatchOutput\"",
+    "build:electron": "tsc -p electron/tsconfig.json",
+    "build": "vite build && tsc -p electron/tsconfig.json",
+    "icons": "python3 scripts/generate-icons.py",
+    "dist": "npm run icons && npm run build && sh -c 'CXXFLAGS=\"-I$(xcrun --show-sdk-path)/usr/include/c++/v1\" electron-builder --mac --win'",
+    "rebuild": "sh -c 'CXXFLAGS=\"-I$(xcrun --show-sdk-path)/usr/include/c++/v1\" electron-rebuild -f -w node-pty'",
+    "postinstall": "npm run rebuild 2>/dev/null || electron-builder install-app-deps || true"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "@types/uuid": "^10.0.0",
+    "@vitejs/plugin-react": "^4.3.0",
+    "concurrently": "^9.0.0",
+    "electron": "^33.0.0",
+    "electron-builder": "^25.0.0",
+    "electron-rebuild": "^3.2.9",
+    "typescript": "^5.6.0",
+    "vite": "^6.0.0",
+    "vite-plugin-electron": "^0.28.0",
+    "wait-on": "^8.0.0"
+  },
+  "dependencies": {
+    "express": "^4.21.0",
+    "@xterm/addon-fit": "^0.10.0",
+    "@xterm/addon-search": "^0.15.0",
+    "@xterm/addon-web-links": "^0.11.0",
+    "chokidar": "^4.0.0",
+    "electron-updater": "^6.3.0",
+    "highlight.js": "^11.11.1",
+    "html2pdf.js": "^0.14.0",
+    "marked": "^17.0.5",
+    "node-pty": "^1.0.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "react-window": "^1.8.10",
+    "uuid": "^10.0.0",
+    "xterm": "^5.3.0",
+    "zustand": "^5.0.0"
+  },
+  "build": {
+    "appId": "dev.terminalos.app",
+    "productName": "terminalOS",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "build/**",
+      "electron/**",
+      "node_modules/**"
+    ],
+    "mac": {
+      "target": [
+        {
+          "target": "dmg",
+          "arch": [
+            "x64",
+            "arm64"
+          ]
+        }
+      ],
+      "category": "public.app-category.developer-tools",
+      "icon": "resources/icon.icns"
+    },
+    "win": {
+      "target": "nsis",
+      "icon": "resources/icon.ico"
+    },
+    "linux": {
+      "target": "AppImage",
+      "icon": "resources/icons"
+    }
+  }
+}

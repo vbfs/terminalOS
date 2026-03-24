@@ -1,0 +1,8 @@
+[build]
+builder = "nixpacks"
+# Skip postinstall (electron-rebuild) — not needed for the web server
+installCommand = "npm install --ignore-scripts"
+
+[deploy]
+startCommand = "node server.js"
+healthcheckPath = "/"

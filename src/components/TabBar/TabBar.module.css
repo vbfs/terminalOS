@@ -1,0 +1,230 @@
+/* ── Tab Bar container ─────────────────────────── */
+.tabBar {
+  height: var(--tabbar-h);
+  background: var(--bg2);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: stretch;
+  flex-shrink: 0;
+  overflow: hidden;
+  -webkit-app-region: drag;
+}
+
+.tabs {
+  display: flex;
+  align-items: stretch;
+  flex: 1;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+  gap: 4px;
+  padding: 0 4px;
+  -webkit-app-region: no-drag;
+}
+
+.tabs::-webkit-scrollbar {
+  display: none;
+}
+
+/* ── Individual tab ────────────────────────────── */
+.tab {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 10px;
+  min-width: 120px;
+  max-width: 200px;
+  cursor: pointer;
+  position: relative;
+  color: var(--muted2);
+  font-size: 11px;
+  font-family: var(--font-ui);
+  background: transparent;
+  border: 1px solid transparent;
+  border-bottom: none;
+  border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+  user-select: none;
+  transition: color var(--dur-fast), background var(--dur-fast);
+  flex-shrink: 0;
+  -webkit-app-region: no-drag;
+}
+
+.tab:hover {
+  background: var(--bg3);
+}
+
+.tab.active {
+  background: var(--bg3);
+  border-color: var(--border2);
+  color: var(--text);
+}
+
+/* Active tab bottom merges with pane area */
+.tab.active::after {
+  content: "";
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: var(--bg3);
+}
+
+/* ── Status dot ────────────────────────────────── */
+.statusDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.dotrunning {
+  background: var(--green);
+  box-shadow: 0 0 5px var(--green);
+}
+
+.dotwaiting {
+  background: var(--amber);
+  box-shadow: 0 0 5px var(--amber);
+}
+
+.doterror {
+  background: var(--red);
+  box-shadow: 0 0 5px var(--red);
+}
+
+.dotidle {
+  background: var(--muted);
+}
+
+/* ── Pane count badge ──────────────────────────── */
+.paneCountBadge {
+  font-size: 9px;
+  font-weight: 700;
+  font-family: var(--font-ui);
+  padding: 1px 5px;
+  border-radius: 3px;
+  background: var(--bg);
+  color: var(--muted);
+  flex-shrink: 0;
+  line-height: 14px;
+  border: 1px solid var(--border);
+}
+
+.tab.active .paneCountBadge {
+  background: var(--bg2);
+  color: var(--muted2);
+  border-color: var(--border2);
+}
+
+/* ── Agent badge ───────────────────────────────── */
+.agentBadge {
+  font-size: 9px;
+  font-family: var(--font-ui);
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  padding: 1px 5px;
+  border-radius: 3px;
+  flex-shrink: 0;
+  line-height: 14px;
+}
+
+.badgeSmall {
+  font-size: 8px;
+  padding: 1px 4px;
+  line-height: 12px;
+}
+
+.badgeCLAUDE {
+  background: #2a1e0a;
+  color: var(--amber);
+}
+
+.badgeOC {
+  background: #1e1a2e;
+  color: var(--purple);
+}
+
+.badgeSHELL {
+  background: #1a1a2e;
+  color: var(--blue);
+}
+
+/* ── Tab name ──────────────────────────────────── */
+.tabName {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 11px;
+}
+
+.tab.active .tabName {
+  cursor: text;
+}
+
+/* ── Close tab button ──────────────────────────── */
+.closeTabBtn {
+  background: none;
+  border: none;
+  color: var(--muted);
+  cursor: pointer;
+  padding: 2px 3px;
+  line-height: 1;
+  border-radius: 3px;
+  flex-shrink: 0;
+  opacity: 0;
+  transition: color var(--dur-fast), opacity var(--dur-fast);
+  margin-left: 2px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tab:hover .closeTabBtn,
+.tab.active .closeTabBtn {
+  opacity: 1;
+}
+
+.closeTabBtn:hover {
+  color: var(--red);
+}
+
+/* ── Tab name inline edit ──────────────────────── */
+.tabNameInput {
+  flex: 1;
+  background: none;
+  border: none;
+  border-bottom: 1px solid var(--amber);
+  color: var(--text);
+  font-size: 11px;
+  font-family: var(--font-ui);
+  padding: 0;
+  outline: none;
+  min-width: 0;
+}
+
+/* ── New project button ────────────────────────── */
+.newTabBtn {
+  width: 36px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--muted);
+  cursor: pointer;
+  border: none;
+  background: none;
+  padding: 0;
+  transition: color var(--dur-fast);
+  -webkit-app-region: no-drag;
+}
+
+.newTabBtn:hover:not(:disabled) {
+  color: var(--text);
+}
+
+.newTabBtn:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
