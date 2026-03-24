@@ -3,10 +3,107 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>terminalOS — The terminal built for AI-native developers</title>
-    <style>
-      @import url("https://fonts.googleapis.com/css2?family=Geist+Mono:wght@300;400;500&family=Geist:wght@300;400;500;600&display=swap");
+    <title>terminalOS — The Terminal Built for AI-Native builders</title>
+    <meta
+      name="description"
+      content="terminalOS is the terminal built for AI coding workflows. Real-time token tracking, Claude Code detection, multi-pane workspace — all in one window. Free forever, MIT licensed."
+    />
+    <meta
+      name="robots"
+      content="index, follow, max-image-preview:large, max-snippet:-1"
+    />
+    <link rel="canonical" href="https://terminalos.dev/" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://terminalos.dev/" />
+    <meta
+      property="og:title"
+      content="terminalOS — The Terminal Built for AI-Native builders"
+    />
+    <meta
+      property="og:description"
+      content="Real-time token tracking, Claude Code detection, multi-pane workspace — free forever."
+    />
+    <meta property="og:image" content="https://terminalos.dev/og.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:site_name" content="terminalOS" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta
+      name="twitter:title"
+      content="terminalOS — The Terminal Built for AI-Native builders"
+    />
+    <meta name="twitter:image" content="https://terminalos.dev/og.png" />
+    <meta name="theme-color" content="#000000" />
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/icon-16x16.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/icon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="48x48" href="/icon-48x48.png" />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="128x128"
+      href="/icon-128x128.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="256x256"
+      href="/icon-256x256.png"
+    />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
 
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@300;400;500&family=Geist:wght@300;400;500;600&display=swap"
+      rel="stylesheet"
+    />
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ["Geist", "-apple-system", "sans-serif"],
+              mono: ["Geist Mono", "monospace"],
+            },
+            colors: {
+              ink: "#000000",
+              canvas: "#ffffff",
+              g96: "#f5f5f5",
+              g90: "#e8e8e8",
+              g70: "#b3b3b3",
+              g50: "#808080",
+              g40: "#666666",
+              g30: "#4d4d4d",
+              g20: "#333333",
+              g10: "#1a1a1a",
+              g06: "#0f0f0f",
+              g04: "#0a0a0a",
+            },
+            keyframes: {
+              fadeUp: {
+                from: { opacity: "0", transform: "translateY(18px)" },
+                to: { opacity: "1", transform: "none" },
+              },
+              blink: { "50%": { opacity: "0" } },
+              ticker: {
+                from: { transform: "translateX(0)" },
+                to: { transform: "translateX(-50%)" },
+              },
+            },
+            animation: {
+              blink: "blink 1s step-end infinite",
+              ticker: "ticker 36s linear infinite",
+            },
+          },
+        },
+      };
+    </script>
+
+    <style>
       *,
       *::before,
       *::after {
@@ -14,261 +111,69 @@
         margin: 0;
         padding: 0;
       }
-
-      :root {
-        --black: #000000;
-        --white: #ffffff;
-        --gray-400: #999;
-        --gray-600: #555;
-        --font-sans: "Geist", -apple-system, sans-serif;
-        --font-mono: "Geist Mono", monospace;
-      }
-
       html {
         scroll-behavior: smooth;
       }
-
       body {
-        background: var(--black);
-        color: var(--white);
-        font-family: var(--font-sans);
-        line-height: 1.6;
+        background: #000;
+        color: #fff;
         -webkit-font-smoothing: antialiased;
         overflow-x: hidden;
       }
 
-      /* NAV */
-      nav {
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        z-index: 100;
-        padding: 20px 56px;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-        backdrop-filter: blur(16px);
-        background: rgba(0, 0, 0, 0.75);
+      ::-webkit-scrollbar {
+        width: 4px;
+      }
+      ::-webkit-scrollbar-track {
+        background: #000;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #222;
+        border-radius: 2px;
       }
 
-      .nav-wordmark {
-        font-family: var(--font-mono);
-        font-size: 14px;
-        color: var(--white);
-        letter-spacing: -0.02em;
-      }
-      .nav-wordmark span {
-        color: #333;
-      }
-
-      .nav-links {
-        display: flex;
-        align-items: center;
-        gap: 36px;
-        list-style: none;
-      }
-
-      .nav-links a {
-        color: var(--gray-600);
-        text-decoration: none;
-        font-size: 13px;
-        transition: color 0.2s;
-      }
-      .nav-links a:hover {
-        color: var(--white);
-      }
-
-      .nav-cta {
-        background: var(--white) !important;
-        color: var(--black) !important;
-        padding: 8px 20px;
-        border-radius: 4px;
-        font-weight: 500 !important;
-        transition: opacity 0.2s !important;
-      }
-      .nav-cta:hover {
-        opacity: 0.85;
-      }
-
-      /* HERO */
-      .hero {
-        min-height: 100vh;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        text-align: center;
-        padding: 140px 24px 100px;
-        position: relative;
-      }
-
-      .hero::after {
-        content: "";
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        height: 1px;
-        background: rgba(255, 255, 255, 0.05);
-      }
-
-      .hero-eyebrow {
-        font-family: var(--font-mono);
-        font-size: 11px;
-        color: var(--gray-600);
-        letter-spacing: 0.14em;
-        text-transform: uppercase;
-        margin-bottom: 40px;
-        animation: fadeUp 0.5s ease both;
-      }
-
-      h1 {
-        font-size: clamp(52px, 7.5vw, 108px);
-        font-weight: 300;
-        line-height: 1;
-        letter-spacing: -0.045em;
-        max-width: 880px;
-        margin: 0 auto 32px;
-        animation: fadeUp 0.5s ease 0.08s both;
-      }
-
-      h1 .muted {
-        color: #2a2a2a;
-      }
-
-      .hero-sub {
-        font-size: 17px;
-        color: var(--gray-400);
-        font-weight: 300;
-        max-width: 440px;
-        margin: 0 auto 52px;
-        line-height: 1.75;
-        animation: fadeUp 0.5s ease 0.14s both;
-      }
-
-      .hero-actions {
-        display: flex;
-        align-items: center;
-        gap: 14px;
-        animation: fadeUp 0.5s ease 0.2s both;
-      }
-
-      .btn-primary {
-        background: var(--white);
-        color: var(--black);
-        border: none;
-        padding: 13px 30px;
-        font-size: 14px;
-        font-weight: 500;
-        font-family: var(--font-sans);
-        border-radius: 4px;
-        cursor: pointer;
-        text-decoration: none;
-        transition: opacity 0.2s;
-      }
-      .btn-primary:hover {
-        opacity: 0.85;
-      }
-
-      .btn-ghost {
-        color: var(--gray-600);
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        padding: 13px 30px;
-        font-size: 14px;
-        font-family: var(--font-sans);
-        border-radius: 4px;
-        text-decoration: none;
+      /* Reveal */
+      .reveal {
+        opacity: 0;
+        transform: translateY(18px);
         transition:
-          border-color 0.2s,
-          color 0.2s;
+          opacity 0.65s ease,
+          transform 0.65s ease;
       }
-      .btn-ghost:hover {
-        border-color: rgba(255, 255, 255, 0.25);
-        color: var(--white);
-      }
-
-      /* TERMINAL MOCKUP */
-      .mockup-wrap {
-        padding: 0 48px 0;
-        max-width: 1100px;
-        margin: 0 auto;
-        animation: fadeUp 0.7s ease 0.28s both;
-        position: relative;
-        top: -1px;
+      .reveal.in {
+        opacity: 1;
+        transform: none;
       }
 
-      .terminal-window {
-        background: #080808;
-        border: 1px solid rgba(255, 255, 255, 0.07);
-        border-radius: 10px;
-        overflow: hidden;
+      /* Stagger delays for sibling reveals */
+      .reveal-group .reveal:nth-child(1) {
+        transition-delay: 0ms;
+      }
+      .reveal-group .reveal:nth-child(2) {
+        transition-delay: 60ms;
+      }
+      .reveal-group .reveal:nth-child(3) {
+        transition-delay: 120ms;
+      }
+      .reveal-group .reveal:nth-child(4) {
+        transition-delay: 180ms;
       }
 
-      .t-bar {
-        background: #0f0f0f;
-        padding: 11px 16px;
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      /* Nav blur */
+      .nav-blur {
+        backdrop-filter: blur(18px);
+        -webkit-backdrop-filter: blur(18px);
       }
 
-      .t-dot {
-        width: 10px;
-        height: 10px;
-        border-radius: 50%;
-        background: #1e1e1e;
+      /* Hairline borders */
+      .border-hair {
+        border-color: rgba(255, 255, 255, 0.06);
+      }
+      .border-hair2 {
+        border-color: rgba(255, 255, 255, 0.04);
       }
 
-      .t-tabs {
-        display: flex;
-        gap: 2px;
-        margin-left: 14px;
-      }
-
-      .t-tab {
-        font-family: var(--font-mono);
-        font-size: 11px;
-        color: #3a3a3a;
-        padding: 3px 12px;
-        border-radius: 3px;
-      }
-      .t-tab.active {
-        background: rgba(255, 255, 255, 0.04);
-        color: #666;
-      }
-
-      .t-panes {
-        display: grid;
-        grid-template-columns: 1fr 1px 1fr;
-        min-height: 260px;
-      }
-
-      .t-pane-div {
-        background: rgba(255, 255, 255, 0.05);
-      }
-
-      .t-pane {
-        padding: 20px 22px;
-        font-family: var(--font-mono);
-        font-size: 12px;
-        line-height: 1.9;
-      }
-
-      .tc {
-        color: #555;
-      }
-      .tw {
-        color: #fff;
-      }
-      .td {
-        color: #2e2e2e;
-      }
-      .tg {
-        color: #888;
-      }
+      /* Terminal cursor */
       .t-cursor {
         display: inline-block;
         width: 6px;
@@ -278,387 +183,41 @@
         animation: blink 1s step-end infinite;
       }
 
-      @keyframes blink {
-        50% {
-          opacity: 0;
-        }
+      /* Ticker */
+      .ticker-wrap {
+        overflow: hidden;
       }
-
-      .t-sbar {
-        background: #0c0c0c;
-        border-top: 1px solid rgba(255, 255, 255, 0.05);
-        padding: 7px 20px;
+      .ticker-track {
         display: flex;
-        align-items: center;
-        gap: 0;
-        font-family: var(--font-mono);
-        font-size: 11px;
-        color: #3a3a3a;
+        width: max-content;
+        animation: ticker 36s linear infinite;
+      }
+      .ticker-track:hover {
+        animation-play-state: paused;
       }
 
-      .t-sitem {
-        color: #666;
-        padding: 0 16px 0 0;
-      }
-      .t-sval {
-        color: #ccc;
-      }
-      .t-sval.hi {
-        color: var(--white);
-      }
-      .t-sdiv {
-        color: #1e1e1e;
-        padding-right: 16px;
-      }
-
-      /* GAINS — main value section */
-      .gains {
-        padding: 160px 56px;
-        max-width: 1100px;
-        margin: 0 auto;
-      }
-
-      .gains-header {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 80px;
-        align-items: end;
-        margin-bottom: 100px;
-      }
-
-      .gains-label {
-        font-family: var(--font-mono);
-        font-size: 11px;
-        color: var(--gray-600);
-        letter-spacing: 0.12em;
-        text-transform: uppercase;
-        margin-bottom: 24px;
-      }
-
-      .gains-header h2 {
-        font-size: clamp(36px, 4.5vw, 58px);
+      /* Stat number */
+      .stat-num {
+        font-family: "Geist", sans-serif;
+        font-size: clamp(32px, 4vw, 48px);
         font-weight: 300;
-        letter-spacing: -0.035em;
-        line-height: 1.08;
-      }
-
-      .gains-header p {
-        font-size: 15px;
-        color: var(--gray-400);
-        line-height: 1.8;
-        font-weight: 300;
-        padding-top: 8px;
-      }
-
-      .gain-list {
-        display: flex;
-        flex-direction: column;
-        gap: 1px;
-        background: rgba(255, 255, 255, 0.05);
-        border: 1px solid rgba(255, 255, 255, 0.05);
-      }
-
-      .gain-item {
-        background: var(--black);
-        display: grid;
-        grid-template-columns: 80px 1fr 1fr;
-        align-items: start;
-        gap: 0;
-        transition: background 0.25s;
-      }
-      .gain-item:hover {
-        background: #060606;
-      }
-
-      .gain-num {
-        font-family: var(--font-mono);
-        font-size: 11px;
-        color: #2a2a2a;
-        padding: 36px 0 36px 36px;
-        padding-right: 0;
+        letter-spacing: -0.04em;
+        color: #fff;
         line-height: 1;
-        padding-top: 38px;
       }
 
-      .gain-title {
-        font-size: 17px;
-        font-weight: 400;
-        letter-spacing: -0.02em;
-        padding: 36px 40px 36px 0;
-        line-height: 1.4;
-        border-right: 1px solid rgba(255, 255, 255, 0.04);
-      }
-
-      .gain-body {
-        font-size: 13px;
-        color: var(--gray-400);
-        font-weight: 300;
-        line-height: 1.8;
-        padding: 36px 36px;
-      }
-
-      /* COMPARE */
-      .compare {
-        padding: 160px 56px;
-        max-width: 1100px;
-        margin: 0 auto;
-        border-top: 1px solid rgba(255, 255, 255, 0.05);
-      }
-
-      .compare h2 {
-        font-size: clamp(36px, 4.5vw, 58px);
-        font-weight: 300;
-        letter-spacing: -0.035em;
-        line-height: 1.08;
-        max-width: 600px;
-        margin-bottom: 64px;
-      }
-
-      .compare h2 em {
-        font-style: normal;
-        color: var(--gray-600);
-      }
-
-      .compare-table {
-        width: 100%;
-        border-collapse: collapse;
-      }
-
-      .compare-table th {
-        text-align: left;
-        padding: 10px 20px;
-        font-size: 11px;
-        font-family: var(--font-mono);
-        font-weight: 400;
-        color: #333;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-        letter-spacing: 0.06em;
-      }
-
-      .compare-table th.hl {
-        color: var(--white);
-      }
-
-      .compare-table td {
-        padding: 15px 20px;
-        border-bottom: 1px solid rgba(255, 255, 255, 0.03);
-        font-size: 13px;
-        color: #444;
-      }
-
-      .compare-table td:first-child {
-        color: var(--gray-400);
-        font-size: 14px;
-      }
-
-      .chk {
-        color: var(--white);
-        font-size: 15px;
-      }
-      .nope {
-        color: #1e1e1e;
-        font-size: 15px;
-      }
-      .part {
-        color: #444;
-        font-family: var(--font-mono);
-        font-size: 11px;
-      }
-
-      /* SHORTCUTS */
-      .shortcuts {
-        padding: 160px 56px;
-        max-width: 1100px;
-        margin: 0 auto;
-        border-top: 1px solid rgba(255, 255, 255, 0.05);
-      }
-
-      .shortcuts h2 {
-        font-size: clamp(28px, 3.5vw, 44px);
-        font-weight: 300;
-        letter-spacing: -0.03em;
-        margin-bottom: 48px;
-      }
-
-      .sc-grid {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 1px;
-        background: rgba(255, 255, 255, 0.05);
-        border: 1px solid rgba(255, 255, 255, 0.05);
-      }
-
-      .sc-row {
-        background: var(--black);
-        padding: 15px 24px;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        transition: background 0.2s;
-      }
-      .sc-row:hover {
-        background: #060606;
-      }
-
-      .sc-action {
-        font-size: 13px;
-        color: var(--gray-400);
-      }
-      .sc-key {
-        font-family: var(--font-mono);
-        font-size: 11px;
-        color: #888;
-        background: rgba(255, 255, 255, 0.04);
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        border-radius: 3px;
-        padding: 3px 10px;
-      }
-
-      /* INSTALL */
-      .install {
-        padding: 160px 56px;
-        max-width: 1100px;
-        margin: 0 auto;
-        border-top: 1px solid rgba(255, 255, 255, 0.05);
-      }
-
-      .install-grid {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 1px;
-        background: rgba(255, 255, 255, 0.05);
-        border: 1px solid rgba(255, 255, 255, 0.05);
-        margin-top: 48px;
-      }
-
-      .install-cell {
-        background: var(--black);
-        padding: 36px;
-        transition: background 0.2s;
-      }
-      .install-cell:hover {
-        background: #060606;
-      }
-
-      .install-platform {
-        font-size: 16px;
-        font-weight: 400;
-        margin-bottom: 6px;
-      }
-      .install-fmt {
-        font-family: var(--font-mono);
-        font-size: 11px;
-        color: #333;
-        margin-bottom: 24px;
-      }
-
-      .install-btn {
-        display: inline-block;
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: 4px;
-        padding: 8px 16px;
-        font-size: 12px;
-        font-family: var(--font-mono);
-        color: var(--gray-600);
-        text-decoration: none;
-        transition:
-          border-color 0.2s,
-          color 0.2s;
-      }
-      .install-btn:hover {
-        border-color: rgba(255, 255, 255, 0.35);
-        color: var(--white);
-      }
-
-      .code-block {
-        background: #060606;
-        border: 1px solid rgba(255, 255, 255, 0.05);
-        border-radius: 6px;
-        padding: 28px 32px;
-        font-family: var(--font-mono);
-        font-size: 12px;
-        color: #444;
-        line-height: 2.1;
-        margin-top: 32px;
-      }
-      .code-block .cmd {
-        color: var(--white);
-      }
-      .code-block .cmt {
-        color: #252525;
-      }
-
-      /* CTA */
-      .cta {
-        padding: 180px 56px;
-        text-align: center;
-        border-top: 1px solid rgba(255, 255, 255, 0.05);
-        position: relative;
-      }
-
-      .cta::before {
-        content: "";
-        position: absolute;
-        top: 0;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 500px;
+      /* Gradient divider */
+      .grad-line {
         height: 1px;
         background: linear-gradient(
           90deg,
           transparent,
-          rgba(255, 255, 255, 0.12),
+          rgba(255, 255, 255, 0.1),
           transparent
         );
       }
 
-      .cta h2 {
-        font-size: clamp(44px, 6.5vw, 88px);
-        font-weight: 300;
-        letter-spacing: -0.045em;
-        line-height: 1;
-        max-width: 720px;
-        margin: 0 auto 20px;
-      }
-
-      .cta-sub {
-        font-family: var(--font-mono);
-        font-size: 11px;
-        color: #333;
-        margin-bottom: 52px;
-        letter-spacing: 0.06em;
-      }
-
-      footer {
-        padding: 28px 56px;
-        border-top: 1px solid rgba(255, 255, 255, 0.04);
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-      }
-
-      .footer-wm {
-        font-family: var(--font-mono);
-        font-size: 12px;
-        color: #222;
-      }
-
-      .footer-links {
-        display: flex;
-        gap: 28px;
-        list-style: none;
-      }
-      .footer-links a {
-        color: #333;
-        text-decoration: none;
-        font-size: 12px;
-        font-family: var(--font-mono);
-        transition: color 0.2s;
-      }
-      .footer-links a:hover {
-        color: var(--white);
-      }
-
+      /* Hero animations — fired immediately on load */
       @keyframes fadeUp {
         from {
           opacity: 0;
@@ -669,484 +228,1658 @@
           transform: none;
         }
       }
-
-      .reveal {
-        opacity: 0;
-        transform: translateY(20px);
-        transition:
-          opacity 0.65s ease,
-          transform 0.65s ease;
+      .h-anim-1 {
+        animation: fadeUp 0.55s ease both;
       }
-      .reveal.in {
-        opacity: 1;
-        transform: none;
+      .h-anim-2 {
+        animation: fadeUp 0.55s 0.09s ease both;
+      }
+      .h-anim-3 {
+        animation: fadeUp 0.55s 0.17s ease both;
+      }
+      .h-anim-4 {
+        animation: fadeUp 0.55s 0.25s ease both;
+      }
+      .h-anim-5 {
+        animation: fadeUp 0.65s 0.32s ease both;
       }
 
-      @media (max-width: 800px) {
-        nav,
-        .mockup-wrap,
-        .gains,
-        .compare,
-        .shortcuts,
-        .install,
-        .cta,
-        footer {
-          padding-left: 24px;
-          padding-right: 24px;
-        }
-        .gains-header {
-          grid-template-columns: 1fr;
-          gap: 32px;
-        }
-        .gain-item {
-          grid-template-columns: 48px 1fr;
-        }
-        .gain-body {
-          display: none;
-        }
-        .sc-grid,
-        .install-grid {
-          grid-template-columns: 1fr;
-        }
-        .t-panes {
-          grid-template-columns: 1fr;
-        }
-        .t-pane-div {
-          display: none;
-        }
-        .compare-table th:nth-child(n + 3),
-        .compare-table td:nth-child(n + 3) {
-          display: none;
-        }
+      /* Focus ring */
+      :focus-visible {
+        outline: 2px solid rgba(255, 255, 255, 0.5);
+        outline-offset: 3px;
+        border-radius: 2px;
       }
     </style>
+
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "terminalOS",
+        "applicationCategory": "DeveloperApplication",
+        "operatingSystem": "macOS, Windows, Linux",
+        "url": "https://terminalos.dev/",
+        "softwareVersion": "0.2.0",
+        "description": "Terminal multiplexer purpose-built for AI coding workflows.",
+        "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+        "featureList": [
+          "Real-time token tracking",
+          "Claude Code detection",
+          "Multi-pane workspace",
+          "Integrated markdown editor",
+          "API error alerts",
+          "Saved workspace layouts"
+        ]
+      }
+    </script>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "Does terminalOS require an API key?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "No. Token usage is parsed directly from CLI output — no API key, no external service."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Is terminalOS free?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Yes. Free forever under the MIT license. No account required."
+            }
+          },
+          {
+            "@type": "Question",
+            "name": "Which AI tools does terminalOS support?",
+            "acceptedAnswer": {
+              "@type": "Answer",
+              "text": "Claude Code, OpenCode, Aider, and Continue. Compatible with any CLI-based AI coding tool."
+            }
+          }
+        ]
+      }
+    </script>
   </head>
-  <body>
-    <nav>
-      <div class="nav-wordmark">terminal<span>OS</span></div>
-      <ul class="nav-links">
-        <li><a href="#gains">Features</a></li>
-        <li><a href="#compare">Compare</a></li>
-        <li><a href="#install">Install</a></li>
-        <li><a href="#install" class="nav-cta">Download</a></li>
-      </ul>
-    </nav>
 
-    <!-- HERO -->
-    <section class="hero">
-      <h1>Everything in one place.<br /><span class="muted">Finally.</span></h1>
-      <p class="hero-sub">
-        Code, docs, AI sessions, and your file tree — all in a single window,
-        organized the way you actually work.
-      </p>
-      <div class="hero-actions">
-        <a href="#install" class="btn-primary">Download free</a>
-        <a href="#gains" class="btn-ghost">See what's possible</a>
-      </div>
-    </section>
-
-    <!-- TERMINAL MOCKUP -->
-    <div class="mockup-wrap">
-      <div class="terminal-window">
-        <div class="t-bar">
-          <span class="t-dot"></span><span class="t-dot"></span
-          ><span class="t-dot"></span>
-          <div class="t-tabs">
-            <div class="t-tab active">~/auth-refactor</div>
-            <div class="t-tab">~/api-service</div>
-            <div class="t-tab">notes.md</div>
-          </div>
-        </div>
-        <div class="t-panes">
-          <div class="t-pane">
-            <div>
-              <span class="tc">$ </span><span class="tw">claude code</span>
-            </div>
-            <div class="tg">Working on AuthService.ts...</div>
-            <div class="tc">Reading 4 files</div>
-            <div class="tc">Analyzing token flow</div>
-            <div>&nbsp;</div>
-            <div>
-              <span class="tg">tokens used: 12,841 · </span
-              ><span class="tw">$0.038</span>
-            </div>
-            <div>&nbsp;</div>
-            <div class="tg">✓ Done. 3 files modified.</div>
-            <div><span class="tc">$ </span><span class="t-cursor"></span></div>
-          </div>
-          <div class="t-pane-div"></div>
-          <div class="t-pane">
-            <div>
-              <span class="tc">$ </span
-              ><span class="tw">npm test -- --watch</span>
-            </div>
-            <div>&nbsp;</div>
-            <div class="tg">PASS AuthService.test.ts</div>
-            <div class="tg">PASS TokenManager.test.ts</div>
-            <div class="tg">PASS middleware.test.ts</div>
-            <div>&nbsp;</div>
-            <div class="tg">24 passed · 1.84s</div>
-            <div>&nbsp;</div>
-            <div class="td">Watching for changes...</div>
-          </div>
-        </div>
-        <div class="t-sbar">
-          <span class="t-sitem"
-            >AI running <span class="t-sval">Claude Code</span></span
-          >
-          <span class="t-sdiv">·</span>
-          <span class="t-sitem"
-            >Session <span class="t-sval">12,841 tok</span></span
-          >
-          <span class="t-sdiv">·</span>
-          <span class="t-sitem"
-            >Cost <span class="t-sval hi">$0.038</span></span
-          >
-          <span class="t-sdiv">·</span>
-          <span class="t-sitem"
-            >Branch <span class="t-sval">feat/auth-refactor</span></span
-          >
-          <span class="t-sdiv">·</span>
-          <span class="t-sitem">conda <span class="t-sval">dev</span></span>
-        </div>
-      </div>
+  <body class="font-sans">
+    <!-- ─── ANNOUNCEMENT BAR ─────────────────────────────── -->
+    <div
+      class="bg-white text-black text-center py-2.5 px-4"
+      style="font-size: 12px; font-weight: 500; letter-spacing: 0.01em"
+    >
+      🚀&nbsp; terminalOS v0.2.0 — real-time token tracking for
+      Claude&nbsp;Code, Aider &amp; OpenCode.
+      <a
+        href="#install"
+        class="underline underline-offset-2 ml-1 hover:opacity-60 transition-opacity"
+        >Download free →</a
+      >
     </div>
 
-    <!-- GAINS -->
-    <section class="gains" id="gains">
-      <div class="gains-header reveal">
-        <div>
-          <p class="gains-label">What you get</p>
-          <h2>The workspace AI-native development demands.</h2>
-        </div>
-        <p>
-          You already moved to AI-first development. Your tools should have too.
-          terminalOS is the first terminal designed around how you actually work
-          — not how developers worked in 1988.
-        </p>
-      </div>
-
-      <div class="gain-list">
-        <div class="gain-item reveal">
-          <div class="gain-num">01</div>
-          <div class="gain-title">Every window, one place</div>
-          <div class="gain-body">
-            Split your workspace however you need — AI session on the left, test
-            runner on the right, docs below. All in a single window. Your layout
-            is saved automatically and restored exactly on every launch. No more
-            hunting across a dozen tabs.
-          </div>
-        </div>
-
-        <div class="gain-item reveal">
-          <div class="gain-num">02</div>
-          <div class="gain-title">Know what your AI is spending</div>
-          <div class="gain-body">
-            Token counts and real USD costs surface in your status bar as you
-            work — per session and across your entire workspace. No API key
-            required. No third-party service. No bill shock at the end of the
-            month.
-          </div>
-        </div>
-
-        <div class="gain-item reveal">
-          <div class="gain-num">03</div>
-          <div class="gain-title">
-            Files and docs without leaving the terminal
-          </div>
-          <div class="gain-body">
-            A built-in editor with live markdown preview, syntax highlighting
-            for 25+ languages, and a full file browser — all inside the same
-            window. Review AI-generated docs, edit prompts, rename files,
-            without touching another app.
-          </div>
-        </div>
-
-        <div class="gain-item reveal">
-          <div class="gain-num">04</div>
-          <div class="gain-title">Always know where you are</div>
-          <div class="gain-body">
-            Your current folder, git branch, conda environment, and working
-            directory are always visible in the status bar. Ten recent
-            workspaces a keystroke away. Context switching ends when you know
-            your context at a glance.
-          </div>
-        </div>
-
-        <div class="gain-item reveal">
-          <div class="gain-num">05</div>
-          <div class="gain-title">Launch AI tools in one keystroke</div>
-          <div class="gain-body">
-            Open Claude Code, OpenCode, or Aider from the command palette
-            without typing a command. terminalOS detects when AI is running and
-            shows a live status — so you always know if it's still thinking or
-            waiting for you.
-          </div>
-        </div>
-
-        <div class="gain-item reveal">
-          <div class="gain-num">06</div>
-          <div class="gain-title">Errors you catch before they cost you</div>
-          <div class="gain-body">
-            Invalid API keys, auth conflicts, and model errors are surfaced as
-            visual alerts the moment they happen — not discovered after 10
-            minutes of a silent session that was failing the entire time.
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- COMPARE -->
-    <section class="compare" id="compare">
-      <h2 class="reveal">
-        Others added AI to a terminal.<br />We built one <em>for</em> it.
-      </h2>
-      <div class="reveal">
-        <table class="compare-table">
-          <thead>
-            <tr>
-              <th></th>
-              <th class="hl">terminalOS</th>
-              <th>iTerm2 / Warp</th>
-              <th>VS Code</th>
-              <th>Cursor</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>Everything in one window</td>
-              <td><span class="chk">✓</span></td>
-              <td><span class="nope">✗</span></td>
-              <td><span class="part">partial</span></td>
-              <td><span class="part">partial</span></td>
-            </tr>
-            <tr>
-              <td>Real-time token & cost tracking</td>
-              <td><span class="chk">✓</span></td>
-              <td><span class="nope">✗</span></td>
-              <td><span class="nope">✗</span></td>
-              <td><span class="nope">✗</span></td>
-            </tr>
-            <tr>
-              <td>Live AI session detection</td>
-              <td><span class="chk">✓</span></td>
-              <td><span class="nope">✗</span></td>
-              <td><span class="nope">✗</span></td>
-              <td><span class="part">partial</span></td>
-            </tr>
-            <tr>
-              <td>Saved & restored layouts</td>
-              <td><span class="chk">✓</span></td>
-              <td><span class="nope">✗</span></td>
-              <td><span class="nope">✗</span></td>
-              <td><span class="nope">✗</span></td>
-            </tr>
-            <tr>
-              <td>Built-in file editor + preview</td>
-              <td><span class="chk">✓</span></td>
-              <td><span class="nope">✗</span></td>
-              <td><span class="part">extension</span></td>
-              <td><span class="nope">✗</span></td>
-            </tr>
-            <tr>
-              <td>Works with any AI tool</td>
-              <td><span class="chk">✓</span></td>
-              <td>—</td>
-              <td>—</td>
-              <td><span class="part">locked in</span></td>
-            </tr>
-            <tr>
-              <td>API error alerts</td>
-              <td><span class="chk">✓</span></td>
-              <td><span class="nope">✗</span></td>
-              <td><span class="nope">✗</span></td>
-              <td><span class="nope">✗</span></td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </section>
-
-    <!-- SHORTCUTS -->
-    <section class="shortcuts">
-      <h2 class="reveal">Designed to stay out of your way.</h2>
-      <div class="sc-grid reveal">
-        <div class="sc-row">
-          <span class="sc-action">Open command palette</span
-          ><span class="sc-key">⌘K</span>
-        </div>
-        <div class="sc-row">
-          <span class="sc-action">Split pane right</span
-          ><span class="sc-key">⌘D</span>
-        </div>
-        <div class="sc-row">
-          <span class="sc-action">Split pane below</span
-          ><span class="sc-key">⌘⇧D</span>
-        </div>
-        <div class="sc-row">
-          <span class="sc-action">New workspace tab</span
-          ><span class="sc-key">⌘T</span>
-        </div>
-        <div class="sc-row">
-          <span class="sc-action">Launch Claude Code</span
-          ><span class="sc-key">⌘⇧C</span>
-        </div>
-        <div class="sc-row">
-          <span class="sc-action">Launch OpenCode</span
-          ><span class="sc-key">⌘⇧O</span>
-        </div>
-        <div class="sc-row">
-          <span class="sc-action">Open file editor</span
-          ><span class="sc-key">⌘M</span>
-        </div>
-        <div class="sc-row">
-          <span class="sc-action">Open folder</span
-          ><span class="sc-key">⌘O</span>
-        </div>
-        <div class="sc-row">
-          <span class="sc-action">Close active pane</span
-          ><span class="sc-key">⌘W</span>
-        </div>
-        <div class="sc-row">
-          <span class="sc-action">Save file</span><span class="sc-key">⌘S</span>
-        </div>
-      </div>
-      <p
-        class="reveal"
-        style="
-          margin-top: 14px;
-          font-family: var(--font-mono);
-          font-size: 11px;
-          color: #2a2a2a;
-        "
+    <!-- ─── NAV ──────────────────────────────────────────── -->
+    <header
+      class="sticky top-0 z-50 nav-blur border-b border-hair"
+      style="background: rgba(0, 0, 0, 0.82)"
+    >
+      <nav
+        class="max-w-6xl mx-auto px-6 h-14 flex items-center justify-between"
+        aria-label="Main navigation"
       >
-        Windows / Linux: replace ⌘ with Ctrl
-      </p>
-    </section>
+        <a
+          href="/"
+          class="font-mono text-sm text-white tracking-tight shrink-0"
+          aria-label="terminalOS home"
+        >
+          terminal<span class="text-g20">OS</span>
+        </a>
 
-    <!-- INSTALL -->
-    <section class="install" id="install">
-      <p class="gains-label reveal">Get started</p>
-      <div class="install-grid reveal">
-        <div class="install-cell">
-          <div class="install-platform">macOS</div>
-          <div class="install-fmt">Apple Silicon (arm64)</div>
-          <a href="/downloads/terminalOS-0.2.0-arm64.dmg" class="install-btn">Download .dmg</a>
-        </div>
-        <div class="install-cell">
-          <div class="install-platform">macOS</div>
-          <div class="install-fmt">Intel (x64)</div>
-          <a href="/downloads/terminalOS-0.2.0.dmg" class="install-btn">Download .dmg</a>
-        </div>
-        <div class="install-cell">
-          <div class="install-platform">Windows</div>
-          <div class="install-fmt">NSIS installer</div>
-          <a href="/downloads/terminalOS Setup 0.2.0.exe" class="install-btn">Download .exe</a>
-        </div>
+        <ul
+          class="hidden md:flex items-center gap-8 list-none"
+          style="font-size: 13px"
+        >
+          <li>
+            <a
+              href="#features"
+              class="text-g40 hover:text-white transition-colors duration-150"
+              >Features</a
+            >
+          </li>
+          <li>
+            <a
+              href="#compare"
+              class="text-g40 hover:text-white transition-colors duration-150"
+              >Compare</a
+            >
+          </li>
+          <li>
+            <a
+              href="#install"
+              class="text-g40 hover:text-white transition-colors duration-150"
+              >Install</a
+            >
+          </li>
+        </ul>
+
+        <a
+          href="#install"
+          id="nav-dl"
+          class="hidden md:inline-flex items-center gap-2 bg-white text-black font-medium rounded px-5 py-2 hover:opacity-85 transition-opacity shrink-0"
+          style="font-size: 13px"
+        >
+          Download free
+        </a>
+
+        <button
+          onclick="document.getElementById('mob').classList.toggle('hidden')"
+          class="md:hidden text-g40 hover:text-white p-1"
+          aria-label="Open menu"
+          aria-expanded="false"
+          onclick="
+            this.setAttribute(
+              'aria-expanded',
+              this.getAttribute('aria-expanded') === 'true' ? 'false' : 'true',
+            )
+          "
+        >
+          <svg
+            width="20"
+            height="20"
+            fill="none"
+            viewBox="0 0 20 20"
+            aria-hidden="true"
+          >
+            <path
+              d="M3 5h14M3 10h14M3 15h14"
+              stroke="currentColor"
+              stroke-width="1.5"
+              stroke-linecap="round"
+            />
+          </svg>
+        </button>
+      </nav>
+
+      <div
+        id="mob"
+        class="hidden md:hidden px-6 pb-5 pt-3 flex flex-col gap-4 border-t border-hair"
+        style="background: #000; font-size: 14px"
+      >
+        <a href="#features" class="text-g40 hover:text-white transition-colors"
+          >Features</a
+        >
+        <a href="#compare" class="text-g40 hover:text-white transition-colors"
+          >Compare</a
+        >
+        <a href="#install" class="text-g40 hover:text-white transition-colors"
+          >Install</a
+        >
+        <a
+          href="#install"
+          class="bg-white text-black font-medium rounded px-4 py-2.5 text-center text-sm"
+          >Download free</a
+        >
       </div>
-      <div class="code-block reveal">
-        <div>
-          <span class="cmt"># Build from source — Node.js 18+, npm 9+</span>
-        </div>
-        <div>
-          <span class="cmd"
-            >git clone https://github.com/your-org/terminalOS</span
+    </header>
+
+    <main id="main-content">
+      <!-- ─── HERO ──────────────────────────────────────── -->
+      <section
+        class="relative flex flex-col items-center justify-center text-center px-6 pt-28 pb-24 overflow-hidden"
+        aria-labelledby="hero-heading"
+      >
+        <!-- Radial glow -->
+        <div
+          class="absolute inset-0 pointer-events-none"
+          style="
+            background: radial-gradient(
+              ellipse 80% 50% at 50% 0%,
+              rgba(255, 255, 255, 0.04) 0%,
+              transparent 70%
+            );
+          "
+          aria-hidden="true"
+        ></div>
+
+        <!-- Eyebrow -->
+        <div
+          class="h-anim-1 inline-flex items-center gap-2 border border-hair rounded-full px-4 py-1.5 mb-10"
+          style="font-size: 11px"
+        >
+          <span class="font-mono text-g40 tracking-widest uppercase"
+            >v0.2.0</span
+          >
+          <span class="text-g20">·</span>
+          <span class="font-mono text-g40 tracking-widest uppercase"
+            >Free &amp; open source</span
           >
         </div>
-        <div>
-          <span class="cmd"
-            >cd terminalOS && npm install && npm run rebuild</span
+
+        <!-- Headline -->
+        <h1
+          class="h-anim-2 text-white font-light leading-none max-w-4xl mx-auto mb-8"
+          style="font-size: clamp(52px, 7.5vw, 108px); letter-spacing: -0.045em"
+          id="hero-heading"
+        >
+          Your terminal finally<br />
+          <span style="color: #222">understands AI.</span>
+        </h1>
+
+        <!-- Sub -->
+        <p
+          class="h-anim-3 text-g50 font-light max-w-[440px] mx-auto mb-12 leading-relaxed"
+          style="font-size: 17px"
+        >
+          Stop duct-taping Claude Code sessions across windows. Real-time token
+          costs, live AI detection, and a workspace built for how you actually
+          work — all in one place.
+        </p>
+
+        <!-- CTAs -->
+        <div
+          class="h-anim-4 flex flex-wrap items-center justify-center gap-3 mb-5"
+        >
+          <a
+            href="#install"
+            id="hero-dl"
+            class="inline-flex items-center gap-2 bg-white text-black font-medium rounded px-7 py-3.5 hover:opacity-85 transition-opacity"
+            style="font-size: 14px"
           >
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 14 14"
+              fill="none"
+              aria-hidden="true"
+            >
+              <path
+                d="M7 1v9M3 8l4 4 4-4"
+                stroke="currentColor"
+                stroke-width="1.7"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+            Download free
+          </a>
+          <a
+            href="#features"
+            class="inline-flex items-center gap-2 text-g40 border border-hair rounded px-7 py-3.5 hover:border-white/25 hover:text-white transition-all duration-150"
+            style="font-size: 14px"
+          >
+            See what's inside
+            <svg
+              width="13"
+              height="13"
+              viewBox="0 0 13 13"
+              fill="none"
+              aria-hidden="true"
+            >
+              <path
+                d="M2 6.5h9M6.5 2l4.5 4.5L6.5 11"
+                stroke="currentColor"
+                stroke-width="1.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+          </a>
         </div>
-        <div>
-          <span class="cmd">npm run dist</span
-          ><span class="cmt"> # package for your platform</span>
+
+        <!-- Trust micro-copy -->
+        <p class="h-anim-4 font-mono text-g30 mb-14" style="font-size: 11px">
+          No account required &nbsp;·&nbsp; MIT License &nbsp;·&nbsp; macOS ·
+          Windows · Linux
+        </p>
+
+        <!-- Terminal mockup -->
+        <div class="h-anim-5 w-full max-w-5xl mx-auto">
+          <div
+            class="rounded-xl overflow-hidden border border-hair"
+            style="
+              background: #080808;
+              box-shadow:
+                0 32px 80px rgba(0, 0, 0, 0.85),
+                0 2px 0 rgba(255, 255, 255, 0.04) inset;
+            "
+          >
+            <!-- Window chrome -->
+            <div
+              class="flex items-center gap-1.5 px-4 py-3 border-b border-hair"
+              style="background: #0f0f0f"
+              aria-hidden="true"
+            >
+              <span
+                class="w-2.5 h-2.5 rounded-full"
+                style="background: #2a0000"
+              ></span>
+              <span
+                class="w-2.5 h-2.5 rounded-full"
+                style="background: #2a2000"
+              ></span>
+              <span
+                class="w-2.5 h-2.5 rounded-full"
+                style="background: #002a00"
+              ></span>
+              <div class="flex gap-0.5 ml-3">
+                <div
+                  class="font-mono px-3 py-0.5 rounded text-xs"
+                  style="background: rgba(255, 255, 255, 0.04); color: #666"
+                >
+                  ~/auth-refactor
+                </div>
+                <div class="font-mono px-3 py-0.5 rounded text-xs text-g20">
+                  ~/api-service
+                </div>
+                <div class="font-mono px-3 py-0.5 rounded text-xs text-g20">
+                  notes.md
+                </div>
+              </div>
+            </div>
+
+            <!-- Panes -->
+            <div
+              class="grid grid-cols-1 md:grid-cols-2 md:divide-x divide-white/5"
+              style="min-height: 240px"
+            >
+              <div
+                class="font-mono p-5 leading-loose"
+                style="font-size: 11.5px"
+              >
+                <div>
+                  <span class="text-g30">$ </span
+                  ><span class="text-white">claude code</span>
+                </div>
+                <div class="text-g50">
+                  &nbsp;&nbsp;Working on AuthService.ts...
+                </div>
+                <div class="text-g30">&nbsp;&nbsp;Reading 4 files</div>
+                <div class="text-g30">&nbsp;&nbsp;Analyzing token flow</div>
+                <div>&nbsp;</div>
+                <div>
+                  <span class="text-g50">tokens used: 12,841 · </span
+                  ><span class="text-white font-medium">$0.038</span>
+                </div>
+                <div>&nbsp;</div>
+                <div class="text-g50">✓ Done. 3 files modified.</div>
+                <div>
+                  <span class="text-g30">$ </span
+                  ><span class="t-cursor" aria-hidden="true"></span>
+                </div>
+              </div>
+              <div
+                class="font-mono p-5 leading-loose hidden md:block"
+                style="font-size: 11.5px"
+              >
+                <div>
+                  <span class="text-g30">$ </span
+                  ><span class="text-white">npm test -- --watch</span>
+                </div>
+                <div>&nbsp;</div>
+                <div class="text-g50">&nbsp;PASS&nbsp; AuthService.test.ts</div>
+                <div class="text-g50">
+                  &nbsp;PASS&nbsp; TokenManager.test.ts
+                </div>
+                <div class="text-g50">&nbsp;PASS&nbsp; middleware.test.ts</div>
+                <div>&nbsp;</div>
+                <div class="text-g50">24 passed · 1.84s</div>
+                <div>&nbsp;</div>
+                <div style="color: #1e1e1e">Watching for changes...</div>
+              </div>
+            </div>
+
+            <!-- Status bar -->
+            <div
+              class="font-mono flex flex-wrap items-center gap-y-1 px-5 py-2 border-t border-hair overflow-x-auto"
+              style="background: #0c0c0c; font-size: 11px"
+              aria-label="Terminal status bar"
+              role="status"
+            >
+              <span class="text-g40 pr-4"
+                >AI running <span class="text-g70">Claude Code</span></span
+              >
+              <span class="text-g10 pr-4" aria-hidden="true">·</span>
+              <span class="text-g40 pr-4"
+                >Session <span class="text-g70">12,841 tok</span></span
+              >
+              <span class="text-g10 pr-4" aria-hidden="true">·</span>
+              <span class="text-g40 pr-4"
+                >Cost <span class="text-white font-medium">$0.038</span></span
+              >
+              <span class="text-g10 pr-4" aria-hidden="true">·</span>
+              <span class="text-g40 pr-4"
+                >Branch <span class="text-g70">feat/auth-refactor</span></span
+              >
+              <span class="text-g10 pr-4" aria-hidden="true">·</span>
+              <span class="text-g40"
+                >conda <span class="text-g70">dev</span></span
+              >
+            </div>
+          </div>
         </div>
-        <div>&nbsp;</div>
-        <div>
-          <span class="cmd">npm run dev</span
-          ><span class="cmt"> # hot reload dev environment</span>
+      </section>
+
+      <!-- ─── TICKER ────────────────────────────────────── -->
+      <div
+        class="ticker-wrap border-y border-hair"
+        style="background: #080808; padding: 13px 0"
+        aria-hidden="true"
+      >
+        <div class="ticker-track">
+          <div
+            class="flex items-center gap-10 px-8 font-mono text-g20 whitespace-nowrap"
+            style="font-size: 11px"
+          >
+            <span>Claude Code</span><span class="text-g10">·</span
+            ><span>Aider</span><span class="text-g10">·</span
+            ><span>OpenCode</span><span class="text-g10">·</span
+            ><span>Continue</span><span class="text-g10">·</span
+            ><span>macOS Apple Silicon</span><span class="text-g10">·</span
+            ><span>macOS Intel</span><span class="text-g10">·</span
+            ><span>Windows 10/11</span><span class="text-g10">·</span
+            ><span>Linux AppImage</span><span class="text-g10">·</span
+            ><span>XTerm.js 5.3</span><span class="text-g10">·</span
+            ><span>node-pty</span><span class="text-g10">·</span
+            ><span>Electron 33</span><span class="text-g10">·</span
+            ><span>React 19</span><span class="text-g10">·</span
+            ><span>MIT License</span><span class="text-g10">·</span
+            ><span>Free Forever</span><span class="text-g10">·</span>
+          </div>
+          <div
+            class="flex items-center gap-10 px-8 font-mono text-g20 whitespace-nowrap"
+            style="font-size: 11px"
+            aria-hidden="true"
+          >
+            <span>Claude Code</span><span class="text-g10">·</span
+            ><span>Aider</span><span class="text-g10">·</span
+            ><span>OpenCode</span><span class="text-g10">·</span
+            ><span>Continue</span><span class="text-g10">·</span
+            ><span>macOS Apple Silicon</span><span class="text-g10">·</span
+            ><span>macOS Intel</span><span class="text-g10">·</span
+            ><span>Windows 10/11</span><span class="text-g10">·</span
+            ><span>Linux AppImage</span><span class="text-g10">·</span
+            ><span>XTerm.js 5.3</span><span class="text-g10">·</span
+            ><span>node-pty</span><span class="text-g10">·</span
+            ><span>Electron 33</span><span class="text-g10">·</span
+            ><span>React 19</span><span class="text-g10">·</span
+            ><span>MIT License</span><span class="text-g10">·</span
+            ><span>Free Forever</span><span class="text-g10">·</span>
+          </div>
         </div>
       </div>
-    </section>
 
-    <!-- CTA -->
-    <section class="cta">
-      <h2 class="reveal">Stop context switching.<br />Start shipping.</h2>
-      <p class="cta-sub reveal">v0.2.0 · MIT License · Free forever</p>
-      <div class="reveal">
-        <a href="#install" class="btn-primary">Download terminalOS</a>
-      </div>
-    </section>
+      <!-- ─── PAIN → SOLUTION ───────────────────────────── -->
+      <section
+        class="max-w-6xl mx-auto px-6 py-28"
+        aria-label="Problem and solution"
+      >
+        <div
+          class="reveal grid md:grid-cols-2 gap-px border border-hair rounded-xl overflow-hidden"
+          style="background: rgba(255, 255, 255, 0.05)"
+        >
+          <div class="p-10 md:p-12" style="background: #000">
+            <p
+              class="font-mono text-g30 uppercase tracking-widest mb-6"
+              style="font-size: 10px"
+            >
+              The problem
+            </p>
+            <h2
+              class="text-white font-light leading-tight mb-8"
+              style="
+                font-size: clamp(24px, 2.8vw, 34px);
+                letter-spacing: -0.03em;
+              "
+            >
+              You're running a 2025 workflow<br />on a 1988 tool.
+            </h2>
+            <ul class="space-y-4" style="font-size: 14px">
+              <li class="flex gap-3 text-g40">
+                <span class="text-g20 shrink-0 mt-0.5" aria-hidden="true"
+                  >✗</span
+                >No visibility into token usage — API bill hits at end of month
+              </li>
+              <li class="flex gap-3 text-g40">
+                <span class="text-g20 shrink-0 mt-0.5" aria-hidden="true"
+                  >✗</span
+                >Terminal looks the same whether AI is running or idle
+              </li>
+              <li class="flex gap-3 text-g40">
+                <span class="text-g20 shrink-0 mt-0.5" aria-hidden="true"
+                  >✗</span
+                >Docs, code, and AI sessions scattered across 6+ windows
+              </li>
+              <li class="flex gap-3 text-g40">
+                <span class="text-g20 shrink-0 mt-0.5" aria-hidden="true"
+                  >✗</span
+                >Silent API failures waste 10+ minutes before you notice
+              </li>
+              <li class="flex gap-3 text-g40">
+                <span class="text-g20 shrink-0 mt-0.5" aria-hidden="true"
+                  >✗</span
+                >Every context switch breaks your flow
+              </li>
+            </ul>
+          </div>
 
-    <footer>
-      <div class="footer-wm">terminalOS</div>
-      <ul class="footer-links">
-        <li><a href="#">GitHub</a></li>
-        <li><a href="#">Docs</a></li>
-        <li><a href="#">Releases</a></li>
-        <li><a href="#">MIT</a></li>
+          <div class="p-10 md:p-12" style="background: #060606">
+            <p
+              class="font-mono text-g30 uppercase tracking-widest mb-6"
+              style="font-size: 10px"
+            >
+              The fix
+            </p>
+            <h2
+              class="text-white font-light leading-tight mb-8"
+              style="
+                font-size: clamp(24px, 2.8vw, 34px);
+                letter-spacing: -0.03em;
+              "
+            >
+              A terminal that speaks<br />the language of AI.
+            </h2>
+            <ul class="space-y-4" style="font-size: 14px">
+              <li class="flex gap-3 text-g50">
+                <span class="text-white shrink-0 mt-0.5" aria-hidden="true"
+                  >✓</span
+                >Live token count + USD cost in the status bar, always
+              </li>
+              <li class="flex gap-3 text-g50">
+                <span class="text-white shrink-0 mt-0.5" aria-hidden="true"
+                  >✓</span
+                >Color-coded badge shows exactly which AI tool is running
+              </li>
+              <li class="flex gap-3 text-g50">
+                <span class="text-white shrink-0 mt-0.5" aria-hidden="true"
+                  >✓</span
+                >One window — AI, tests, docs, file browser side-by-side
+              </li>
+              <li class="flex gap-3 text-g50">
+                <span class="text-white shrink-0 mt-0.5" aria-hidden="true"
+                  >✓</span
+                >API errors surface instantly as visual alerts
+              </li>
+              <li class="flex gap-3 text-g50">
+                <span class="text-white shrink-0 mt-0.5" aria-hidden="true"
+                  >✓</span
+                >Layout saved and restored exactly — zero setup on every launch
+              </li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- ─── FEATURES ─────────────────────────────────── -->
+      <section
+        id="features"
+        class="border-t border-hair py-28 max-w-6xl mx-auto px-6"
+        aria-labelledby="features-heading"
+      >
+        <div class="reveal mb-20">
+          <p
+            class="font-mono text-g40 uppercase tracking-widest mb-5"
+            style="font-size: 11px"
+          >
+            What you get
+          </p>
+          <h2
+            id="features-heading"
+            class="text-white font-light leading-tight max-w-2xl"
+            style="
+              font-size: clamp(36px, 4.5vw, 58px);
+              letter-spacing: -0.035em;
+            "
+          >
+            The workspace AI-native<br />development demands.
+          </h2>
+          <p
+            class="text-g50 mt-5 max-w-lg leading-relaxed font-light"
+            style="font-size: 15px"
+          >
+            You already moved to AI-first development. Your tools should have
+            too. terminalOS is the first terminal designed around how you
+            actually work — not how builders worked in 1988.
+          </p>
+        </div>
+
+        <div
+          class="flex flex-col gap-px border border-hair"
+          style="background: rgba(255, 255, 255, 0.05)"
+          role="list"
+        >
+          <article
+            class="reveal grid md:grid-cols-[80px_1fr_1fr] items-start bg-black hover:bg-g06 transition-colors duration-200"
+            role="listitem"
+          >
+            <div
+              class="font-mono text-g20 p-9 pt-10 hidden md:block"
+              style="font-size: 11px"
+              aria-hidden="true"
+            >
+              01
+            </div>
+            <div class="border-r border-hair2 py-9 pl-6 md:pl-0 pr-10">
+              <h3
+                class="text-white font-normal leading-snug"
+                style="font-size: 17px; letter-spacing: -0.02em"
+              >
+                Every window, one place
+              </h3>
+            </div>
+            <div
+              class="text-g40 py-9 px-8 leading-relaxed font-light"
+              style="font-size: 13px"
+            >
+              Split your workspace however you need — AI session on the left,
+              test runner on the right, docs below. Layout saved automatically
+              and restored exactly on every launch. No more hunting across a
+              dozen tabs.
+            </div>
+          </article>
+
+          <article
+            class="reveal grid md:grid-cols-[80px_1fr_1fr] items-start bg-black hover:bg-g06 transition-colors duration-200"
+            role="listitem"
+          >
+            <div
+              class="font-mono text-g20 p-9 pt-10 hidden md:block"
+              style="font-size: 11px"
+              aria-hidden="true"
+            >
+              02
+            </div>
+            <div class="border-r border-hair2 py-9 pl-6 md:pl-0 pr-10">
+              <h3
+                class="text-white font-normal leading-snug"
+                style="font-size: 17px; letter-spacing: -0.02em"
+              >
+                Know exactly what your AI is spending
+              </h3>
+            </div>
+            <div
+              class="text-g40 py-9 px-8 leading-relaxed font-light"
+              style="font-size: 13px"
+            >
+              Token counts and real USD costs surface in the status bar as you
+              work — per session and across your entire workspace. No API key.
+              No third-party service. No bill shock at end of month.
+            </div>
+          </article>
+
+          <article
+            class="reveal grid md:grid-cols-[80px_1fr_1fr] items-start bg-black hover:bg-g06 transition-colors duration-200"
+            role="listitem"
+          >
+            <div
+              class="font-mono text-g20 p-9 pt-10 hidden md:block"
+              style="font-size: 11px"
+              aria-hidden="true"
+            >
+              03
+            </div>
+            <div class="border-r border-hair2 py-9 pl-6 md:pl-0 pr-10">
+              <h3
+                class="text-white font-normal leading-snug"
+                style="font-size: 17px; letter-spacing: -0.02em"
+              >
+                Files and docs without leaving the terminal
+              </h3>
+            </div>
+            <div
+              class="text-g40 py-9 px-8 leading-relaxed font-light"
+              style="font-size: 13px"
+            >
+              Built-in editor with live markdown preview, syntax highlighting
+              for 25+ languages, and a full file browser — inside the same
+              window. Review AI-generated docs without touching another app.
+            </div>
+          </article>
+
+          <article
+            class="reveal grid md:grid-cols-[80px_1fr_1fr] items-start bg-black hover:bg-g06 transition-colors duration-200"
+            role="listitem"
+          >
+            <div
+              class="font-mono text-g20 p-9 pt-10 hidden md:block"
+              style="font-size: 11px"
+              aria-hidden="true"
+            >
+              04
+            </div>
+            <div class="border-r border-hair2 py-9 pl-6 md:pl-0 pr-10">
+              <h3
+                class="text-white font-normal leading-snug"
+                style="font-size: 17px; letter-spacing: -0.02em"
+              >
+                Always know where you are
+              </h3>
+            </div>
+            <div
+              class="text-g40 py-9 px-8 leading-relaxed font-light"
+              style="font-size: 13px"
+            >
+              Git branch, conda environment, current folder, and working
+              directory always visible in the status bar. 10 recent workspaces a
+              keystroke away. Context switching ends when you know your context
+              at a glance.
+            </div>
+          </article>
+
+          <article
+            class="reveal grid md:grid-cols-[80px_1fr_1fr] items-start bg-black hover:bg-g06 transition-colors duration-200"
+            role="listitem"
+          >
+            <div
+              class="font-mono text-g20 p-9 pt-10 hidden md:block"
+              style="font-size: 11px"
+              aria-hidden="true"
+            >
+              05
+            </div>
+            <div class="border-r border-hair2 py-9 pl-6 md:pl-0 pr-10">
+              <h3
+                class="text-white font-normal leading-snug"
+                style="font-size: 17px; letter-spacing: -0.02em"
+              >
+                Launch AI tools in one keystroke
+              </h3>
+            </div>
+            <div
+              class="text-g40 py-9 px-8 leading-relaxed font-light"
+              style="font-size: 13px"
+            >
+              Open Claude Code, OpenCode, or Aider from the command palette
+              without typing a command. terminalOS detects when AI is running —
+              so you always know if it's still thinking or waiting for you.
+            </div>
+          </article>
+
+          <article
+            class="reveal grid md:grid-cols-[80px_1fr_1fr] items-start bg-black hover:bg-g06 transition-colors duration-200"
+            role="listitem"
+          >
+            <div
+              class="font-mono text-g20 p-9 pt-10 hidden md:block"
+              style="font-size: 11px"
+              aria-hidden="true"
+            >
+              06
+            </div>
+            <div class="border-r border-hair2 py-9 pl-6 md:pl-0 pr-10">
+              <h3
+                class="text-white font-normal leading-snug"
+                style="font-size: 17px; letter-spacing: -0.02em"
+              >
+                Catch errors before they cost you
+              </h3>
+            </div>
+            <div
+              class="text-g40 py-9 px-8 leading-relaxed font-light"
+              style="font-size: 13px"
+            >
+              Invalid API keys, auth conflicts, and model errors surface as
+              visual alerts the moment they happen — not after 10 minutes of a
+              silent session that was failing the entire time.
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <!-- ─── STATS ──────────────────────────────────────── -->
+      <section
+        class="border-y border-hair py-20"
+        style="background: #060606"
+        aria-label="Key numbers"
+      >
+        <div
+          class="reveal max-w-6xl mx-auto px-6 grid grid-cols-2 md:grid-cols-4 gap-px border border-hair rounded-xl overflow-hidden"
+          style="background: rgba(255, 255, 255, 0.05)"
+        >
+          <div class="p-8 md:p-10 text-center" style="background: #060606">
+            <div class="stat-num mb-2">25+</div>
+            <p
+              class="text-g40 font-mono uppercase tracking-widest"
+              style="font-size: 10px"
+            >
+              Languages highlighted
+            </p>
+          </div>
+          <div class="p-8 md:p-10 text-center" style="background: #060606">
+            <div class="stat-num mb-2">5,000</div>
+            <p
+              class="text-g40 font-mono uppercase tracking-widest"
+              style="font-size: 10px"
+            >
+              Lines scrollback / pane
+            </p>
+          </div>
+          <div class="p-8 md:p-10 text-center" style="background: #060606">
+            <div class="stat-num mb-2">500ms</div>
+            <p
+              class="text-g40 font-mono uppercase tracking-widest"
+              style="font-size: 10px"
+            >
+              Layout autosave interval
+            </p>
+          </div>
+          <div class="p-8 md:p-10 text-center" style="background: #060606">
+            <div class="stat-num mb-2">$0</div>
+            <p
+              class="text-g40 font-mono uppercase tracking-widest"
+              style="font-size: 10px"
+            >
+              Forever. MIT licensed.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ─── COMPARE ───────────────────────────────────── -->
+      <section
+        id="compare"
+        class="py-28 border-t border-hair max-w-6xl mx-auto px-6"
+        aria-labelledby="compare-heading"
+      >
+        <div class="reveal mb-16">
+          <p
+            class="font-mono text-g40 uppercase tracking-widest mb-5"
+            style="font-size: 11px"
+          >
+            How we compare
+          </p>
+          <h2
+            id="compare-heading"
+            class="text-white font-light leading-tight max-w-2xl"
+            style="
+              font-size: clamp(36px, 4.5vw, 58px);
+              letter-spacing: -0.035em;
+            "
+          >
+            Others added AI to a terminal.<br />
+            <em class="not-italic" style="color: #333">We built one for it.</em>
+          </h2>
+        </div>
+
+        <div class="reveal overflow-x-auto border border-hair rounded-xl">
+          <table
+            class="w-full border-collapse"
+            style="font-size: 13px"
+            role="table"
+            aria-label="Feature comparison between terminalOS and alternatives"
+          >
+            <thead>
+              <tr class="border-b border-hair" style="background: #080808">
+                <th
+                  scope="col"
+                  class="text-left px-5 py-4 font-mono text-g20 tracking-widest uppercase"
+                  style="font-size: 10px; width: 35%"
+                >
+                  Feature
+                </th>
+                <th
+                  scope="col"
+                  class="px-5 py-4 font-mono text-white tracking-widest uppercase text-center"
+                  style="font-size: 10px"
+                >
+                  terminalOS
+                </th>
+                <th
+                  scope="col"
+                  class="px-5 py-4 font-mono text-g20 tracking-widest uppercase text-center hidden sm:table-cell"
+                  style="font-size: 10px"
+                >
+                  iTerm2 / Warp
+                </th>
+                <th
+                  scope="col"
+                  class="px-5 py-4 font-mono text-g20 tracking-widest uppercase text-center hidden md:table-cell"
+                  style="font-size: 10px"
+                >
+                  VS Code
+                </th>
+                <th
+                  scope="col"
+                  class="px-5 py-4 font-mono text-g20 tracking-widest uppercase text-center hidden lg:table-cell"
+                  style="font-size: 10px"
+                >
+                  Cursor
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr
+                class="border-b border-hair hover:bg-g06 transition-colors"
+                style="border-color: rgba(255, 255, 255, 0.03)"
+              >
+                <td class="px-5 py-4 text-g50">Everything in one window</td>
+                <td
+                  class="px-5 py-4 text-center text-white font-bold"
+                  style="font-size: 15px"
+                  aria-label="Yes"
+                >
+                  ✓
+                </td>
+                <td
+                  class="px-5 py-4 text-center hidden sm:table-cell"
+                  style="color: #1e1e1e; font-size: 15px"
+                  aria-label="No"
+                >
+                  ✗
+                </td>
+                <td
+                  class="px-5 py-4 text-center font-mono text-g30 hidden md:table-cell"
+                  style="font-size: 11px"
+                >
+                  partial
+                </td>
+                <td
+                  class="px-5 py-4 text-center font-mono text-g30 hidden lg:table-cell"
+                  style="font-size: 11px"
+                >
+                  partial
+                </td>
+              </tr>
+              <tr
+                class="border-b border-hair hover:bg-g06 transition-colors"
+                style="border-color: rgba(255, 255, 255, 0.03)"
+              >
+                <td class="px-5 py-4 text-g50">
+                  Real-time token &amp; cost tracking
+                </td>
+                <td
+                  class="px-5 py-4 text-center text-white font-bold"
+                  style="font-size: 15px"
+                  aria-label="Yes"
+                >
+                  ✓
+                </td>
+                <td
+                  class="px-5 py-4 text-center hidden sm:table-cell"
+                  style="color: #1e1e1e; font-size: 15px"
+                  aria-label="No"
+                >
+                  ✗
+                </td>
+                <td
+                  class="px-5 py-4 text-center hidden md:table-cell"
+                  style="color: #1e1e1e; font-size: 15px"
+                  aria-label="No"
+                >
+                  ✗
+                </td>
+                <td
+                  class="px-5 py-4 text-center hidden lg:table-cell"
+                  style="color: #1e1e1e; font-size: 15px"
+                  aria-label="No"
+                >
+                  ✗
+                </td>
+              </tr>
+              <tr
+                class="border-b border-hair hover:bg-g06 transition-colors"
+                style="border-color: rgba(255, 255, 255, 0.03)"
+              >
+                <td class="px-5 py-4 text-g50">Live AI session detection</td>
+                <td
+                  class="px-5 py-4 text-center text-white font-bold"
+                  style="font-size: 15px"
+                  aria-label="Yes"
+                >
+                  ✓
+                </td>
+                <td
+                  class="px-5 py-4 text-center hidden sm:table-cell"
+                  style="color: #1e1e1e; font-size: 15px"
+                  aria-label="No"
+                >
+                  ✗
+                </td>
+                <td
+                  class="px-5 py-4 text-center hidden md:table-cell"
+                  style="color: #1e1e1e; font-size: 15px"
+                  aria-label="No"
+                >
+                  ✗
+                </td>
+                <td
+                  class="px-5 py-4 text-center font-mono text-g30 hidden lg:table-cell"
+                  style="font-size: 11px"
+                >
+                  partial
+                </td>
+              </tr>
+              <tr
+                class="border-b border-hair hover:bg-g06 transition-colors"
+                style="border-color: rgba(255, 255, 255, 0.03)"
+              >
+                <td class="px-5 py-4 text-g50">Saved &amp; restored layouts</td>
+                <td
+                  class="px-5 py-4 text-center text-white font-bold"
+                  style="font-size: 15px"
+                  aria-label="Yes"
+                >
+                  ✓
+                </td>
+                <td
+                  class="px-5 py-4 text-center hidden sm:table-cell"
+                  style="color: #1e1e1e; font-size: 15px"
+                  aria-label="No"
+                >
+                  ✗
+                </td>
+                <td
+                  class="px-5 py-4 text-center hidden md:table-cell"
+                  style="color: #1e1e1e; font-size: 15px"
+                  aria-label="No"
+                >
+                  ✗
+                </td>
+                <td
+                  class="px-5 py-4 text-center hidden lg:table-cell"
+                  style="color: #1e1e1e; font-size: 15px"
+                  aria-label="No"
+                >
+                  ✗
+                </td>
+              </tr>
+              <tr
+                class="border-b border-hair hover:bg-g06 transition-colors"
+                style="border-color: rgba(255, 255, 255, 0.03)"
+              >
+                <td class="px-5 py-4 text-g50">
+                  Built-in file editor + live preview
+                </td>
+                <td
+                  class="px-5 py-4 text-center text-white font-bold"
+                  style="font-size: 15px"
+                  aria-label="Yes"
+                >
+                  ✓
+                </td>
+                <td
+                  class="px-5 py-4 text-center hidden sm:table-cell"
+                  style="color: #1e1e1e; font-size: 15px"
+                  aria-label="No"
+                >
+                  ✗
+                </td>
+                <td
+                  class="px-5 py-4 text-center font-mono text-g30 hidden md:table-cell"
+                  style="font-size: 11px"
+                >
+                  extension
+                </td>
+                <td
+                  class="px-5 py-4 text-center hidden lg:table-cell"
+                  style="color: #1e1e1e; font-size: 15px"
+                  aria-label="No"
+                >
+                  ✗
+                </td>
+              </tr>
+              <tr
+                class="border-b border-hair hover:bg-g06 transition-colors"
+                style="border-color: rgba(255, 255, 255, 0.03)"
+              >
+                <td class="px-5 py-4 text-g50">Works with any AI tool</td>
+                <td
+                  class="px-5 py-4 text-center text-white font-bold"
+                  style="font-size: 15px"
+                  aria-label="Yes"
+                >
+                  ✓
+                </td>
+                <td
+                  class="px-5 py-4 text-center text-g30 hidden sm:table-cell"
+                  style="font-size: 13px"
+                >
+                  —
+                </td>
+                <td
+                  class="px-5 py-4 text-center text-g30 hidden md:table-cell"
+                  style="font-size: 13px"
+                >
+                  —
+                </td>
+                <td
+                  class="px-5 py-4 text-center font-mono text-g30 hidden lg:table-cell"
+                  style="font-size: 11px"
+                >
+                  locked in
+                </td>
+              </tr>
+              <tr class="hover:bg-g06 transition-colors">
+                <td class="px-5 py-4 text-g50">API error alerts</td>
+                <td
+                  class="px-5 py-4 text-center text-white font-bold"
+                  style="font-size: 15px"
+                  aria-label="Yes"
+                >
+                  ✓
+                </td>
+                <td
+                  class="px-5 py-4 text-center hidden sm:table-cell"
+                  style="color: #1e1e1e; font-size: 15px"
+                  aria-label="No"
+                >
+                  ✗
+                </td>
+                <td
+                  class="px-5 py-4 text-center hidden md:table-cell"
+                  style="color: #1e1e1e; font-size: 15px"
+                  aria-label="No"
+                >
+                  ✗
+                </td>
+                <td
+                  class="px-5 py-4 text-center hidden lg:table-cell"
+                  style="color: #1e1e1e; font-size: 15px"
+                  aria-label="No"
+                >
+                  ✗
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ─── SHORTCUTS ─────────────────────────────────── -->
+      <section
+        class="py-28 border-t border-hair max-w-6xl mx-auto px-6"
+        aria-labelledby="shortcuts-heading"
+      >
+        <h2
+          id="shortcuts-heading"
+          class="reveal text-white font-light leading-tight mb-14"
+          style="font-size: clamp(28px, 3.5vw, 44px); letter-spacing: -0.03em"
+        >
+          Designed to stay out of your way.
+        </h2>
+
+        <div
+          class="reveal grid sm:grid-cols-2 gap-px border border-hair rounded-xl overflow-hidden"
+          style="background: rgba(255, 255, 255, 0.05)"
+        >
+          <div
+            class="flex items-center justify-between px-6 py-4 bg-black hover:bg-g06 transition-colors"
+          >
+            <span class="text-g50" style="font-size: 13px"
+              >Open command palette</span
+            >
+            <kbd
+              class="font-mono text-g50 border border-hair px-2.5 py-1 rounded"
+              style="font-size: 11px; background: rgba(255, 255, 255, 0.04)"
+              >⌘K</kbd
+            >
+          </div>
+          <div
+            class="flex items-center justify-between px-6 py-4 bg-black hover:bg-g06 transition-colors"
+          >
+            <span class="text-g50" style="font-size: 13px"
+              >Split pane right</span
+            >
+            <kbd
+              class="font-mono text-g50 border border-hair px-2.5 py-1 rounded"
+              style="font-size: 11px; background: rgba(255, 255, 255, 0.04)"
+              >⌘D</kbd
+            >
+          </div>
+          <div
+            class="flex items-center justify-between px-6 py-4 bg-black hover:bg-g06 transition-colors"
+          >
+            <span class="text-g50" style="font-size: 13px"
+              >Split pane below</span
+            >
+            <kbd
+              class="font-mono text-g50 border border-hair px-2.5 py-1 rounded"
+              style="font-size: 11px; background: rgba(255, 255, 255, 0.04)"
+              >⌘⇧D</kbd
+            >
+          </div>
+          <div
+            class="flex items-center justify-between px-6 py-4 bg-black hover:bg-g06 transition-colors"
+          >
+            <span class="text-g50" style="font-size: 13px"
+              >New workspace tab</span
+            >
+            <kbd
+              class="font-mono text-g50 border border-hair px-2.5 py-1 rounded"
+              style="font-size: 11px; background: rgba(255, 255, 255, 0.04)"
+              >⌘T</kbd
+            >
+          </div>
+          <div
+            class="flex items-center justify-between px-6 py-4 bg-black hover:bg-g06 transition-colors"
+          >
+            <span class="text-g50" style="font-size: 13px"
+              >Launch Claude Code</span
+            >
+            <kbd
+              class="font-mono text-g50 border border-hair px-2.5 py-1 rounded"
+              style="font-size: 11px; background: rgba(255, 255, 255, 0.04)"
+              >⌘⇧C</kbd
+            >
+          </div>
+          <div
+            class="flex items-center justify-between px-6 py-4 bg-black hover:bg-g06 transition-colors"
+          >
+            <span class="text-g50" style="font-size: 13px"
+              >Launch OpenCode</span
+            >
+            <kbd
+              class="font-mono text-g50 border border-hair px-2.5 py-1 rounded"
+              style="font-size: 11px; background: rgba(255, 255, 255, 0.04)"
+              >⌘⇧O</kbd
+            >
+          </div>
+          <div
+            class="flex items-center justify-between px-6 py-4 bg-black hover:bg-g06 transition-colors"
+          >
+            <span class="text-g50" style="font-size: 13px"
+              >Open file editor</span
+            >
+            <kbd
+              class="font-mono text-g50 border border-hair px-2.5 py-1 rounded"
+              style="font-size: 11px; background: rgba(255, 255, 255, 0.04)"
+              >⌘M</kbd
+            >
+          </div>
+          <div
+            class="flex items-center justify-between px-6 py-4 bg-black hover:bg-g06 transition-colors"
+          >
+            <span class="text-g50" style="font-size: 13px">Open folder</span>
+            <kbd
+              class="font-mono text-g50 border border-hair px-2.5 py-1 rounded"
+              style="font-size: 11px; background: rgba(255, 255, 255, 0.04)"
+              >⌘O</kbd
+            >
+          </div>
+          <div
+            class="flex items-center justify-between px-6 py-4 bg-black hover:bg-g06 transition-colors"
+          >
+            <span class="text-g50" style="font-size: 13px"
+              >Close active pane</span
+            >
+            <kbd
+              class="font-mono text-g50 border border-hair px-2.5 py-1 rounded"
+              style="font-size: 11px; background: rgba(255, 255, 255, 0.04)"
+              >⌘W</kbd
+            >
+          </div>
+          <div
+            class="flex items-center justify-between px-6 py-4 bg-black hover:bg-g06 transition-colors"
+          >
+            <span class="text-g50" style="font-size: 13px">Save file</span>
+            <kbd
+              class="font-mono text-g50 border border-hair px-2.5 py-1 rounded"
+              style="font-size: 11px; background: rgba(255, 255, 255, 0.04)"
+              >⌘S</kbd
+            >
+          </div>
+        </div>
+        <p class="reveal mt-4 font-mono text-g20" style="font-size: 11px">
+          Windows / Linux: replace ⌘ with Ctrl
+        </p>
+      </section>
+
+      <!-- ─── INSTALL ────────────────────────────────────── -->
+      <section
+        id="install"
+        class="py-28 border-t border-hair max-w-6xl mx-auto px-6"
+        aria-labelledby="install-heading"
+      >
+        <div class="reveal mb-14">
+          <p
+            class="font-mono text-g40 uppercase tracking-widest mb-5"
+            style="font-size: 11px"
+          >
+            Get started
+          </p>
+          <h2
+            id="install-heading"
+            class="text-white font-light leading-tight"
+            style="font-size: clamp(28px, 3.5vw, 44px); letter-spacing: -0.03em"
+          >
+            Download terminalOS
+          </h2>
+        </div>
+
+        <div
+          class="reveal grid md:grid-cols-3 gap-px border border-hair rounded-xl overflow-hidden mb-8"
+          style="background: rgba(255, 255, 255, 0.05)"
+        >
+          <div class="p-9 bg-black hover:bg-g06 transition-colors group">
+            <p class="text-white font-normal mb-1.5" style="font-size: 16px">
+              macOS
+            </p>
+            <p class="font-mono text-g20 mb-7" style="font-size: 11px">
+              Universal · Apple Silicon + Intel
+            </p>
+            <a
+              href="/downloads/terminalOS-0.2.0-arm64.dmg"
+              class="inline-flex items-center gap-2 border border-hair text-g40 rounded px-4 py-2 font-mono group-hover:border-white/25 group-hover:text-white transition-all duration-150"
+              style="font-size: 12px"
+              aria-label="Download terminalOS for macOS"
+            >
+              Download .dmg
+              <svg
+                width="11"
+                height="11"
+                viewBox="0 0 11 11"
+                fill="none"
+                aria-hidden="true"
+              >
+                <path
+                  d="M5.5 1v8M2 7l3.5 3.5L9 7"
+                  stroke="currentColor"
+                  stroke-width="1.4"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+            </a>
+          </div>
+          <div
+            class="p-9 bg-black hover:bg-g06 transition-colors border-l border-r border-hair group"
+          >
+            <p class="text-white font-normal mb-1.5" style="font-size: 16px">
+              Windows
+            </p>
+            <p class="font-mono text-g20 mb-7" style="font-size: 11px">
+              NSIS installer · Windows 10/11
+            </p>
+            <a
+              href="/downloads/terminalOS%20Setup%200.2.0.exe"
+              class="inline-flex items-center gap-2 border border-hair text-g40 rounded px-4 py-2 font-mono group-hover:border-white/25 group-hover:text-white transition-all duration-150"
+              style="font-size: 12px"
+              aria-label="Download terminalOS for Windows"
+            >
+              Download .exe
+              <svg
+                width="11"
+                height="11"
+                viewBox="0 0 11 11"
+                fill="none"
+                aria-hidden="true"
+              >
+                <path
+                  d="M5.5 1v8M2 7l3.5 3.5L9 7"
+                  stroke="currentColor"
+                  stroke-width="1.4"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+            </a>
+          </div>
+          <div class="p-9 bg-black hover:bg-g06 transition-colors group">
+            <p class="text-white font-normal mb-1.5" style="font-size: 16px">
+              Linux
+            </p>
+            <p class="font-mono text-g20 mb-7" style="font-size: 11px">
+              Portable AppImage · x64 + ARM64
+            </p>
+            <a
+              href="/downloads/terminalOS-0.2.0.AppImage"
+              class="inline-flex items-center gap-2 border border-hair text-g40 rounded px-4 py-2 font-mono group-hover:border-white/25 group-hover:text-white transition-all duration-150"
+              style="font-size: 12px"
+              aria-label="Download terminalOS for Linux"
+            >
+              Download .AppImage
+              <svg
+                width="11"
+                height="11"
+                viewBox="0 0 11 11"
+                fill="none"
+                aria-hidden="true"
+              >
+                <path
+                  d="M5.5 1v8M2 7l3.5 3.5L9 7"
+                  stroke="currentColor"
+                  stroke-width="1.4"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+            </a>
+          </div>
+        </div>
+
+        <div
+          class="reveal rounded-xl border border-hair p-8 font-mono leading-loose"
+          style="background: #060606; font-size: 12px; color: #444"
+        >
+          <div class="text-g20 mb-1">
+            # Build from source — Node.js 18+, npm 9+
+          </div>
+          <div>
+            <span class="text-g30">$ </span
+            ><span class="text-white select-all"
+              >git clone https://github.com/your-org/terminalOS</span
+            >
+          </div>
+          <div>
+            <span class="text-g30">$ </span
+            ><span class="text-white select-all"
+              >cd terminalOS &amp;&amp; npm install &amp;&amp; npm run
+              rebuild</span
+            >
+          </div>
+          <div>
+            <span class="text-g30">$ </span
+            ><span class="text-white select-all">npm run dist</span
+            ><span class="text-g20"> &nbsp;# package for your platform</span>
+          </div>
+          <div class="mt-1">
+            <span class="text-g30">$ </span
+            ><span class="text-white select-all">npm run dev</span
+            ><span class="text-g20"> &nbsp;# hot reload dev environment</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ─── CTA ───────────────────────────────────────── -->
+      <section
+        class="relative text-center py-36 border-t border-hair overflow-hidden"
+        aria-labelledby="cta-heading"
+      >
+        <div
+          class="grad-line absolute top-0 inset-x-0"
+          aria-hidden="true"
+        ></div>
+        <div
+          class="absolute inset-0 pointer-events-none"
+          style="
+            background: radial-gradient(
+              ellipse 60% 60% at 50% 0%,
+              rgba(255, 255, 255, 0.04) 0%,
+              transparent 70%
+            );
+          "
+          aria-hidden="true"
+        ></div>
+
+        <div class="relative max-w-3xl mx-auto px-6">
+          <div class="reveal">
+            <p
+              class="font-mono text-g40 uppercase tracking-widest mb-8"
+              style="font-size: 11px"
+            >
+              Join builders who ship faster
+            </p>
+
+            <h2
+              id="cta-heading"
+              class="text-white font-light leading-none tracking-tight mb-5"
+              style="
+                font-size: clamp(44px, 6.5vw, 88px);
+                letter-spacing: -0.045em;
+              "
+            >
+              Stop context switching.<br />
+              Start shipping.
+            </h2>
+
+            <p
+              class="text-g40 max-w-md mx-auto mb-10 leading-relaxed font-light"
+              style="font-size: 16px"
+            >
+              Everything you need to run AI coding sessions, track costs, and
+              stay in flow — in one window, forever free.
+            </p>
+
+            <p
+              class="font-mono text-g30 mb-10"
+              style="font-size: 11px; letter-spacing: 0.06em"
+            >
+              v0.2.0 &nbsp;·&nbsp; MIT License &nbsp;·&nbsp; Free forever
+              &nbsp;·&nbsp; No account required
+            </p>
+
+            <div class="flex flex-wrap items-center justify-center gap-3">
+              <a
+                href="#install"
+                id="cta-dl"
+                class="inline-flex items-center gap-2 bg-white text-black font-medium rounded px-8 py-4 hover:opacity-85 transition-opacity"
+                style="font-size: 15px"
+              >
+                <svg
+                  width="15"
+                  height="15"
+                  viewBox="0 0 15 15"
+                  fill="none"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M7.5 1v10M3 9l4.5 4.5L12 9"
+                    stroke="currentColor"
+                    stroke-width="1.8"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+                Download terminalOS
+              </a>
+              <a
+                href="https://github.com/your-org/terminalOS"
+                rel="noopener noreferrer"
+                class="inline-flex items-center gap-2 text-g40 border border-hair rounded px-8 py-4 hover:border-white/25 hover:text-white transition-all duration-150"
+                style="font-size: 15px"
+              >
+                <svg
+                  width="15"
+                  height="15"
+                  viewBox="0 0 16 16"
+                  fill="currentColor"
+                  aria-hidden="true"
+                >
+                  <path
+                    d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"
+                  />
+                </svg>
+                View on GitHub
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- ─── FOOTER ────────────────────────────────────────── -->
+    <footer
+      class="border-t border-hair py-8 px-6 flex flex-col sm:flex-row items-center justify-between gap-4"
+      style="background: #000"
+      role="contentinfo"
+    >
+      <a
+        href="/"
+        class="font-mono text-g20 hover:text-white transition-colors"
+        style="font-size: 12px"
+        aria-label="terminalOS home"
+        >terminalOS</a
+      >
+      <ul class="flex items-center gap-7 list-none" style="font-size: 12px">
+        <li>
+          <a
+            href="/docs"
+            class="font-mono text-g20 hover:text-white transition-colors"
+            >Docs</a
+          >
+        </li>
+        <li>
+          <a
+            href="/releases"
+            class="font-mono text-g20 hover:text-white transition-colors"
+            >Releases</a
+          >
+        </li>
+        <li>
+          <a
+            href="https://opensource.org/licenses/MIT"
+            rel="noopener noreferrer"
+            class="font-mono text-g20 hover:text-white transition-colors"
+            >MIT</a
+          >
+        </li>
       </ul>
     </footer>
 
     <script>
-      // OS-aware download buttons
+      // ── OS-aware download buttons ──────────────────────
       (function () {
-        const ua = navigator.userAgent;
-        const isMac = /Macintosh|MacIntel|MacPPC|Mac OS X/.test(ua);
-        const isWin = /Windows/.test(ua);
+        var ua = navigator.userAgent;
+        var mac = /Macintosh|MacIntel|Mac OS X/.test(ua);
+        var win = /Windows/.test(ua);
+        var arm =
+          /arm64|aarch64/i.test(ua) || (mac && navigator.maxTouchPoints > 0);
 
-        // Detect Apple Silicon via canvas trick (best-effort)
-        const isArm = /arm64|aarch64/i.test(ua) ||
-          (isMac && navigator.maxTouchPoints > 0); // heuristic for M-series
+        var href, label;
+        if (mac) {
+          href = arm
+            ? "/downloads/terminalOS-0.2.0-arm64.dmg"
+            : "/downloads/terminalOS-0.2.0.dmg";
+          label = "Download for Mac";
+        } else if (win) {
+          href = "/downloads/terminalOS%20Setup%200.2.0.exe";
+          label = "Download for Windows";
+        } else {
+          href = "#install";
+          label = "Download free";
+        }
 
-        const macFile = isArm
-          ? '/downloads/terminalOS-0.2.0-arm64.dmg'
-          : '/downloads/terminalOS-0.2.0.dmg';
-        const winFile = '/downloads/terminalOS%20Setup%200.2.0.exe';
-
-        let href, label;
-        if (isMac)       { href = macFile; label = 'Download for Mac'; }
-        else if (isWin)  { href = winFile; label = 'Download for Windows'; }
-        else             { href = '#install'; label = 'Download'; }
-
-        // Update hero + CTA primary buttons (not the nav anchor — keep it pointing to #install)
-        document.querySelectorAll('.btn-primary').forEach((el) => {
-          if (el.getAttribute('href') === '#install') return; // keep nav/section anchors
-          el.setAttribute('href', href);
+        ["nav-dl", "hero-dl", "cta-dl"].forEach(function (id) {
+          var el = document.getElementById(id);
+          if (!el) return;
+          var svg = el.querySelector("svg");
+          el.setAttribute("href", href);
           el.textContent = label;
+          if (svg) el.appendChild(svg);
         });
-
-        // Hero and CTA btn-primary that link to #install should also update
-        document.querySelectorAll('a.btn-primary[href="#install"]').forEach((el) => {
-          // Only the ones inside .hero and .cta get the OS label
-          const inHeroOrCta = el.closest('.hero, .cta');
-          if (inHeroOrCta) {
-            el.setAttribute('href', href);
-            el.textContent = label;
-          }
-        });
-
-        // Nav Download CTA: update text but keep href="#install" for smooth scroll
-        const navCta = document.querySelector('.nav-cta');
-        if (navCta) navCta.textContent = label;
       })();
-    </script>
 
-    <script>
-      const els = document.querySelectorAll(".reveal");
-      const io = new IntersectionObserver(
-        (entries) => {
-          entries.forEach((e, i) => {
+      // ── Scroll reveal ─────────────────────────────────
+      var io = new IntersectionObserver(
+        function (entries) {
+          entries.forEach(function (e, i) {
             if (e.isIntersecting) {
-              setTimeout(() => e.target.classList.add("in"), i * 55);
+              setTimeout(function () {
+                e.target.classList.add("in");
+              }, i * 55);
               io.unobserve(e.target);
             }
           });
         },
         { threshold: 0.07, rootMargin: "0px 0px -32px 0px" },
       );
-      els.forEach((el) => io.observe(el));
+
+      document.querySelectorAll(".reveal").forEach(function (el) {
+        io.observe(el);
+      });
     </script>
   </body>
 </html>

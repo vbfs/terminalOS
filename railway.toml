@@ -2,5 +2,5 @@
 builder = "RAILPACK"
 
 [deploy]
-startCommand = "node server.js"
+startCommand = "sh startup.sh"
 healthcheckPath = "/"
