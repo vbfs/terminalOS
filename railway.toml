@@ -1,6 +1,10 @@
 [build]
-builder = "RAILPACK"
+# Define o Nixpacks, que é o motor padrão atual do Railway, no lugar do antigo RAILPACK
+builder = "nixpacks"
+# Anula a tentativa de rodar 'npm run build' substituindo por um echo
+buildCommand = "echo 'Pulando a etapa de build'"
 
 [deploy]
+# Força a execução estrita do comando start do seu package.json
+startCommand = "npm start"
 healthcheckPath = "/"
-
