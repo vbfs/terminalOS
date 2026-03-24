@@ -309,7 +309,7 @@
 
   <body class="font-sans">
     <!-- ─── ANNOUNCEMENT BAR ─────────────────────────────── -->
-    <div
+    <!-- <div
       class="bg-white text-black text-center py-2.5 px-4"
       style="font-size: 12px; font-weight: 500; letter-spacing: 0.01em"
     >
@@ -320,7 +320,7 @@
         class="underline underline-offset-2 ml-1 hover:opacity-60 transition-opacity"
         >Download free →</a
       >
-    </div>
+    </div> -->
 
     <!-- ─── NAV ──────────────────────────────────────────── -->
     <header
@@ -446,7 +446,7 @@
         ></div>
 
         <!-- Eyebrow -->
-        <div
+        <!-- <div
           class="h-anim-1 inline-flex items-center gap-2 border border-hair rounded-full px-4 py-1.5 mb-10"
           style="font-size: 11px"
         >
@@ -457,7 +457,7 @@
           <span class="font-mono text-g40 tracking-widest uppercase"
             >Free &amp; open source</span
           >
-        </div>
+        </div> -->
 
         <!-- Headline -->
         <h1
@@ -537,180 +537,7 @@
         </p>
 
         <!-- Terminal mockup -->
-        <div class="h-anim-5 w-full max-w-5xl mx-auto">
-          <div
-            class="rounded-xl overflow-hidden border border-hair"
-            style="
-              background: #080808;
-              box-shadow:
-                0 32px 80px rgba(0, 0, 0, 0.85),
-                0 2px 0 rgba(255, 255, 255, 0.04) inset;
-            "
-          >
-            <!-- Window chrome -->
-            <div
-              class="flex items-center gap-1.5 px-4 py-3 border-b border-hair"
-              style="background: #0f0f0f"
-              aria-hidden="true"
-            >
-              <span
-                class="w-2.5 h-2.5 rounded-full"
-                style="background: #2a0000"
-              ></span>
-              <span
-                class="w-2.5 h-2.5 rounded-full"
-                style="background: #2a2000"
-              ></span>
-              <span
-                class="w-2.5 h-2.5 rounded-full"
-                style="background: #002a00"
-              ></span>
-              <div class="flex gap-0.5 ml-3">
-                <div
-                  class="font-mono px-3 py-0.5 rounded text-xs"
-                  style="background: rgba(255, 255, 255, 0.04); color: #666"
-                >
-                  ~/auth-refactor
-                </div>
-                <div class="font-mono px-3 py-0.5 rounded text-xs text-g20">
-                  ~/api-service
-                </div>
-                <div class="font-mono px-3 py-0.5 rounded text-xs text-g20">
-                  notes.md
-                </div>
-              </div>
-            </div>
-
-            <!-- Panes -->
-            <div
-              class="grid grid-cols-1 md:grid-cols-2 md:divide-x divide-white/5"
-              style="min-height: 240px"
-            >
-              <div
-                class="font-mono p-5 leading-loose"
-                style="font-size: 11.5px"
-              >
-                <div>
-                  <span class="text-g30">$ </span
-                  ><span class="text-white">claude code</span>
-                </div>
-                <div class="text-g50">
-                  &nbsp;&nbsp;Working on AuthService.ts...
-                </div>
-                <div class="text-g30">&nbsp;&nbsp;Reading 4 files</div>
-                <div class="text-g30">&nbsp;&nbsp;Analyzing token flow</div>
-                <div>&nbsp;</div>
-                <div>
-                  <span class="text-g50">tokens used: 12,841 · </span
-                  ><span class="text-white font-medium">$0.038</span>
-                </div>
-                <div>&nbsp;</div>
-                <div class="text-g50">✓ Done. 3 files modified.</div>
-                <div>
-                  <span class="text-g30">$ </span
-                  ><span class="t-cursor" aria-hidden="true"></span>
-                </div>
-              </div>
-              <div
-                class="font-mono p-5 leading-loose hidden md:block"
-                style="font-size: 11.5px"
-              >
-                <div>
-                  <span class="text-g30">$ </span
-                  ><span class="text-white">npm test -- --watch</span>
-                </div>
-                <div>&nbsp;</div>
-                <div class="text-g50">&nbsp;PASS&nbsp; AuthService.test.ts</div>
-                <div class="text-g50">
-                  &nbsp;PASS&nbsp; TokenManager.test.ts
-                </div>
-                <div class="text-g50">&nbsp;PASS&nbsp; middleware.test.ts</div>
-                <div>&nbsp;</div>
-                <div class="text-g50">24 passed · 1.84s</div>
-                <div>&nbsp;</div>
-                <div style="color: #1e1e1e">Watching for changes...</div>
-              </div>
-            </div>
-
-            <!-- Status bar -->
-            <div
-              class="font-mono flex flex-wrap items-center gap-y-1 px-5 py-2 border-t border-hair overflow-x-auto"
-              style="background: #0c0c0c; font-size: 11px"
-              aria-label="Terminal status bar"
-              role="status"
-            >
-              <span class="text-g40 pr-4"
-                >AI running <span class="text-g70">Claude Code</span></span
-              >
-              <span class="text-g10 pr-4" aria-hidden="true">·</span>
-              <span class="text-g40 pr-4"
-                >Session <span class="text-g70">12,841 tok</span></span
-              >
-              <span class="text-g10 pr-4" aria-hidden="true">·</span>
-              <span class="text-g40 pr-4"
-                >Cost <span class="text-white font-medium">$0.038</span></span
-              >
-              <span class="text-g10 pr-4" aria-hidden="true">·</span>
-              <span class="text-g40 pr-4"
-                >Branch <span class="text-g70">feat/auth-refactor</span></span
-              >
-              <span class="text-g10 pr-4" aria-hidden="true">·</span>
-              <span class="text-g40"
-                >conda <span class="text-g70">dev</span></span
-              >
-            </div>
-          </div>
-        </div>
       </section>
-
-      <!-- ─── TICKER ────────────────────────────────────── -->
-      <div
-        class="ticker-wrap border-y border-hair"
-        style="background: #080808; padding: 13px 0"
-        aria-hidden="true"
-      >
-        <div class="ticker-track">
-          <div
-            class="flex items-center gap-10 px-8 font-mono text-g20 whitespace-nowrap"
-            style="font-size: 11px"
-          >
-            <span>Claude Code</span><span class="text-g10">·</span
-            ><span>Aider</span><span class="text-g10">·</span
-            ><span>OpenCode</span><span class="text-g10">·</span
-            ><span>Continue</span><span class="text-g10">·</span
-            ><span>macOS Apple Silicon</span><span class="text-g10">·</span
-            ><span>macOS Intel</span><span class="text-g10">·</span
-            ><span>Windows 10/11</span><span class="text-g10">·</span
-            ><span>Linux AppImage</span><span class="text-g10">·</span
-            ><span>XTerm.js 5.3</span><span class="text-g10">·</span
-            ><span>node-pty</span><span class="text-g10">·</span
-            ><span>Electron 33</span><span class="text-g10">·</span
-            ><span>React 19</span><span class="text-g10">·</span
-            ><span>MIT License</span><span class="text-g10">·</span
-            ><span>Free Forever</span><span class="text-g10">·</span>
-          </div>
-          <div
-            class="flex items-center gap-10 px-8 font-mono text-g20 whitespace-nowrap"
-            style="font-size: 11px"
-            aria-hidden="true"
-          >
-            <span>Claude Code</span><span class="text-g10">·</span
-            ><span>Aider</span><span class="text-g10">·</span
-            ><span>OpenCode</span><span class="text-g10">·</span
-            ><span>Continue</span><span class="text-g10">·</span
-            ><span>macOS Apple Silicon</span><span class="text-g10">·</span
-            ><span>macOS Intel</span><span class="text-g10">·</span
-            ><span>Windows 10/11</span><span class="text-g10">·</span
-            ><span>Linux AppImage</span><span class="text-g10">·</span
-            ><span>XTerm.js 5.3</span><span class="text-g10">·</span
-            ><span>node-pty</span><span class="text-g10">·</span
-            ><span>Electron 33</span><span class="text-g10">·</span
-            ><span>React 19</span><span class="text-g10">·</span
-            ><span>MIT License</span><span class="text-g10">·</span
-            ><span>Free Forever</span><span class="text-g10">·</span>
-          </div>
-        </div>
-      </div>
 
       <!-- ─── PAIN → SOLUTION ───────────────────────────── -->
       <section
@@ -1649,7 +1476,6 @@
             </a>
           </div>
         </div>
-
       </section>
 
       <!-- ─── CTA ───────────────────────────────────────── -->

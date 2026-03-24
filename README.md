@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="build/icon.png" alt="terminalOS Logo" width="96" />
+<img src="public/icon.png" alt="terminalOS Logo" width="96" />
 
 # terminalOS
 
@@ -43,12 +43,12 @@ terminalOS is a **desktop terminal multiplexer purpose-built for AI coding workf
 
 Every terminal pane detects when an AI coding tool is running. A live color-coded badge shows which tool is active with instant visual feedback when a session starts or ends.
 
-| Tool        | Badge Color                       |
-| ----------- | --------------------------------- |
-| Claude Code | Tan `#D4A27F`                     |
-| OpenCode    | Blue `#7FB5D4`                    |
-| Aider       | Purple `#A27FD4`                  |
-| Continue    | Green `#7FD4A2`                   |
+| Tool        | Badge Color      |
+| ----------- | ---------------- |
+| Claude Code | Tan `#D4A27F`    |
+| OpenCode    | Blue `#7FB5D4`   |
+| Aider       | Purple `#A27FD4` |
+| Continue    | Green `#7FD4A2`  |
 
 Detection works by scanning PTY output directly — no process polling, no shell hooks required. A 3-second grace period prevents false positives when TUI input prompts appear at startup.
 
@@ -60,20 +60,20 @@ terminalOS parses token usage directly from CLI output — **no API key required
 
 **Supported output formats (all tools, automatically detected):**
 
-| Format | Example |
-| ------ | ------- |
-| OpenCode | `64,101 31%` |
-| Generic | `↑ 5.2k tokens` |
-| Claude | `tokens used: 12,345` |
-| Aider | `(5.2k tokens)` |
+| Format   | Example               |
+| -------- | --------------------- |
+| OpenCode | `64,101 31%`          |
+| Generic  | `↑ 5.2k tokens`       |
+| Claude   | `tokens used: 12,345` |
+| Aider    | `(5.2k tokens)`       |
 
 **Built-in model pricing:**
 
-| Model | Price per 1M tokens |
-| ----- | ------------------- |
-| Claude Opus 4 / 4.5 | $15.00 |
-| Claude Sonnet 4.5 / 4.6 | $3.00 |
-| Claude Haiku 4.5 | $0.80 |
+| Model                   | Price per 1M tokens |
+| ----------------------- | ------------------- |
+| Claude Opus 4 / 4.5     | $15.00              |
+| Claude Sonnet 4.5 / 4.6 | $3.00               |
+| Claude Haiku 4.5        | $0.80               |
 
 The status bar shows two counters simultaneously: **session tokens** (focused pane only) and **workspace tokens** (all panes in the active tab).
 
@@ -243,18 +243,18 @@ npm run dev
 
 ## Keyboard Shortcuts
 
-| Shortcut | Action                    |
-| -------- | ------------------------- |
-| `⌘K`     | Open command palette      |
-| `⌘T`     | New tab / workspace       |
-| `⌘D`     | Split pane right          |
-| `⌘⇧D`    | Split pane below          |
-| `⌘W`     | Close active pane         |
-| `⌘M`     | Open markdown editor      |
-| `⌘⇧C`    | Launch Claude Code        |
-| `⌘⇧O`    | Launch OpenCode           |
-| `⌘O`     | Open folder               |
-| `⌘S`     | Save file (in editor)     |
+| Shortcut | Action                |
+| -------- | --------------------- |
+| `⌘K`     | Open command palette  |
+| `⌘T`     | New tab / workspace   |
+| `⌘D`     | Split pane right      |
+| `⌘⇧D`    | Split pane below      |
+| `⌘W`     | Close active pane     |
+| `⌘M`     | Open markdown editor  |
+| `⌘⇧C`    | Launch Claude Code    |
+| `⌘⇧O`    | Launch OpenCode       |
+| `⌘O`     | Open folder           |
+| `⌘S`     | Save file (in editor) |
 
 > On Windows/Linux, replace `⌘` with `Ctrl`.
 
@@ -262,19 +262,19 @@ npm run dev
 
 ## Tech Stack
 
-| Layer | Technology |
-| ----- | ---------- |
-| Desktop runtime | Electron 33 |
-| UI framework | React 19 + TypeScript |
-| Build tooling | Vite 6 |
-| Terminal emulator | XTerm.js 5.3 |
-| PTY management | node-pty |
-| State management | Zustand 5 |
-| File watching | Chokidar 4 |
-| Markdown rendering | Marked 17 |
-| Syntax highlighting | Highlight.js 11 |
-| Auto-updater | electron-updater |
-| Virtualized lists | React Window |
+| Layer               | Technology            |
+| ------------------- | --------------------- |
+| Desktop runtime     | Electron 33           |
+| UI framework        | React 19 + TypeScript |
+| Build tooling       | Vite 6                |
+| Terminal emulator   | XTerm.js 5.3          |
+| PTY management      | node-pty              |
+| State management    | Zustand 5             |
+| File watching       | Chokidar 4            |
+| Markdown rendering  | Marked 17             |
+| Syntax highlighting | Highlight.js 11       |
+| Auto-updater        | electron-updater      |
+| Virtualized lists   | React Window          |
 
 ---
 

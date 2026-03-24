@@ -7,3 +7,4 @@ electron/*.js.map
 .DS_Store
 null.o
 -.o
+src/

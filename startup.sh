@@ -10,9 +10,21 @@ download_if_missing() {
   DEST_PATH="$DEST/$FILE"
   if [ ! -f "$DEST_PATH" ]; then
     echo "Downloading $FILE..."
-    wget -q --show-progress -O "$DEST_PATH" "$RELEASE_BASE/$(printf '%s' "$FILE" | sed 's/ /%20/g')"
+    if wget --show-progress -O "$DEST_PATH" "$RELEASE_BASE/$(printf '%s' "$FILE" | sed 's/ /%20/g')"; then
+      SIZE=$(stat -f%z "$DEST_PATH" 2>/dev/null || stat -c%s "$DEST_PATH" 2>/dev/null)
+      if [ "$SIZE" -eq 0 ]; then
+        echo "ERROR: Downloaded file is empty (0 bytes): $FILE"
+        rm "$DEST_PATH"
+        exit 1
+      fi
+      echo "Successfully downloaded: $FILE ($SIZE bytes)"
+    else
+      echo "ERROR: Failed to download $FILE"
+      exit 1
+    fi
   else
-    echo "Already exists: $FILE"
+    SIZE=$(stat -f%z "$DEST_PATH" 2>/dev/null || stat -c%s "$DEST_PATH" 2>/dev/null)
+    echo "Already exists: $FILE ($SIZE bytes)"
   fi
 }
 
