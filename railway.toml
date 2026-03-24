@@ -5,5 +5,3 @@ builder = "RAILPACK"
 startCommand = "sh startup.sh"
 healthcheckPath = "/"
 
-[deploy.variables]
-RAILPACK_DEPLOY_APT_PACKAGES = "wget"
