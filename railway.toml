@@ -1,7 +1,5 @@
 [build]
-builder = "nixpacks"
-# Skip postinstall (electron-rebuild) — not needed for the web server
-installCommand = "npm install --ignore-scripts"
+builder = "RAILPACK"
 
 [deploy]
 startCommand = "node server.js"
