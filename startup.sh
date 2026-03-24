@@ -3,6 +3,7 @@ set -e
 
 RELEASE_BASE="https://github.com/vbfs/terminalOS/releases/download/v0.2.0"
 DEST="/downloads"
+mkdir -p "$DEST"
 
 download_if_missing() {
   FILE="$1"
