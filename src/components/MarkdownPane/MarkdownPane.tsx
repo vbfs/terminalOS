@@ -483,7 +483,6 @@ const Editor: React.FC<EditorProps> = ({
   isDirty,
 }) => {
   const { setContent, save, closeFile } = useMdPaneStore();
-  const toggleMinimize = useTabsStore((s) => s.toggleMinimizePane);
   const previewRef = useRef<HTMLDivElement>(null);
 
   const filename = filePath.split("/").pop() ?? filePath;
@@ -583,13 +582,6 @@ const Editor: React.FC<EditorProps> = ({
             <IconFilePdf size={12} /> export pdf
           </button>
         )}
-        <button
-          className={`${styles.headerBtn} ${styles.minimizeBtn}`}
-          onClick={() => toggleMinimize(paneId)}
-          title="Minimize pane"
-        >
-          <IconMinus size={10} />
-        </button>
       </div>
 
       <div className={styles.editorBody}>
