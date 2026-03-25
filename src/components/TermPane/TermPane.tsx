@@ -48,6 +48,7 @@ export const TermPane: React.FC<TermPaneProps> = React.memo(
     const session = useSessionsStore((s) => s.sessions.get(sessionId));
     const setAlert = useSessionsStore((s) => s.setAlert);
     const isMinimized = useTabsStore((s) => s.minimizedPanes.has(paneId));
+    const minimizedPanes = useTabsStore((s) => s.minimizedPanes);
     const toggleMinimize = useTabsStore((s) => s.toggleMinimizePane);
     const rootFolder = useWorkspaceStore((s) => s.rootFolder);
     const [ctxMenu, setCtxMenu] = useState<{ x: number; y: number } | null>(
@@ -55,7 +56,13 @@ export const TermPane: React.FC<TermPaneProps> = React.memo(
     );
     const [hasInteracted, setHasInteracted] = useState(() => interactedSessions.has(sessionId));
 
-    const { paste } = usePty({ sessionId, containerRef });
+    const { paste, fit } = usePty({ sessionId, containerRef });
+
+    useEffect(() => {
+      if (isMinimized) return;
+      const timer = setTimeout(() => fit(), 250);
+      return () => clearTimeout(timer);
+    }, [minimizedPanes, isMinimized]);
 
     const handleContextMenu = useCallback((e: React.MouseEvent) => {
       e.preventDefault();
