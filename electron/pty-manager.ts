@@ -8,6 +8,11 @@ import { ProcessDetector } from "./process-detector";
 
 function createZdotdir(): string {
   const zdotdir = fs.mkdtempSync(path.join(os.tmpdir(), "aiterm-"));
+  const zprofile = [
+    "# aiTerm: source real .zprofile (restores full PATH in packaged app)",
+    '[ -f "$HOME/.zprofile" ] && source "$HOME/.zprofile"',
+  ].join("\n");
+  fs.writeFileSync(path.join(zdotdir, ".zprofile"), zprofile);
   const zshrc = [
     "# aiTerm: source real .zshrc first",
     "unset ZDOTDIR",
@@ -65,7 +70,7 @@ export class PtyManager {
       ? { ZDOTDIR: createZdotdir() }
       : { PS1: " ", PROMPT: " " };
 
-    const ptyProcess = pty.spawn(shell, [], {
+    const ptyProcess = pty.spawn(shell, ["-l"], {
       name: "xterm-256color",
       cols: 80,
       rows: 24,
