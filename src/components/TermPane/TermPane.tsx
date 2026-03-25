@@ -1,4 +1,4 @@
-import React, { useRef, useState, useCallback } from "react";
+import React, { useRef, useState, useCallback, useEffect } from "react";
 import styles from "./TermPane.module.css";
 import { PaneHeader } from "./PaneHeader";
 import { usePty } from "../../hooks/usePty";
