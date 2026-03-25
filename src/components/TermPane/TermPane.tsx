@@ -54,7 +54,9 @@ export const TermPane: React.FC<TermPaneProps> = React.memo(
     const [ctxMenu, setCtxMenu] = useState<{ x: number; y: number } | null>(
       null,
     );
-    const [hasInteracted, setHasInteracted] = useState(() => interactedSessions.has(sessionId));
+    const [hasInteracted, setHasInteracted] = useState(() =>
+      interactedSessions.has(sessionId),
+    );
 
     const { paste, fit } = usePty({ sessionId, containerRef });
 
@@ -197,43 +199,74 @@ export const TermPane: React.FC<TermPaneProps> = React.memo(
         <div
           ref={containerRef}
           className={styles.terminal}
-          onMouseDown={() => { interactedSessions.add(sessionId); setHasInteracted(true); }}
-          onKeyDown={() => { interactedSessions.add(sessionId); setHasInteracted(true); }}
+          onMouseDown={() => {
+            interactedSessions.add(sessionId);
+            setHasInteracted(true);
+          }}
+          onKeyDown={() => {
+            interactedSessions.add(sessionId);
+            setHasInteracted(true);
+          }}
         >
           {!hasInteracted && (
             <div className={styles.placeholder}>
               {rootFolder ? (
                 <>
                   <div className={styles.placeholderIcon}>
-                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                      <polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/>
+                    <svg
+                      width="28"
+                      height="28"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <polyline points="4 17 10 11 4 5" />
+                      <line x1="12" y1="19" x2="20" y2="19" />
                     </svg>
                   </div>
                   <div className={styles.placeholderTitle}>Terminal ready</div>
                   <div className={styles.placeholderHint}>
-                    Type a command, run {isMac ? "⌘⇧C" : "Ctrl+Shift+C"} to launch Claude Code, or {isMac ? "⌘⇧M" : "Ctrl+Shift+M"} to edit files
+                    Type a command or {isMac ? "⌘⇧M" : "Ctrl+Shift+M"} to open
+                    the Markdown editor
                   </div>
                 </>
               ) : (
                 <>
                   <div className={styles.placeholderIcon}>
-                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
+                    <svg
+                      width="28"
+                      height="28"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" />
                     </svg>
                   </div>
-                  <div className={styles.placeholderTitle}>Your AI terminal is ready.</div>
+                  <div className={styles.placeholderTitle}>
+                    Your AI terminal is ready.
+                  </div>
                   <div className={styles.placeholderHint}>
-                    Open a folder and start building with Claude Code, Opencode, or Aider.
+                    Open a folder and start building.
                   </div>
                   <div className={styles.placeholderHint}>
                     Press {isMac ? "⌘O" : "Ctrl+O"} to open a folder
                   </div>
                   <button
                     className={styles.placeholderBtn}
-                    onClick={(e) => { e.stopPropagation(); onCommandPalette?.() }}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onCommandPalette?.();
+                    }}
                     onMouseDown={(e) => e.stopPropagation()}
                   >
-                    {isMac ? "⌘K" : "Ctrl+K"}  Open Command Palette
+                    {isMac ? "⌘K" : "Ctrl+K"} Open Command Palette
                   </button>
                 </>
               )}

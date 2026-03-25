@@ -49,6 +49,7 @@ export interface IpcApi {
   app: {
     getVersion: () => Promise<string>
     getGitBranch: (cwd: string) => Promise<string | null>
+    checkForUpdates: () => Promise<{ version: string; url: string } | null>
     onFocus: (cb: () => void) => Unsubscribe
     onBlur: (cb: () => void) => Unsubscribe
   }
@@ -60,6 +61,7 @@ export interface IpcApi {
   shell: {
     openPath: (path: string) => void
     openInFinder: (path: string) => void
+    openExternal: (url: string) => void
   }
 }
 

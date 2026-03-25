@@ -15,6 +15,16 @@ let mainWindow: BrowserWindow | null = null
 let ptyManager: PtyManager
 let fsWatcher: FsWatcher
 
+function semverGt(a: string, b: string): boolean {
+  const pa = a.split('.').map(Number)
+  const pb = b.split('.').map(Number)
+  for (let i = 0; i < 3; i++) {
+    if ((pa[i] ?? 0) > (pb[i] ?? 0)) return true
+    if ((pa[i] ?? 0) < (pb[i] ?? 0)) return false
+  }
+  return false
+}
+
 function createWindow() {
   protocol.handle('localfile', (request) => {
     const filePath = new URL(request.url).pathname
@@ -155,6 +165,21 @@ function setupIpcHandlers() {
     }
   })
 
+  ipcMain.handle('app:checkForUpdates', async () => {
+    try {
+      const res = await net.fetch('https://api.github.com/repos/vbfs/terminalOS/releases/latest', {
+        headers: { 'User-Agent': 'aiTerm-updater' },
+      })
+      if (!res.ok) return null
+      const data = await res.json() as { tag_name: string; html_url: string }
+      const latest = data.tag_name.replace(/^v/, '')
+      const current = app.getVersion()
+      return semverGt(latest, current) ? { version: latest, url: data.html_url } : null
+    } catch {
+      return null
+    }
+  })
+
   // Window controls
   ipcMain.on('window:minimize', () => mainWindow?.minimize())
   ipcMain.on('window:maximize', () => {
@@ -173,6 +198,10 @@ function setupIpcHandlers() {
 
   ipcMain.on('shell:openInFinder', (_, folderPath: string) => {
     shell.openPath(folderPath)
+  })
+
+  ipcMain.on('shell:openExternal', (_, url: string) => {
+    shell.openExternal(url)
   })
 }
 

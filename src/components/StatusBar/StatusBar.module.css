@@ -107,6 +107,14 @@
   100% { opacity: 0; }
 }
 
+/* ── App version ───────────────────────────────── */
+.appVersion {
+  color: var(--muted);
+  opacity: 0.5;
+  white-space: nowrap;
+  margin-right: 8px;
+}
+
 /* ── Window controls (Windows only) ───────────── */
 .windowControls {
   display: flex;

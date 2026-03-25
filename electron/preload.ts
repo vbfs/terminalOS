@@ -69,6 +69,8 @@ const api = {
       ipcRenderer.invoke('app:getVersion'),
     getGitBranch: (cwd: string): Promise<string | null> =>
       ipcRenderer.invoke('app:getGitBranch', cwd),
+    checkForUpdates: (): Promise<{ version: string; url: string } | null> =>
+      ipcRenderer.invoke('app:checkForUpdates'),
     onFocus: (cb: () => void): Unsubscribe => {
       ipcRenderer.on('app:focus', cb)
       return () => ipcRenderer.removeListener('app:focus', cb)
@@ -86,6 +88,7 @@ const api = {
   shell: {
     openPath: (filePath: string): void => ipcRenderer.send('shell:openPath', filePath),
     openInFinder: (folderPath: string): void => ipcRenderer.send('shell:openInFinder', folderPath),
+    openExternal: (url: string): void => ipcRenderer.send('shell:openExternal', url),
   },
 }
 
