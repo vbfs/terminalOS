@@ -2,7 +2,16 @@ import React, { useEffect, useMemo, useState } from "react";
 import styles from "./StatusBar.module.css";
 import { useSessionsStore } from "../../store/sessions.store";
 import { useTabsStore } from "../../store/tabs.store";
-import { UpdateToast } from "../UpdateToast/UpdateToast";
+
+// Build a direct binary download URL for the given version
+function buildDownloadUrl(version: string, isMac: boolean): string {
+  const base = `https://github.com/vbfs/terminalOS/releases/download/v${version}`;
+  if (!isMac) return `${base}/terminalOS.Setup.${version}.exe`;
+  const isArm = typeof process !== "undefined" && process.arch === "arm64";
+  return isArm
+    ? `${base}/terminalOS-${version}-arm64.dmg`
+    : `${base}/terminalOS-${version}.dmg`;
+}
 
 function formatTokens(n: number): string {
   if (n >= 1000) return `~${(n / 1000).toFixed(1)}k`;
@@ -53,9 +62,6 @@ export const StatusBar: React.FC = () => {
     [focusedSessionId, sessionsMap, sessions],
   );
 
-  // Session tokens = focused terminal only
-  const sessionTokens = focusedSession?.tokens ?? 0;
-
   // Workspace tokens = sum of all terminals in the workspace
   const workspaceTokens = sessions.reduce((sum, s) => sum + s.tokens, 0);
 
@@ -75,14 +81,6 @@ export const StatusBar: React.FC = () => {
   }, []);
 
   return (
-    <>
-    {updateInfo && (
-      <UpdateToast
-        version={updateInfo.version}
-        url={updateInfo.url}
-        onDismiss={() => setUpdateInfo(null)}
-      />
-    )}
     <div className={styles.statusBar}>
       {/* ── Left: tokens + git branch + cwd ── */}
       <div className={styles.left}>
@@ -133,8 +131,32 @@ export const StatusBar: React.FC = () => {
         )}
       </div>
 
-      {/* ── Right: version + window controls ── */}
+      {/* ── Right: update banner + version + window controls ── */}
       <div className={styles.right}>
+        {updateInfo && (
+          <div className={styles.updateInline}>
+            <span className={styles.updateNewVersion}>v{updateInfo.version}</span>
+            <span className={styles.updateLabel}>available</span>
+            <button
+              className={styles.updateDownloadBtn}
+              onClick={() =>
+                window.api.shell.openExternal(
+                  buildDownloadUrl(updateInfo.version, isMac),
+                )
+              }
+            >
+              Download Now!
+            </button>
+            <button
+              className={styles.updateDismiss}
+              onClick={() => setUpdateInfo(null)}
+              title="Fechar"
+            >
+              ✕
+            </button>
+            <span className={styles.updateSep}>·</span>
+          </div>
+        )}
         <span className={styles.appVersion}>v{__APP_VERSION__}</span>
         {/* {workspaceTokens > 0 && (
           <span className={styles.workspaceTokens}>
@@ -201,6 +223,5 @@ export const StatusBar: React.FC = () => {
         )}
       </div>
     </div>
-    </>
   );
 };
