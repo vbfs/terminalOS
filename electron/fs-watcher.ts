@@ -2,6 +2,8 @@ import { BrowserWindow } from 'electron'
 import fs from 'fs/promises'
 import path from 'path'
 import chokidar, { FSWatcher } from 'chokidar'
+import pdfParse from 'pdf-parse'
+import mammoth from 'mammoth'
 
 interface FsEntry {
   name: string
@@ -9,6 +11,25 @@ interface FsEntry {
   isDirectory: boolean
   ext: string
   size?: number
+  contentSize?: number
+}
+
+async function getContentSize(entryPath: string, ext: string): Promise<number | undefined> {
+  try {
+    if (ext === 'pdf') {
+      const buffer = await fs.readFile(entryPath)
+      const result = await pdfParse(buffer)
+      return result.text.length
+    }
+    if (ext === 'docx') {
+      const buffer = await fs.readFile(entryPath)
+      const result = await mammoth.extractRawText({ buffer })
+      return result.value.length
+    }
+  } catch {
+    // fallback: no contentSize, frontend will use size
+  }
+  return undefined
 }
 
 export class FsWatcher {
@@ -27,11 +48,12 @@ export class FsWatcher {
     const entries = await fs.readdir(resolved, { withFileTypes: true })
     const result: FsEntry[] = []
 
-    for (const entry of entries) {
+    await Promise.all(entries.map(async (entry) => {
       const entryPath = path.join(resolved, entry.name)
       const isDirectory = entry.isDirectory()
-      const ext = isDirectory ? '' : path.extname(entry.name).slice(1)
+      const ext = isDirectory ? '' : path.extname(entry.name).slice(1).toLowerCase()
       const stat = isDirectory ? null : await fs.stat(entryPath).catch(() => null)
+      const contentSize = isDirectory ? undefined : await getContentSize(entryPath, ext)
 
       result.push({
         name: entry.name,
@@ -39,8 +61,9 @@ export class FsWatcher {
         isDirectory,
         ext,
         size: stat?.size,
+        contentSize,
       })
-    }
+    }))
 
     // Sort: directories first, then files, both alphabetically
     result.sort((a, b) => {

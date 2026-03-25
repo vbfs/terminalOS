@@ -186,7 +186,7 @@ const FileBrowser: React.FC<FileBrowserProps> = ({
   const isTextFile = (e: FsEntry) => {
     if (e.isDirectory || e.name.startsWith(".")) return false;
     const ext = e.ext.toLowerCase();
-    return ext === "md" || ext === "mdx" || ext === "txt" || ext in LANG_MAP;
+    return ext === "md" || ext === "mdx" || ext === "txt" || ext === "csv" || ext === "pdf" || ext === "docx" || ext in LANG_MAP;
   };
 
   const fmtTokens = (size: number) => {
@@ -364,8 +364,8 @@ const FileBrowser: React.FC<FileBrowserProps> = ({
             ) : (
               <>
                 <span className={styles.entryName}>{entry.name}</span>
-                {isTextFile(entry) && entry.size != null && (
-                  <span className={styles.tokenCount}>{fmtTokens(entry.size)}</span>
+                {isTextFile(entry) && (entry.contentSize ?? entry.size) != null && (
+                  <span className={styles.tokenCount}>{fmtTokens((entry.contentSize ?? entry.size)!)}</span>
                 )}
               </>
             )}
