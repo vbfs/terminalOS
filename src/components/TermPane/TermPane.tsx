@@ -12,6 +12,10 @@ const mod = isMac ? "⌘" : "Ctrl+";
 const sh = isMac ? "⇧" : "Shift+";
 const ctrl = isMac ? "⌃" : "Ctrl+";
 
+// Persists across remounts — once a session has been interacted with,
+// never show the placeholder again regardless of component lifecycle.
+const interactedSessions = new Set<string>();
+
 interface TermPaneProps {
   sessionId: string;
   paneId: string;
@@ -49,7 +53,7 @@ export const TermPane: React.FC<TermPaneProps> = React.memo(
     const [ctxMenu, setCtxMenu] = useState<{ x: number; y: number } | null>(
       null,
     );
-    const [hasInteracted, setHasInteracted] = useState(false);
+    const [hasInteracted, setHasInteracted] = useState(() => interactedSessions.has(sessionId));
 
     const { paste } = usePty({ sessionId, containerRef });
 
@@ -186,8 +190,8 @@ export const TermPane: React.FC<TermPaneProps> = React.memo(
         <div
           ref={containerRef}
           className={styles.terminal}
-          onMouseDown={() => setHasInteracted(true)}
-          onKeyDown={() => setHasInteracted(true)}
+          onMouseDown={() => { interactedSessions.add(sessionId); setHasInteracted(true); }}
+          onKeyDown={() => { interactedSessions.add(sessionId); setHasInteracted(true); }}
         >
           {!hasInteracted && (
             <div className={styles.placeholder}>

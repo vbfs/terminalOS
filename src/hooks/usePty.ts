@@ -207,7 +207,24 @@ export function usePty({ sessionId, containerRef, onReady }: UsePtyOptions) {
 
     const ro = new ResizeObserver((entries) => {
       const entry = entries[0];
-      if (!entry || entry.contentRect.width === 0) return;
+
+      // Width === 0 can happen mid-layout-transition (e.g. after closing a pane
+      // or toggling the markdown editor). If already initialized, schedule a
+      // deferred fit() so we catch the real post-paint dimensions.
+      if (!entry || entry.contentRect.width === 0) {
+        if (initializedRef.current) {
+          if (resizeDebounceRef.current) clearTimeout(resizeDebounceRef.current);
+          resizeDebounceRef.current = setTimeout(() => {
+            fitAddonRef.current?.fit();
+            const term = termRef.current;
+            if (term && (term.cols !== lastSizeRef.current.cols || term.rows !== lastSizeRef.current.rows)) {
+              lastSizeRef.current = { cols: term.cols, rows: term.rows };
+              window.api.pty.resize(sessionId, term.cols, term.rows);
+            }
+          }, 200);
+        }
+        return;
+      }
 
       if (!initializedRef.current) {
         initializedRef.current = true;
