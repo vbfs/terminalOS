@@ -260,7 +260,7 @@
         "applicationCategory": "DeveloperApplication",
         "operatingSystem": "macOS, Windows, Linux",
         "url": "https://terminalos.dev/",
-        "softwareVersion": "0.2.0",
+        "softwareVersion": "0.3.0",
         "description": "Terminal multiplexer purpose-built for AI coding workflows.",
         "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
         "featureList": [
@@ -268,6 +268,7 @@
           "Claude Code detection",
           "Multi-pane workspace",
           "Integrated markdown editor",
+          "Markdown version history",
           "API error alerts",
           "Saved workspace layouts"
         ]
@@ -313,8 +314,7 @@
       class="bg-white text-black text-center py-2.5 px-4"
       style="font-size: 12px; font-weight: 500; letter-spacing: 0.01em"
     >
-      🚀&nbsp; terminalOS v0.2.0 — real-time token tracking for
-      Claude&nbsp;Code, Aider &amp; OpenCode.
+      ✨&nbsp; terminalOS v0.3.0 — automatic Markdown version history.
       <a
         href="#install"
         class="underline underline-offset-2 ml-1 hover:opacity-60 transition-opacity"
@@ -452,7 +452,7 @@
           style="font-size: 11px"
         >
           <span class="font-mono text-g40 tracking-widest uppercase"
-            >v0.2.0</span
+            >v0.3.0</span
           >
           <span class="text-g20">·</span>
           <span class="font-mono text-g40 tracking-widest uppercase"
@@ -481,9 +481,7 @@
         </p>
 
         <!-- CTAs -->
-        <div
-          class="h-anim-4 flex items-center justify-center mb-5"
-        >
+        <div class="h-anim-4 flex items-center justify-center mb-5">
           <a
             href="#install"
             id="hero-dl"
@@ -738,9 +736,9 @@
               class="text-g40 py-9 px-8 leading-relaxed font-light"
               style="font-size: 13px"
             >
-              Built-in editor with live markdown preview, syntax highlighting
-              for 25+ languages, and a full file browser — inside the same
-              window. Review AI-generated docs without touching another app.
+              Built-in editor with live markdown preview, automatic version
+              history (up to 50 snapshots per file), syntax highlighting for 25+
+              languages, and a full file browser — all inside the same window.
             </div>
           </article>
 
@@ -1395,7 +1393,7 @@
               Universal · Apple Silicon + Intel
             </p>
             <a
-              href="https://github.com/vbfs/terminalOS/releases/download/v0.2.0/terminalOS-0.2.0-arm64.dmg"
+              href="https://github.com/vbfs/terminalOS/releases/download/v0.3.0/terminalOS-0.3.0-arm64.dmg"
               class="inline-flex items-center gap-2 border border-hair text-g40 rounded px-4 py-2 font-mono group-hover:border-white/25 group-hover:text-white transition-all duration-150"
               style="font-size: 12px"
               aria-label="Download terminalOS for macOS"
@@ -1428,7 +1426,7 @@
               NSIS installer · Windows 10/11
             </p>
             <a
-              href="https://github.com/vbfs/terminalOS/releases/download/v0.2.0/terminalOS.Setup.0.2.0.exe"
+              href="https://github.com/vbfs/terminalOS/releases/download/v0.3.0/terminalOS.Setup.0.3.0.exe"
               class="inline-flex items-center gap-2 border border-hair text-g40 rounded px-4 py-2 font-mono group-hover:border-white/25 group-hover:text-white transition-all duration-150"
               style="font-size: 12px"
               aria-label="Download terminalOS for Windows"
@@ -1539,7 +1537,8 @@
               class="font-mono text-g30 mb-10"
               style="font-size: 11px; letter-spacing: 0.06em"
             >
-              v0.2.0 &nbsp;·&nbsp; Free forever &nbsp;·&nbsp; No account required
+              v0.3.0 &nbsp;·&nbsp; Free forever &nbsp;·&nbsp; No account
+              required
             </p>
 
             <div class="flex flex-wrap items-center justify-center gap-3">
@@ -1615,11 +1614,12 @@
         var href, label;
         if (mac) {
           href = arm
-            ? "https://github.com/vbfs/terminalOS/releases/download/v0.2.0/terminalOS-0.2.0-arm64.dmg"
-            : "https://github.com/vbfs/terminalOS/releases/download/v0.2.0/terminalOS-0.2.0.dmg";
+            ? "https://github.com/vbfs/terminalOS/releases/download/v0.3.0/terminalOS-0.3.0-arm64.dmg"
+            : "https://github.com/vbfs/terminalOS/releases/download/v0.3.0/terminalOS-0.3.0.dmg";
           label = "Download for Mac";
         } else if (win) {
-          href = "https://github.com/vbfs/terminalOS/releases/download/v0.2.0/terminalOS.Setup.0.2.0.exe";
+          href =
+            "https://github.com/vbfs/terminalOS/releases/download/v0.3.0/terminalOS.Setup.0.3.0.exe";
           label = "Download for Windows";
         } else {
           href = "#install";
