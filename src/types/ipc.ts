@@ -12,6 +12,12 @@ export interface FsEntry {
   contentSize?: number
 }
 
+export interface VersionMeta {
+  id: string
+  version: number
+  timestamp: number
+}
+
 export interface FsEvent {
   type: 'add' | 'addDir' | 'change' | 'unlink' | 'unlinkDir'
   path: string
@@ -45,6 +51,11 @@ export interface IpcApi {
     delete: (path: string) => Promise<void>
     setWatchRoot: (path: string) => void
     onWatch: (cb: (event: FsEvent) => void) => Unsubscribe
+    versions: {
+      save: (filePath: string, content: string) => Promise<VersionMeta | null>
+      list: (filePath: string) => Promise<VersionMeta[]>
+      get: (filePath: string, versionId: string) => Promise<string | null>
+    }
   }
   app: {
     getVersion: () => Promise<string>

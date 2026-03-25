@@ -27,6 +27,7 @@ import {
 } from "../Icons";
 import { ContextMenu } from "../ContextMenu/ContextMenu";
 import { ConfirmDialog } from "../ConfirmDialog/ConfirmDialog";
+import { VersionHistory } from "./VersionHistory";
 
 // ── Language detection ─────────────────────────────────────────
 const LANG_MAP: Record<string, string> = {
@@ -499,6 +500,8 @@ interface EditorProps {
   filePath: string;
   content: string;
   isDirty: boolean;
+  versionCount: number;
+  currentVersion: number;
 }
 
 const Editor: React.FC<EditorProps> = ({
@@ -506,9 +509,12 @@ const Editor: React.FC<EditorProps> = ({
   filePath,
   content,
   isDirty,
+  versionCount,
+  currentVersion,
 }) => {
   const { setContent, save, closeFile } = useMdPaneStore();
   const previewRef = useRef<HTMLDivElement>(null);
+  const [showHistory, setShowHistory] = useState(false);
 
   const filename = filePath.split("/").pop() ?? filePath;
   const isMarkdown = filePath.endsWith(".md") || filePath.endsWith(".mdx");
@@ -534,8 +540,14 @@ const Editor: React.FC<EditorProps> = ({
   const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const triggerAutoSave = useCallback(() => {
     if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
-    saveTimerRef.current = setTimeout(() => save(paneId), 1200);
+    saveTimerRef.current = setTimeout(() => save(paneId, false), 1200);
   }, [paneId, save]);
+
+  const handleRestore = useCallback((restoredContent: string) => {
+    setContent(paneId, restoredContent);
+    if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
+    save(paneId, true);
+  }, [paneId, setContent, save]);
 
   const exportPdf = async () => {
     if (!previewRef.current || !isMarkdown) return;
@@ -568,7 +580,7 @@ const Editor: React.FC<EditorProps> = ({
     if ((e.metaKey || e.ctrlKey) && e.key === "s") {
       e.preventDefault();
       if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
-      save(paneId);
+      save(paneId, true);
     }
   };
 
@@ -589,10 +601,24 @@ const Editor: React.FC<EditorProps> = ({
           </span>
         )}
         {!isPdf && !isDirty && <span className={styles.savedLabel}>saved</span>}
+        {isMarkdown && versionCount > 0 && (
+          <span className={styles.versionBadge} title={`Version ${currentVersion}`}>
+            v{currentVersion}
+          </span>
+        )}
+        {isMarkdown && versionCount > 0 && (
+          <button
+            className={`${styles.saveBtn} ${showHistory ? styles.saveBtnActive : ''}`}
+            onClick={() => setShowHistory((v) => !v)}
+            title="Version history"
+          >
+            history
+          </button>
+        )}
         {!isPdf && (
           <button
             className={styles.saveBtn}
-            onClick={() => save(paneId)}
+            onClick={() => save(paneId, true)}
             title="Save (⌘S)"
           >
             save
@@ -610,6 +636,14 @@ const Editor: React.FC<EditorProps> = ({
       </div>
 
       <div className={styles.editorBody}>
+        {isMarkdown && showHistory && (
+          <VersionHistory
+            filePath={filePath}
+            currentVersion={currentVersion}
+            onRestore={handleRestore}
+            onClose={() => setShowHistory(false)}
+          />
+        )}
         {isPdf ? (
           <iframe
             className={styles.pdfViewer}
@@ -733,6 +767,8 @@ export const MarkdownPane: React.FC<MarkdownPaneProps> = React.memo(
               filePath={state.filePath}
               content={state.content}
               isDirty={isDirty}
+              versionCount={state.versionCount}
+              currentVersion={state.currentVersion}
             />
           ))}
       </div>

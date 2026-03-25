@@ -3,6 +3,7 @@ import path from 'path'
 import { WindowState } from './window-state'
 import { PtyManager } from './pty-manager'
 import { FsWatcher } from './fs-watcher'
+import { VersionsManager } from './versions-manager'
 
 // Must be called before app.ready
 protocol.registerSchemesAsPrivileged([
@@ -14,6 +15,7 @@ const isDev = process.env.NODE_ENV === 'development' || !app.isPackaged
 let mainWindow: BrowserWindow | null = null
 let ptyManager: PtyManager
 let fsWatcher: FsWatcher
+let versionsManager: VersionsManager
 
 function semverGt(a: string, b: string): boolean {
   const pa = a.split('.').map(Number)
@@ -59,6 +61,7 @@ function createWindow() {
 
   ptyManager = new PtyManager(mainWindow)
   fsWatcher = new FsWatcher(mainWindow)
+  versionsManager = new VersionsManager()
 
   if (isDev) {
     mainWindow.loadURL('http://localhost:5173')
@@ -202,6 +205,19 @@ function setupIpcHandlers() {
 
   ipcMain.on('shell:openExternal', (_, url: string) => {
     shell.openExternal(url)
+  })
+
+  // Version history handlers
+  ipcMain.handle('fs:versions:save', async (_, filePath: string, content: string) => {
+    return versionsManager.saveVersion(filePath, content)
+  })
+
+  ipcMain.handle('fs:versions:list', async (_, filePath: string) => {
+    return versionsManager.listVersions(filePath)
+  })
+
+  ipcMain.handle('fs:versions:get', async (_, filePath: string, versionId: string) => {
+    return versionsManager.getVersion(filePath, versionId)
   })
 }
 

@@ -63,6 +63,14 @@ const api = {
       ipcRenderer.on('fs:watch', handler)
       return () => ipcRenderer.removeListener('fs:watch', handler)
     },
+    versions: {
+      save: (filePath: string, content: string) =>
+        ipcRenderer.invoke('fs:versions:save', filePath, content),
+      list: (filePath: string) =>
+        ipcRenderer.invoke('fs:versions:list', filePath),
+      get: (filePath: string, versionId: string) =>
+        ipcRenderer.invoke('fs:versions:get', filePath, versionId),
+    },
   },
   app: {
     getVersion: (): Promise<string> =>

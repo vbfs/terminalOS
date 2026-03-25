@@ -17,6 +17,9 @@ export interface MdPane {
   savedContent: string
   isLoading: boolean
   view: 'browser' | 'editor'
+  versionCount: number
+  currentVersion: number
+  lastVersionAt: number
 }
 
 interface MdPaneStoreState {
@@ -27,7 +30,7 @@ interface MdPaneStoreState {
   openFile: (paneId: string, filePath: string) => Promise<void>
   closeFile: (paneId: string) => void
   setContent: (paneId: string, content: string) => void
-  save: (paneId: string) => Promise<void>
+  save: (paneId: string, isManual?: boolean) => Promise<void>
   newFile: (paneId: string, name: string) => Promise<void>
   newDir: (paneId: string, name: string) => Promise<void>
   goUp: (paneId: string) => Promise<void>
@@ -68,6 +71,9 @@ export const useMdPaneStore = create<MdPaneStoreState>((set, get) => ({
         savedContent: '',
         isLoading: true,
         view: 'browser',
+        versionCount: 0,
+        currentVersion: 0,
+        lastVersionAt: 0,
       })
       return { panes: next }
     })
@@ -101,7 +107,13 @@ export const useMdPaneStore = create<MdPaneStoreState>((set, get) => ({
   openFile: async (paneId, filePath) => {
     set((s) => ({ panes: patchPane(s.panes, paneId, { isLoading: true }) }))
     try {
-      const content = await window.api.fs.readFile(filePath)
+      const isMarkdown = filePath.endsWith('.md') || filePath.endsWith('.mdx')
+      const [content, versions] = await Promise.all([
+        window.api.fs.readFile(filePath),
+        isMarkdown ? window.api.fs.versions.list(filePath) : Promise.resolve([]),
+      ])
+      const versionCount = versions.length
+      const currentVersion = versionCount > 0 ? versions[0].version : 0
       set((s) => ({
         panes: patchPane(s.panes, paneId, {
           filePath,
@@ -109,6 +121,9 @@ export const useMdPaneStore = create<MdPaneStoreState>((set, get) => ({
           savedContent: content,
           isLoading: false,
           view: 'editor',
+          versionCount,
+          currentVersion,
+          lastVersionAt: versionCount > 0 ? versions[0].timestamp : 0,
         }),
       }))
     } catch {
@@ -123,6 +138,9 @@ export const useMdPaneStore = create<MdPaneStoreState>((set, get) => ({
         content: '',
         savedContent: '',
         view: 'browser',
+        versionCount: 0,
+        currentVersion: 0,
+        lastVersionAt: 0,
       }),
     }))
   },
@@ -131,11 +149,31 @@ export const useMdPaneStore = create<MdPaneStoreState>((set, get) => ({
     set((s) => ({ panes: patchPane(s.panes, paneId, { content }) }))
   },
 
-  save: async (paneId) => {
+  save: async (paneId, isManual = false) => {
     const pane = get().panes.get(paneId)
     if (!pane?.filePath) return
     await window.api.fs.writeFile(pane.filePath, pane.content)
     set((s) => ({ panes: patchPane(s.panes, paneId, { savedContent: pane.content }) }))
+
+    // Only version .md files
+    const isMarkdown = pane.filePath.endsWith('.md') || pane.filePath.endsWith('.mdx')
+    if (!isMarkdown) return
+
+    // Throttle: create version on manual save always, or if >2 min since last version
+    const now = Date.now()
+    const TWO_MINUTES = 2 * 60 * 1000
+    if (!isManual && pane.lastVersionAt > 0 && now - pane.lastVersionAt < TWO_MINUTES) return
+
+    const meta = await window.api.fs.versions.save(pane.filePath, pane.content)
+    if (meta) {
+      set((s) => ({
+        panes: patchPane(s.panes, paneId, {
+          versionCount: s.panes.get(paneId)!.versionCount + 1,
+          currentVersion: meta.version,
+          lastVersionAt: meta.timestamp,
+        }),
+      }))
+    }
   },
 
   newFile: async (paneId, name) => {
