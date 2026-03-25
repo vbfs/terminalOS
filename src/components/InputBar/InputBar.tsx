@@ -4,6 +4,7 @@ import { useSessionsStore } from '../../store/sessions.store'
 import { getDotState } from '../../types/session'
 import type { Session } from '../../types/session'
 import { IconChevronDown, IconSend } from '../Icons'
+import { Tooltip } from '../Tooltip/Tooltip'
 
 export const InputBar: React.FC = () => {
   const inputRef = useRef<HTMLInputElement>(null)
@@ -127,7 +128,13 @@ export const InputBar: React.FC = () => {
 
       {/* Input field */}
       <div className={`${styles.inputWrapper} ${isBroadcast ? styles.broadcasting : ''}`}>
-        <span className={styles.askPill}>{isBroadcast ? 'BC' : 'ASK'}</span>
+        <Tooltip
+          content={isBroadcast ? `Broadcasting to ${runningCount} sessions` : "Send to focused session"}
+          shortcut="Ctrl+B"
+          placement="top"
+        >
+          <span className={styles.askPill}>{isBroadcast ? 'BC' : 'ASK'}</span>
+        </Tooltip>
         <input
           ref={inputRef}
           className={styles.input}

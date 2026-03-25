@@ -26,6 +26,7 @@ import {
   IconFilePdf,
 } from "../Icons";
 import { ContextMenu } from "../ContextMenu/ContextMenu";
+import { ConfirmDialog } from "../ConfirmDialog/ConfirmDialog";
 
 // ── Language detection ─────────────────────────────────────────
 const LANG_MAP: Record<string, string> = {
@@ -122,6 +123,7 @@ const FileBrowser: React.FC<FileBrowserProps> = ({
   const [draggingPath, setDraggingPath] = useState<string | null>(null);
   const [dragOverTarget, setDragOverTarget] = useState<string | null>(null);
   const [ctxMenu, setCtxMenu] = useState<{ x: number; y: number; entry: FsEntry } | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
   const [renamingPath, setRenamingPath] = useState<string | null>(null);
   const [renameValue, setRenameValue] = useState("");
   const renameInputRef = useRef<HTMLInputElement>(null);
@@ -290,7 +292,15 @@ const FileBrowser: React.FC<FileBrowserProps> = ({
       >
         {isLoading && <div className={styles.loadingMsg}>loading…</div>}
         {!isLoading && entries.length === 0 && (
-          <div className={styles.emptyMsg}>empty directory</div>
+          <div className={styles.emptyDir}>
+            <span className={styles.emptyDirIcon}>
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
+              </svg>
+            </span>
+            <span className={styles.emptyDirTitle}>Empty folder</span>
+            <span className={styles.emptyDirHint}>Create a new file to get started</span>
+          </div>
         )}
         {entries.map((entry) => (
           <div
@@ -406,7 +416,7 @@ const FileBrowser: React.FC<FileBrowserProps> = ({
                   icon: "✕",
                   label: "Delete",
                   danger: true,
-                  onClick: () => deleteEntry(paneId, ctxMenu.entry.path),
+                  onClick: () => setDeleteTarget(ctxMenu.entry.path),
                 },
               ],
             },
@@ -414,6 +424,15 @@ const FileBrowser: React.FC<FileBrowserProps> = ({
           onClose={() => setCtxMenu(null)}
         />
       )}
+      <ConfirmDialog
+        isOpen={deleteTarget !== null}
+        title={`Delete "${deleteTarget?.split('/').pop() ?? ''}"`}
+        body="This will permanently delete the file. This action cannot be undone."
+        confirmLabel="Delete"
+        isDanger
+        onConfirm={() => { deleteEntry(paneId, deleteTarget!); setDeleteTarget(null) }}
+        onCancel={() => setDeleteTarget(null)}
+      />
     </div>
   );
 };

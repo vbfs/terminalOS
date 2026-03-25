@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import { useTabsStore } from '../store/tabs.store'
 import { useWorkspaceStore } from '../store/workspace.store'
 import { useSessionsStore } from '../store/sessions.store'
+import { useUiStore } from '../store/ui.store'
 
 interface KeymapHandlers {
   onCommandPalette?: () => void
@@ -29,11 +30,23 @@ export function useKeymap(handlers: KeymapHandlers = {}) {
   const tabsStore = useTabsStore()
   const workspaceStore = useWorkspaceStore()
   const sessionsStore = useSessionsStore()
+  const setShortcutRefOpen = useUiStore((s) => s.setShortcutRefOpen)
+  const shortcutRefOpen = useUiStore((s) => s.shortcutRefOpen)
 
   useEffect(() => {
     const handleKeyDown = async (e: KeyboardEvent) => {
       const activeTab = tabsStore.tabs.find((t) => t.id === tabsStore.activeTabId)
       const activePaneId = activeTab?.activePaneId ?? null
+
+      // Shortcut reference panel — ? key (only when not typing in an input)
+      if (e.key === '?' && !e.metaKey && !e.ctrlKey) {
+        const tag = (e.target as HTMLElement)?.tagName
+        if (tag !== 'INPUT' && tag !== 'TEXTAREA') {
+          e.preventDefault()
+          setShortcutRefOpen(!shortcutRefOpen)
+          return
+        }
+      }
 
       // Command palette
       if (matchesShortcut(e, 'CmdOrCtrl+K')) {
@@ -110,9 +123,23 @@ export function useKeymap(handlers: KeymapHandlers = {}) {
         }
         return
       }
+
+      // Open Folder
+      if (matchesShortcut(e, 'CmdOrCtrl+O')) {
+        e.preventDefault()
+        const folder = await window.api.fs.openFolder()
+        if (folder) {
+          workspaceStore.setRootFolder(folder)
+          if (activePaneId) {
+            const session = Array.from(sessionsStore.sessions.values()).find(s => s.paneId === activePaneId)
+            if (session) window.api.pty.write(session.id, `cd "${folder}"\n`)
+          }
+        }
+        return
+      }
     }
 
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [tabsStore, workspaceStore, sessionsStore, handlers])
+  }, [tabsStore, workspaceStore, sessionsStore, handlers, setShortcutRefOpen, shortcutRefOpen])
 }

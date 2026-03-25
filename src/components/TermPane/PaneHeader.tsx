@@ -1,6 +1,7 @@
 import React from "react";
 import styles from "./TermPane.module.css";
 import { useUiStore } from "../../store/ui.store";
+import { Tooltip } from "../Tooltip/Tooltip";
 function formatTokens(n: number): string {
   if (n >= 1000) return `${(n / 1000).toFixed(1)}k`;
   return String(n);
@@ -70,10 +71,12 @@ export const PaneHeader: React.FC<PaneHeaderProps> = ({
             <span className={styles.envName}>{session.condaEnv}</span>
           </span>
         )}
-        <button className={styles.pathBtn} onClick={handleOpenFolder} title="Open folder">
-          <IconFolder size={11} />
-          <span>{path}</span>
-        </button>
+        <Tooltip content="Open folder dialog" placement="bottom">
+          <button className={styles.pathBtn} onClick={handleOpenFolder}>
+            <IconFolder size={11} />
+            <span>{path}</span>
+          </button>
+        </Tooltip>
 
         <>
           <span className={styles.sessionPath}>|</span>
@@ -94,14 +97,14 @@ export const PaneHeader: React.FC<PaneHeaderProps> = ({
       <div
         className={`${styles.paneActions} ${isMinimized ? styles.paneActionsMinimized : ""}`}
       >
-        <button
-          className={`${styles.paneActionBtn} ${styles.minimizeBtn}`}
-          onClick={(e) => {
-            e.stopPropagation();
-            onToggleMinimize?.(paneId);
-          }}
-          title={isMinimized ? "Restore pane" : "Minimize pane"}
-        >
+        <Tooltip content={isMinimized ? "Restore pane" : "Minimize pane"} placement="bottom">
+          <button
+            className={`${styles.paneActionBtn} ${styles.minimizeBtn}`}
+            onClick={(e) => {
+              e.stopPropagation();
+              onToggleMinimize?.(paneId);
+            }}
+          >
           {isMinimized
             ? restoreDirection === 'left'
               ? <IconArrowLeft size={10} />
@@ -110,54 +113,59 @@ export const PaneHeader: React.FC<PaneHeaderProps> = ({
                 : <IconRestore size={10} />
             : <IconMinus size={10} />
           }
-        </button>
+          </button>
+        </Tooltip>
         {!isMinimized && onOpenMd && (
-          <button
-            className={`${styles.paneActionBtn} ${styles.mdBtn}`}
-            onClick={(e) => {
-              e.stopPropagation();
-              onOpenMd(paneId);
-            }}
-            title="Open Markdown Editor"
-          >
-            <IconMarkdownDoc size={12} />
-          </button>
+          <Tooltip content="Open Markdown Editor" shortcut="⌘⇧M" placement="bottom">
+            <button
+              className={`${styles.paneActionBtn} ${styles.mdBtn}`}
+              onClick={(e) => {
+                e.stopPropagation();
+                onOpenMd(paneId);
+              }}
+            >
+              <IconMarkdownDoc size={12} />
+            </button>
+          </Tooltip>
         )}
         {!isMinimized && (
-          <button
-            className={styles.paneActionBtn}
-            onClick={(e) => {
-              e.stopPropagation();
-              onSplit(paneId, "h");
-            }}
-            title="Split right (Cmd+D)"
-          >
-            <IconPanelRight size={12} />
-          </button>
+          <Tooltip content="Split right" shortcut="⌘D" placement="bottom">
+            <button
+              className={styles.paneActionBtn}
+              onClick={(e) => {
+                e.stopPropagation();
+                onSplit(paneId, "h");
+              }}
+            >
+              <IconPanelRight size={12} />
+            </button>
+          </Tooltip>
         )}
         {!isMinimized && (
-          <button
-            className={styles.paneActionBtn}
-            onClick={(e) => {
-              e.stopPropagation();
-              onSplit(paneId, "v");
-            }}
-            title="Split down (Cmd+Shift+D)"
-          >
-            <IconPanelBottom size={12} />
-          </button>
+          <Tooltip content="Split below" shortcut="⌘⇧D" placement="bottom">
+            <button
+              className={styles.paneActionBtn}
+              onClick={(e) => {
+                e.stopPropagation();
+                onSplit(paneId, "v");
+              }}
+            >
+              <IconPanelBottom size={12} />
+            </button>
+          </Tooltip>
         )}
         {!isMinimized && canClose && (
-          <button
-            className={`${styles.paneActionBtn} ${styles.closePaneBtn}`}
-            onClick={(e) => {
-              e.stopPropagation();
-              onClose(paneId);
-            }}
-            title="Close pane (Cmd+W)"
-          >
-            <IconX size={10} />
-          </button>
+          <Tooltip content="Close pane" shortcut="⌘W" placement="bottom">
+            <button
+              className={`${styles.paneActionBtn} ${styles.closePaneBtn}`}
+              onClick={(e) => {
+                e.stopPropagation();
+                onClose(paneId);
+              }}
+            >
+              <IconX size={10} />
+            </button>
+          </Tooltip>
         )}
       </div>
     </div>

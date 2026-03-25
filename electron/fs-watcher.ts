@@ -2,7 +2,8 @@ import { BrowserWindow } from 'electron'
 import fs from 'fs/promises'
 import path from 'path'
 import chokidar, { FSWatcher } from 'chokidar'
-import pdfParse from 'pdf-parse'
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const pdfParse = require('pdf-parse') as (buf: Buffer) => Promise<{ text: string }>
 import mammoth from 'mammoth'
 
 interface FsEntry {

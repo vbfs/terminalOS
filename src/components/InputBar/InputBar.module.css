@@ -127,6 +127,7 @@
 
 .inputWrapper.broadcasting {
   border-color: var(--purple);
+  box-shadow: 0 0 0 1px var(--purple) inset;
 }
 
 /* ── ASK pill ──────────────────────────────────── */

@@ -45,6 +45,14 @@
   font-weight: 500;
 }
 
+/* ── Git branch ────────────────────────────────── */
+.gitBranch {
+  color: var(--teal);
+  white-space: nowrap;
+  flex-shrink: 0;
+  opacity: 0.8;
+}
+
 /* ── CWD ───────────────────────────────────────── */
 .cwd {
   color: var(--muted);

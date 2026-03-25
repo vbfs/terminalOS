@@ -224,16 +224,79 @@
 /* ── Placeholder / empty state ──────────────────── */
 .placeholder {
   position: absolute;
-  top: 6px;
-  left: 24px;
-  pointer-events: none;
+  inset: 0;
   z-index: 1;
   user-select: none;
-  font-size: 13px;
-  font-family: "JetBrains Mono", "MesloLGS NF", "Hack Nerd Font", "Cascadia Code", monospace;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  pointer-events: none;
+}
+
+.placeholderIcon {
   color: var(--muted);
-  opacity: 0.3;
-  white-space: nowrap;
+  opacity: 0.35;
+}
+
+.placeholderTitle {
+  font-size: 14px;
+  font-family: var(--font-ui);
+  font-weight: 500;
+  color: var(--muted2);
+  opacity: 0.7;
+}
+
+.placeholderHint {
+  font-size: 12px;
+  font-family: var(--font-ui);
+  color: var(--muted);
+  opacity: 0.5;
+}
+
+.placeholderBtn {
+  pointer-events: all;
+  background: none;
+  border: 1px solid var(--border2);
+  color: var(--muted2);
+  font-size: 12px;
+  font-family: var(--font-ui);
+  padding: 6px 14px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  margin-top: 4px;
+  opacity: 0.7;
+  transition: opacity var(--dur-fast), border-color var(--dur-fast);
+  letter-spacing: 0.02em;
+}
+
+.placeholderBtn:hover {
+  opacity: 1;
+  border-color: var(--accent);
+}
+
+/* ── AI pulse animation ──────────────────────────── */
+@keyframes tokenPulse {
+  0%   { color: var(--muted); }
+  50%  { color: var(--amber); }
+  100% { color: var(--muted); }
+}
+
+.aiPulse {
+  animation: tokenPulse 1s ease-out;
+}
+
+/* ── Session exited badge ────────────────────────── */
+.exitedBadge {
+  font-size: 10px;
+  font-family: var(--font-ui);
+  color: var(--muted);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 0px 5px;
+  margin-left: 4px;
+  flex-shrink: 0;
 }
 
 /* ── Terminal ───────────────────────────────────── */

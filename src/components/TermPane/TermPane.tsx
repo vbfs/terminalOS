@@ -4,6 +4,7 @@ import { PaneHeader } from "./PaneHeader";
 import { usePty } from "../../hooks/usePty";
 import { useSessionsStore } from "../../store/sessions.store";
 import { useTabsStore } from "../../store/tabs.store";
+import { useWorkspaceStore } from "../../store/workspace.store";
 import { ContextMenu, isMac } from "../ContextMenu/ContextMenu";
 import type { SplitDirection } from "../../types/pane";
 
@@ -44,6 +45,7 @@ export const TermPane: React.FC<TermPaneProps> = React.memo(
     const setAlert = useSessionsStore((s) => s.setAlert);
     const isMinimized = useTabsStore((s) => s.minimizedPanes.has(paneId));
     const toggleMinimize = useTabsStore((s) => s.toggleMinimizePane);
+    const rootFolder = useWorkspaceStore((s) => s.rootFolder);
     const [ctxMenu, setCtxMenu] = useState<{ x: number; y: number } | null>(
       null,
     );
@@ -185,10 +187,42 @@ export const TermPane: React.FC<TermPaneProps> = React.memo(
           ref={containerRef}
           className={styles.terminal}
           onMouseDown={() => setHasInteracted(true)}
+          onKeyDown={() => setHasInteracted(true)}
         >
           {!hasInteracted && (
             <div className={styles.placeholder}>
-              {`Type  ·   Select a folder  ·  ${isMac ? "⌘K" : "Ctrl+K"} to open Command Palette`}
+              {rootFolder ? (
+                <>
+                  <div className={styles.placeholderIcon}>
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                      <polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/>
+                    </svg>
+                  </div>
+                  <div className={styles.placeholderTitle}>Terminal ready</div>
+                  <div className={styles.placeholderHint}>
+                    Type a command, run {isMac ? "⌘⇧C" : "Ctrl+Shift+C"} to launch Claude Code, or {isMac ? "⌘⇧M" : "Ctrl+Shift+M"} to edit files
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className={styles.placeholderIcon}>
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
+                    </svg>
+                  </div>
+                  <div className={styles.placeholderTitle}>Open a folder to begin</div>
+                  <div className={styles.placeholderHint}>
+                    Use {isMac ? "⌘O" : "Ctrl+O"} to open a folder
+                  </div>
+                  <button
+                    className={styles.placeholderBtn}
+                    onClick={(e) => { e.stopPropagation(); onCommandPalette?.() }}
+                    onMouseDown={(e) => e.stopPropagation()}
+                  >
+                    {isMac ? "⌘K" : "Ctrl+K"}  Open Command Palette
+                  </button>
+                </>
+              )}
             </div>
           )}
         </div>

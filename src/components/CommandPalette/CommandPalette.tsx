@@ -3,6 +3,7 @@ import styles from "./CommandPalette.module.css";
 import { useTabsStore } from "../../store/tabs.store";
 import { useWorkspaceStore } from "../../store/workspace.store";
 import { useSessionsStore } from "../../store/sessions.store";
+import { useUiStore } from "../../store/ui.store";
 
 interface Command {
   id: string;
@@ -254,6 +255,16 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
       icon: "⚙",
       action: () => {
         onOpenSettings?.();
+      },
+    },
+    {
+      id: "app.shortcuts",
+      label: "Keyboard Shortcuts",
+      shortcut: "?",
+      icon: "⌨",
+      action: () => {
+        useUiStore.getState().setShortcutRefOpen(true);
+        onClose();
       },
     },
     ...(canClosePane

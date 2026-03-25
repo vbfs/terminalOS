@@ -6,6 +6,8 @@ import { getDotState } from "../../types/session";
 import { getAllLeaves } from "../../types/pane";
 import type { AgentType, DotState } from "../../types/session";
 import { IconX, IconPlus } from "../Icons";
+import { ConfirmDialog } from "../ConfirmDialog/ConfirmDialog";
+import { Tooltip } from "../Tooltip/Tooltip";
 
 const AGENT_LABELS: Record<AgentType, string> = {
   CLAUDE: "CLAUDE",
@@ -43,6 +45,7 @@ export const TabBar: React.FC<TabBarProps> = ({ onNewTab, onCloseTab }) => {
   const [editingTabId, setEditingTabId] = useState<string | null>(null);
   const [editValue, setEditValue] = useState("");
   const editRef = useRef<HTMLInputElement>(null);
+  const [closingTabId, setClosingTabId] = useState<string | null>(null);
 
   const getTabDotState = (tabId: string): DotState => {
     const tab = tabs.find((t) => t.id === tabId);
@@ -130,29 +133,50 @@ export const TabBar: React.FC<TabBarProps> = ({ onNewTab, onCloseTab }) => {
                 </span>
               )}
               {tabs.length > 1 && (
-                <button
-                  className={styles.closeTabBtn}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onCloseTab(tab.id);
-                  }}
-                  title="Close workspace"
-                >
-                  <IconX size={9} />
-                </button>
+                <Tooltip content="Close workspace" placement="bottom">
+                  <button
+                    className={styles.closeTabBtn}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      if (paneCount > 1) {
+                        setClosingTabId(tab.id);
+                      } else {
+                        onCloseTab(tab.id);
+                      }
+                    }}
+                  >
+                    <IconX size={9} />
+                  </button>
+                </Tooltip>
               )}
             </div>
           );
         })}
       </div>
 
-      <button
-        className={styles.newTabBtn}
-        onClick={onNewTab}
-        title="New Workspace (Cmd+T)"
-      >
-        <IconPlus size={11} />
-      </button>
+      <Tooltip content="New Workspace" shortcut="⌘T" placement="bottom">
+        <button
+          className={styles.newTabBtn}
+          onClick={onNewTab}
+        >
+          <IconPlus size={11} />
+        </button>
+      </Tooltip>
+
+      {closingTabId && (() => {
+        const closingTab = tabs.find((t) => t.id === closingTabId);
+        return (
+          <ConfirmDialog
+            isOpen
+            title={`Close "${closingTab?.name}"?`}
+            body={`This workspace has ${getPaneCount(closingTabId)} open panes. All terminal sessions will be closed.`}
+            confirmLabel="Close workspace"
+            isDanger
+            onConfirm={() => { onCloseTab(closingTabId); setClosingTabId(null) }}
+            onCancel={() => setClosingTabId(null)}
+          />
+        );
+      })()}
     </div>
   );
 };

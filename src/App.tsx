@@ -5,6 +5,7 @@ import { PaneGrid } from "./components/PaneGrid/PaneGrid";
 import { StatusBar } from "./components/StatusBar/StatusBar";
 import { CommandPalette } from "./components/CommandPalette/CommandPalette";
 import { Settings } from "./components/Settings/Settings";
+import { ShortcutReference } from "./components/ShortcutReference/ShortcutReference";
 import { useSessionsStore } from "./store/sessions.store";
 import { useTabsStore } from "./store/tabs.store";
 import { useWorkspaceStore } from "./store/workspace.store";
@@ -311,6 +312,7 @@ export const App: React.FC = () => {
         onOpenSettings={() => { setCommandPaletteOpen(false); setSettingsOpen(true); }}
       />
       <Settings isOpen={settingsOpen} onClose={() => setSettingsOpen(false)} />
+      <ShortcutReference />
     </div>
   );
 };

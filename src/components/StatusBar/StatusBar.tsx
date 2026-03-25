@@ -2,6 +2,7 @@ import React, { useMemo, useState } from "react";
 import styles from "./StatusBar.module.css";
 import { useSessionsStore } from "../../store/sessions.store";
 import { useTabsStore } from "../../store/tabs.store";
+import { useWorkspaceStore } from "../../store/workspace.store";
 
 function formatTokens(n: number): string {
   if (n >= 1000) return `~${(n / 1000).toFixed(1)}k`;
@@ -61,24 +62,12 @@ export const StatusBar: React.FC = () => {
   const condaEnv = focusedSession?.condaEnv ?? null;
   const cwd = focusedSession?.cwd ?? "";
   const shortCwd = shortenCwd(cwd);
+  const gitBranch = useWorkspaceStore((s) => s.gitBranch);
 
   return (
     <div className={styles.statusBar}>
-      {/* ── Left: env + path + session tokens ── */}
+      {/* ── Left: tokens + git branch + cwd ── */}
       <div className={styles.left}>
-        {/* {condaEnv && (
-          <span className={styles.envTag}>
-            <span className={styles.envArrow}>&gt;</span>
-            <span className={styles.envName}>{condaEnv}</span>
-          </span>
-        )}
-
-        {shortCwd && (
-          <span className={styles.cwd} title={cwd}>
-            {shortCwd}
-          </span>
-        )} */}
-
         <>
           <span className={styles.label}>workspace tokens: </span>
           <span className={styles.value}>
@@ -87,6 +76,33 @@ export const StatusBar: React.FC = () => {
           </span>
         </>
 
+        {gitBranch && (
+          <>
+            <span className={styles.sep}>·</span>
+            <span className={styles.gitBranch} title={`Branch: ${gitBranch}`}>
+              ⎇ {gitBranch}
+            </span>
+          </>
+        )}
+
+        {shortCwd && (
+          <>
+            <span className={styles.sep}>·</span>
+            <span className={styles.cwd} title={cwd}>
+              {shortCwd}
+            </span>
+          </>
+        )}
+
+        {condaEnv && (
+          <>
+            <span className={styles.sep}>·</span>
+            <span className={styles.envTag}>
+              <span className={styles.envArrow}>&gt;</span>
+              <span className={styles.envName}>{condaEnv}</span>
+            </span>
+          </>
+        )}
       </div>
 
       {/* ── Right: workspace tokens + window controls ── */}
