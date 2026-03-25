@@ -6,7 +6,7 @@
 
 **The terminal built for AI-native developers.**
 
-[![Version](https://img.shields.io/badge/version-0.2.0-blue.svg)](package.json)
+[![Version](https://img.shields.io/badge/version-0.3.0-blue.svg)](package.json)
 [![Platform](https://img.shields.io/badge/platform-macOS%20%7C%20Windows%20%7C%20Linux-lightgrey.svg)]()
 [![License](https://img.shields.io/badge/license-MIT-green.svg)]()
 
@@ -105,10 +105,20 @@ Split your workspace horizontally or vertically into an unlimited 2D pane tree. 
 A built-in file editor with live preview designed for reviewing AI-generated docs, editing prompts, and working with code files without leaving your terminal.
 
 - **Live markdown preview** — rendered side-by-side as you type
+- **Automatic version history** — up to 50 snapshots saved per file, with a sidebar panel to browse, preview, and restore any previous version
 - **Syntax highlighting** for 25+ languages (TypeScript, JavaScript, Python, Rust, Go, C/C++, and more)
 - **File browser** — navigate directories, open files with a single click
 - **File management** — create and rename files and folders inline
 - **Drag-and-drop** file operations within the browser
+
+#### Version History
+
+Every time you save a file, terminalOS captures a snapshot automatically. A version badge (`v{n}`) appears in the editor header when history exists.
+
+- **Auto-save deduplication** — identical content is never stored twice
+- **Manual saves** always create a new version; auto-saves are throttled to 2-minute intervals
+- **Up to 50 versions** per file, stored locally in `{userData}/md-versions/`
+- **Restore any version** from the sidebar panel with a single click
 
 ---
 
@@ -191,6 +201,7 @@ Team leads and senior engineers rolling out AI coding tools across their org. Th
 | API error alerts           | ✅         | ❌            | ❌               | ❌               |
 | Multi-pane AI sessions     | ✅         | Manual        | Manual           | ❌               |
 | Integrated markdown editor | ✅         | ❌            | Extension        | ❌               |
+| Markdown version history   | ✅         | ❌            | ❌               | ❌               |
 | Built for CLI AI tools     | ✅         | ❌            | ❌               | ❌               |
 | Works with any AI tool     | ✅         | —             | —                | ❌ (locked in)   |
 
