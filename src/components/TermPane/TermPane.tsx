@@ -210,9 +210,12 @@ export const TermPane: React.FC<TermPaneProps> = React.memo(
                       <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
                     </svg>
                   </div>
-                  <div className={styles.placeholderTitle}>Open a folder to begin</div>
+                  <div className={styles.placeholderTitle}>Your AI terminal is ready.</div>
                   <div className={styles.placeholderHint}>
-                    Use {isMac ? "⌘O" : "Ctrl+O"} to open a folder
+                    Open a folder and start building with Claude Code, Opencode, or Aider.
+                  </div>
+                  <div className={styles.placeholderHint}>
+                    Press {isMac ? "⌘O" : "Ctrl+O"} to open a folder
                   </div>
                   <button
                     className={styles.placeholderBtn}
