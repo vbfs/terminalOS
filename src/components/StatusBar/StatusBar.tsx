@@ -1,8 +1,7 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import styles from "./StatusBar.module.css";
 import { useSessionsStore } from "../../store/sessions.store";
 import { useTabsStore } from "../../store/tabs.store";
-import { useWorkspaceStore } from "../../store/workspace.store";
 
 function formatTokens(n: number): string {
   if (n >= 1000) return `~${(n / 1000).toFixed(1)}k`;
@@ -62,7 +61,12 @@ export const StatusBar: React.FC = () => {
   const condaEnv = focusedSession?.condaEnv ?? null;
   const cwd = focusedSession?.cwd ?? "";
   const shortCwd = shortenCwd(cwd);
-  const gitBranch = useWorkspaceStore((s) => s.gitBranch);
+
+  const [gitBranch, setGitBranch] = useState<string | null>(null);
+  useEffect(() => {
+    if (!cwd) { setGitBranch(null); return; }
+    window.api.app.getGitBranch(cwd).then((branch) => setGitBranch(branch ?? null));
+  }, [cwd]);
 
   return (
     <div className={styles.statusBar}>
@@ -85,21 +89,21 @@ export const StatusBar: React.FC = () => {
           </>
         )}
 
-        {shortCwd && (
-          <>
-            <span className={styles.sep}>·</span>
-            <span className={styles.cwd} title={cwd}>
-              {shortCwd}
-            </span>
-          </>
-        )}
-
         {condaEnv && (
           <>
             <span className={styles.sep}>·</span>
             <span className={styles.envTag}>
               <span className={styles.envArrow}>&gt;</span>
               <span className={styles.envName}>{condaEnv}</span>
+            </span>
+          </>
+        )}
+
+        {shortCwd && (
+          <>
+            <span className={styles.sep}>·</span>
+            <span className={styles.cwd} title={cwd}>
+              {shortCwd}
             </span>
           </>
         )}
