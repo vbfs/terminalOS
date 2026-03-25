@@ -1,6 +1,7 @@
 import React from "react";
 import styles from "./TermPane.module.css";
 import { useUiStore } from "../../store/ui.store";
+import { useWorkspaceStore } from "../../store/workspace.store";
 import { Tooltip } from "../Tooltip/Tooltip";
 function formatTokens(n: number): string {
   if (n >= 1000) return `${(n / 1000).toFixed(1)}k`;
@@ -53,6 +54,8 @@ export const PaneHeader: React.FC<PaneHeaderProps> = ({
 }) => {
   const path = shortPath(session.cwd);
   const copiedFlash = useUiStore((s) => s.copiedFlash);
+  const rootFolder = useWorkspaceStore((s) => s.rootFolder);
+  const workspaceName = (rootFolder ?? session.cwd ?? "").split("/").filter(Boolean).pop() ?? null;
 
   const handleOpenFolder = async (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -65,10 +68,9 @@ export const PaneHeader: React.FC<PaneHeaderProps> = ({
   return (
     <div className={`${styles.paneHeader} ${isFocused ? styles.focused : ""}`}>
       <div className={styles.paneHeaderLeft}>
-        {session.condaEnv && (
-          <span className={styles.envBadge}>
-            <span className={styles.envIcon}>›</span>
-            <span className={styles.envName}>{session.condaEnv}</span>
+        {workspaceName && (
+          <span className={styles.workspaceBadge}>
+            <span className={styles.workspaceName}>{workspaceName}</span>
           </span>
         )}
         <Tooltip content="Open folder dialog" placement="bottom">
