@@ -619,8 +619,31 @@ function startServer(port) {
     });
     httpServer.listen(port, '127.0.0.1', () => {
         const url = `http://localhost:${port}`;
-        console.log(`\n  terminalOS is running at ${url}\n`);
-        // Open browser automatically
+        const W = '\x1b[97m';
+        const GR = '\x1b[90m';
+        const B = '\x1b[1m';
+        const D = '\x1b[2m';
+        const R = '\x1b[0m';
+        const T = W + B;
+        const O = GR + B;
+        const logo = [
+            `${T}████████╗███████╗██████╗ ███╗   ███╗██╗███╗   ██╗ █████╗ ██╗      ${O} ██████╗ ███████╗${R}`,
+            `${T}   ██╔══╝██╔════╝██╔══██╗████╗ ████║██║████╗  ██║██╔══██╗██║      ${O}██╔═══██╗██╔════╝${R}`,
+            `${T}   ██║   █████╗  ██████╔╝██╔████╔██║██║██╔██╗ ██║███████║██║      ${O}██║   ██║███████╗${R}`,
+            `${T}   ██║   ██╔══╝  ██╔══██╗██║╚██╔╝██║██║██║╚██╗██║██╔══██║██║      ${O}██║   ██║╚════██║${R}`,
+            `${T}   ██║   ███████╗██║  ██║██║ ╚═╝ ██║██║██║ ╚████║██║  ██║███████╗${O}╚██████╔╝███████║${R}`,
+            `${T}   ╚═╝   ╚══════╝╚═╝  ╚═╝╚═╝     ╚═╝╚═╝╚═╝  ╚═══╝╚═╝  ╚═╝╚══════╝${O} ╚═════╝ ╚══════╝${R}`,
+        ];
+        const pad = '  ';
+        console.log('');
+        logo.forEach(line => console.log(pad + line));
+        console.log('');
+        console.log(`${pad}${D}v${pkgVersion}  ·  terminalos.dev${R}`);
+        console.log('');
+        console.log(`${pad}${W}◆${R} ${B}Ready${R}  ${W}${B}${url}${R}`);
+        console.log(`${pad}${D}  Opening in your browser...${R}`);
+        console.log(`${pad}${D}  Press Ctrl+C to stop.${R}`);
+        console.log('');
         openUrl(url).catch(() => { });
     });
 }
