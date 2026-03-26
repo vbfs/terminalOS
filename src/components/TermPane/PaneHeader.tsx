@@ -1,3 +1,4 @@
+import { api } from "../../api";
 import React from "react";
 import styles from "./TermPane.module.css";
 import { useUiStore } from "../../store/ui.store";
@@ -59,9 +60,9 @@ export const PaneHeader: React.FC<PaneHeaderProps> = ({
 
   const handleOpenFolder = async (e: React.MouseEvent) => {
     e.stopPropagation();
-    const folder = await window.api.fs.openFolder();
+    const folder = await api.fs.openFolder();
     if (folder) {
-      window.api.pty.write(session.id, `cd "${folder}"\n`);
+      api.pty.write(session.id, `cd "${folder}"\n`);
     }
   };
 

@@ -9,6 +9,7 @@ import { useUiStore } from "../store/ui.store";
 import { usePreferencesStore } from "../store/preferences.store";
 import { getThemeById } from "../themes";
 import { estimateCost, normalizeModel } from "../utils/pricing";
+import { api } from "../api";
 import {
   saveTerminal,
   takeTerminal,
@@ -220,7 +221,7 @@ export function usePty({ sessionId, containerRef, onReady }: UsePtyOptions) {
             const term = termRef.current;
             if (term && (term.cols !== lastSizeRef.current.cols || term.rows !== lastSizeRef.current.rows)) {
               lastSizeRef.current = { cols: term.cols, rows: term.rows };
-              window.api.pty.resize(sessionId, term.cols, term.rows);
+              api.pty.resize(sessionId, term.cols, term.rows);
             }
           }, 200);
         }
@@ -270,11 +271,11 @@ export function usePty({ sessionId, containerRef, onReady }: UsePtyOptions) {
 
           setTimeout(() => {
             if (!termRef.current) return;
-            window.api.pty.resize(sessionId, cols, rows);
-            setTimeout(() => window.api.pty.write(sessionId, "\x0c"), 30);
+            api.pty.resize(sessionId, cols, rows);
+            setTimeout(() => api.pty.write(sessionId, "\x0c"), 30);
           }, 50);
 
-          terminal.onData((data) => window.api.pty.write(sessionId, data));
+          terminal.onData((data) => api.pty.write(sessionId, data));
 
           terminal.parser.registerOscHandler(7, (data) => {
             try {
@@ -305,7 +306,7 @@ export function usePty({ sessionId, containerRef, onReady }: UsePtyOptions) {
               term.rows !== lastSizeRef.current.rows)
           ) {
             lastSizeRef.current = { cols: term.cols, rows: term.rows };
-            window.api.pty.resize(sessionId, term.cols, term.rows);
+            api.pty.resize(sessionId, term.cols, term.rows);
           }
         }, 150);
       }
@@ -373,7 +374,7 @@ export function usePty({ sessionId, containerRef, onReady }: UsePtyOptions) {
       if (alert) setAlert(sessionId, alert);
     };
 
-    const unsubData = window.api.pty.onData((id, data) => {
+    const unsubData = api.pty.onData((id, data) => {
       if (id !== sessionId) return;
 
       termRef.current?.write(data);
@@ -416,7 +417,7 @@ export function usePty({ sessionId, containerRef, onReady }: UsePtyOptions) {
       }, 600);
     });
 
-    const unsubExit = window.api.pty.onExit((id, code) => {
+    const unsubExit = api.pty.onExit((id, code) => {
       if (id !== sessionId) return;
       updateStatus(sessionId, code === 0 ? "exited" : "error", code);
       disposeTerminal(sessionId);
@@ -427,7 +428,7 @@ export function usePty({ sessionId, containerRef, onReady }: UsePtyOptions) {
       isAiActiveRef.current = true;
     }
 
-    const unsubAiDetected = window.api.pty.onAiDetected((id, aiProcess) => {
+    const unsubAiDetected = api.pty.onAiDetected((id, aiProcess) => {
       if (id !== sessionId) return;
       console.log(`[aiTerm] AI detectado: ${aiProcess.name} — session=${sessionId}`);
       isAiActiveRef.current = true;
@@ -438,7 +439,7 @@ export function usePty({ sessionId, containerRef, onReady }: UsePtyOptions) {
       setAlert(sessionId, null);
     });
 
-    const unsubAiExited = window.api.pty.onAiExited((id) => {
+    const unsubAiExited = api.pty.onAiExited((id) => {
       if (id !== sessionId) return;
       console.log(`[aiTerm] AI saiu — session=${sessionId}, disparando parse final`);
       isAiActiveRef.current = false;

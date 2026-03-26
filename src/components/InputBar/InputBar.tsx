@@ -1,3 +1,4 @@
+import { api } from "../../api";
 import React, { useRef, useState, useEffect, useMemo } from 'react'
 import styles from './InputBar.module.css'
 import { useSessionsStore } from '../../store/sessions.store'
@@ -40,10 +41,10 @@ export const InputBar: React.FC = () => {
   const sendText = (payload: string) => {
     if (isBroadcast) {
       for (const s of sessions) {
-        if (s.status === 'running') window.api.pty.write(s.id, payload)
+        if (s.status === 'running') api.pty.write(s.id, payload)
       }
     } else if (focusedSession) {
-      window.api.pty.write(focusedSession.id, payload)
+      api.pty.write(focusedSession.id, payload)
     }
   }
 

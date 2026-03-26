@@ -1,3 +1,4 @@
+import { api } from "../api";
 import { create } from 'zustand'
 
 export interface FsEntry {
@@ -79,7 +80,7 @@ export const useMdPaneStore = create<MdPaneStoreState>((set, get) => ({
     })
 
     try {
-      const entries = await window.api.fs.readDir(browsePath)
+      const entries = await api.fs.readDir(browsePath)
       set((s) => ({ panes: patchPane(s.panes, paneId, { entries, isLoading: false }) }))
     } catch {
       set((s) => ({ panes: patchPane(s.panes, paneId, { isLoading: false }) }))
@@ -97,7 +98,7 @@ export const useMdPaneStore = create<MdPaneStoreState>((set, get) => ({
   browse: async (paneId, dirPath) => {
     set((s) => ({ panes: patchPane(s.panes, paneId, { browsePath: dirPath, isLoading: true }) }))
     try {
-      const entries = await window.api.fs.readDir(dirPath)
+      const entries = await api.fs.readDir(dirPath)
       set((s) => ({ panes: patchPane(s.panes, paneId, { entries, isLoading: false }) }))
     } catch {
       set((s) => ({ panes: patchPane(s.panes, paneId, { isLoading: false }) }))
@@ -109,8 +110,8 @@ export const useMdPaneStore = create<MdPaneStoreState>((set, get) => ({
     try {
       const isMarkdown = filePath.endsWith('.md') || filePath.endsWith('.mdx')
       const [content, versions] = await Promise.all([
-        window.api.fs.readFile(filePath),
-        isMarkdown ? window.api.fs.versions.list(filePath) : Promise.resolve([]),
+        api.fs.readFile(filePath),
+        isMarkdown ? api.fs.versions.list(filePath) : Promise.resolve([]),
       ])
       const versionCount = versions.length
       const currentVersion = versionCount > 0 ? versions[0].version : 0
@@ -152,7 +153,7 @@ export const useMdPaneStore = create<MdPaneStoreState>((set, get) => ({
   save: async (paneId, isManual = false) => {
     const pane = get().panes.get(paneId)
     if (!pane?.filePath) return
-    await window.api.fs.writeFile(pane.filePath, pane.content)
+    await api.fs.writeFile(pane.filePath, pane.content)
     set((s) => ({ panes: patchPane(s.panes, paneId, { savedContent: pane.content }) }))
 
     // Only version .md files
@@ -164,7 +165,7 @@ export const useMdPaneStore = create<MdPaneStoreState>((set, get) => ({
     const TWO_MINUTES = 2 * 60 * 1000
     if (!isManual && pane.lastVersionAt > 0 && now - pane.lastVersionAt < TWO_MINUTES) return
 
-    const meta = await window.api.fs.versions.save(pane.filePath, pane.content)
+    const meta = await api.fs.versions.save(pane.filePath, pane.content)
     if (meta) {
       set((s) => ({
         panes: patchPane(s.panes, paneId, {
@@ -180,7 +181,7 @@ export const useMdPaneStore = create<MdPaneStoreState>((set, get) => ({
     const pane = get().panes.get(paneId)
     if (!pane) return
     const filePath = pane.browsePath + '/' + name
-    await window.api.fs.writeFile(filePath, '')
+    await api.fs.writeFile(filePath, '')
     await get().browse(paneId, pane.browsePath)
   },
 
@@ -188,7 +189,7 @@ export const useMdPaneStore = create<MdPaneStoreState>((set, get) => ({
     const pane = get().panes.get(paneId)
     if (!pane) return
     const dirPath = pane.browsePath + '/' + name
-    await window.api.fs.mkdir(dirPath)
+    await api.fs.mkdir(dirPath)
     await get().browse(paneId, pane.browsePath)
   },
 
@@ -207,21 +208,21 @@ export const useMdPaneStore = create<MdPaneStoreState>((set, get) => ({
     const name = srcPath.split('/').pop()!
     const dest = destDir + '/' + name
     if (dest === srcPath) return
-    await window.api.fs.rename(srcPath, dest)
+    await api.fs.rename(srcPath, dest)
     const pane = get().panes.get(paneId)
     if (pane) await get().browse(paneId, pane.browsePath)
   },
 
   copyExternal: async (paneId, srcPaths, destDir) => {
     for (const src of srcPaths) {
-      await window.api.fs.copyExternal(src, destDir)
+      await api.fs.copyExternal(src, destDir)
     }
     const pane = get().panes.get(paneId)
     if (pane) await get().browse(paneId, pane.browsePath)
   },
 
   deleteEntry: async (paneId, entryPath) => {
-    await window.api.fs.delete(entryPath)
+    await api.fs.delete(entryPath)
     const pane = get().panes.get(paneId)
     if (!pane) return
     if (pane.filePath === entryPath) {
@@ -233,7 +234,7 @@ export const useMdPaneStore = create<MdPaneStoreState>((set, get) => ({
   renameEntry: async (paneId, entryPath, newName) => {
     const dir = entryPath.split('/').slice(0, -1).join('/')
     const dest = dir + '/' + newName
-    await window.api.fs.rename(entryPath, dest)
+    await api.fs.rename(entryPath, dest)
     const pane = get().panes.get(paneId)
     if (!pane) return
     if (pane.filePath === entryPath) {

@@ -1,3 +1,4 @@
+import { api } from "../../api";
 import React, { useRef, useState, useCallback, useEffect } from "react";
 import styles from "./TermPane.module.css";
 import { PaneHeader } from "./PaneHeader";
@@ -103,7 +104,7 @@ export const TermPane: React.FC<TermPaneProps> = React.memo(
             icon: "⌫",
             label: "Clear",
             shortcut: `${ctrl}L`,
-            onClick: () => window.api.pty.write(sessionId, "\x0c"),
+            onClick: () => api.pty.write(sessionId, "\x0c"),
           },
         ],
       },

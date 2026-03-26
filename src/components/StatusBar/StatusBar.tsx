@@ -1,3 +1,4 @@
+import { api } from "../../api";
 import React, { useEffect, useMemo, useState } from "react";
 import styles from "./StatusBar.module.css";
 import { useSessionsStore } from "../../store/sessions.store";
@@ -72,12 +73,12 @@ export const StatusBar: React.FC = () => {
   const [gitBranch, setGitBranch] = useState<string | null>(null);
   useEffect(() => {
     if (!cwd) { setGitBranch(null); return; }
-    window.api.app.getGitBranch(cwd).then((branch) => setGitBranch(branch ?? null));
+    api.app.getGitBranch(cwd).then((branch) => setGitBranch(branch ?? null));
   }, [cwd]);
 
   const [updateInfo, setUpdateInfo] = useState<{ version: string; url: string } | null>(null);
   useEffect(() => {
-    window.api.app.checkForUpdates().then((info) => setUpdateInfo(info ?? null));
+    api.app.checkForUpdates().then((info) => setUpdateInfo(info ?? null));
   }, []);
 
   return (
@@ -140,7 +141,7 @@ export const StatusBar: React.FC = () => {
             <button
               className={styles.updateDownloadBtn}
               onClick={() =>
-                window.api.shell.openExternal(
+                api.shell.openExternal(
                   buildDownloadUrl(updateInfo.version, isMac),
                 )
               }
@@ -171,7 +172,7 @@ export const StatusBar: React.FC = () => {
         {!isMac && (
           <div className={styles.windowControls}>
             <button
-              onClick={() => window.api.window.minimize()}
+              onClick={() => api.window.minimize()}
               className={styles.winBtn}
               title="Minimize"
             >
@@ -185,7 +186,7 @@ export const StatusBar: React.FC = () => {
               </svg>
             </button>
             <button
-              onClick={() => window.api.window.maximize()}
+              onClick={() => api.window.maximize()}
               className={styles.winBtn}
               title="Maximize"
             >
@@ -201,7 +202,7 @@ export const StatusBar: React.FC = () => {
               </svg>
             </button>
             <button
-              onClick={() => window.api.window.close()}
+              onClick={() => api.window.close()}
               className={`${styles.winBtn} ${styles.closeBtn}`}
               title="Close"
             >

@@ -1,3 +1,4 @@
+import { api } from "../api";
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 
@@ -21,8 +22,8 @@ export const useWorkspaceStore = create<WorkspaceState>()(
         set({ rootFolder: folder })
         if (folder) {
           get().addRecentFolder(folder)
-          window.api.fs.setWatchRoot(folder)
-          window.api.app.getGitBranch(folder).then((branch) => {
+          api.fs.setWatchRoot(folder)
+          api.app.getGitBranch(folder).then((branch) => {
             set({ gitBranch: branch })
           })
         }
