@@ -9,7 +9,9 @@
     "build:electron": "tsc -p electron/tsconfig.json",
     "build": "vite build && tsc -p electron/tsconfig.json",
     "icons": "python3 scripts/generate-icons.py",
-    "dist": "npm run icons && npm run build && sh -c 'CXXFLAGS=\"-I$(xcrun --show-sdk-path)/usr/include/c++/v1\" electron-builder --mac --win'",
+    "dist": "npm run dist:mac",
+    "dist:mac": "npm run icons && npm run build && sh -c 'CXXFLAGS=\"-I$(xcrun --show-sdk-path)/usr/include/c++/v1\" electron-builder --mac'",
+    "dist:win": "npm run build && electron-builder --win",
     "rebuild": "sh -c 'CXXFLAGS=\"-I$(xcrun --show-sdk-path)/usr/include/c++/v1\" electron-rebuild -f -w node-pty'",
     "postinstall": "npm run rebuild 2>/dev/null || electron-builder install-app-deps || true"
   },
@@ -78,9 +80,5 @@
       "target": "nsis",
       "icon": "resources/icon.ico"
     },
-    "linux": {
-      "target": "AppImage",
-      "icon": "resources/icons"
-    }
   }
 }
