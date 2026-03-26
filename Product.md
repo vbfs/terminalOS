@@ -1,6 +1,6 @@
 # terminalOS — Product Overview
 
-**AI-native terminal workspace for people who live inside Claude Code.**
+**Terminal workspace built for AI-assisted development.**
 
 ---
 
@@ -48,10 +48,19 @@ Open a markdown editor alongside the terminal — no need to leave the app. Feat
 - Syntax highlighting for code files (25+ languages)
 - Auto-save with manual override (⌘S)
 - PDF export from markdown
+- **Automatic version history** — every save creates a snapshot; browse, compare, and restore any previous version from the editor sidebar (up to 50 versions per file, stored locally)
 
 ### 14 Themes
 
 Includes Dracula, Tokyo Night, Nord, Gruvbox, Catppuccin, Rosé Pine, Solarized, and more. Live preview before applying.
+
+### Smart Status Bar
+
+The status bar surfaces live context without interrupting focus:
+
+- **Git status** — current branch and dirty-state indicator updated in real time
+- **App version** — running build version detected automatically at startup
+- **Component versions** — each integrated component reports its version without any configuration
 
 ### Command Palette
 
@@ -72,6 +81,8 @@ Includes Dracula, Tokyo Night, Nord, Gruvbox, Catppuccin, Rosé Pine, Solarized,
 | Markdown notes in separate app                 | Editor integrated next to the terminal    |
 | Manually typing `claude` / `aider` to start AI | One shortcut per AI tool                  |
 | No context on which pane is running AI         | Live badge per pane                       |
+| No edit history for notes / context files      | Automatic version history with restore    |
+| No visibility into git state inside the app    | Branch + dirty state in the status bar    |
 
 ---
 
