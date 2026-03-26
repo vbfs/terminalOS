@@ -13,7 +13,7 @@
     "dist:mac": "npm run icons && npm run build && sh -c 'CXXFLAGS=\"-I$(xcrun --show-sdk-path)/usr/include/c++/v1\" electron-builder --mac'",
     "dist:win": "npm run build && electron-builder --win",
     "rebuild": "sh -c 'CXXFLAGS=\"-I$(xcrun --show-sdk-path)/usr/include/c++/v1\" electron-rebuild -f -w node-pty'",
-    "postinstall": "npm run rebuild 2>/dev/null || electron-builder install-app-deps || true"
+    "postinstall": "electron-builder install-app-deps || true"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",
