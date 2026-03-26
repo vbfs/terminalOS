@@ -47,6 +47,8 @@ export interface IpcApi {
     readFile: (path: string) => Promise<string>
     writeFile: (path: string, content: string) => Promise<void>
     mkdir: (path: string) => Promise<void>
+    rename: (src: string, dest: string) => Promise<void>
+    copyExternal: (src: string, destDir: string) => Promise<void>
     writeBinaryFile: (filePath: string, data: ArrayBuffer) => Promise<void>
     delete: (path: string) => Promise<void>
     setWatchRoot: (path: string) => void

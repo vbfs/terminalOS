@@ -1,3 +1,4 @@
+import { api } from "../../api";
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import styles from "./CommandPalette.module.css";
 import { useTabsStore } from "../../store/tabs.store";
@@ -78,7 +79,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
       icon: "⊟",
       action: async () => {
         if (!activeTab?.activePaneId) return;
-        const sessionId = await window.api.pty.create({ cwd: activeCwd });
+        const sessionId = await api.pty.create({ cwd: activeCwd });
         const newPaneId = tabsStore.splitTabPane(
           activeTab.id,
           activeTab.activePaneId,
@@ -109,7 +110,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
       icon: "⊞",
       action: async () => {
         if (!activeTab?.activePaneId) return;
-        const sessionId = await window.api.pty.create({ cwd: activeCwd });
+        const sessionId = await api.pty.create({ cwd: activeCwd });
         const newPaneId = tabsStore.splitTabPane(
           activeTab.id,
           activeTab.activePaneId,
@@ -142,7 +143,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
         const n = tabsStore.tabs.length + 1;
         const tabId = tabsStore.createTab(`Shell ${n}`);
         const cwd = rootFolder ?? undefined;
-        const sessionId = await window.api.pty.create({ cwd });
+        const sessionId = await api.pty.create({ cwd });
         const paneId = tabsStore.initTabRoot(tabId, sessionId);
         addSession({
           id: sessionId,
@@ -171,7 +172,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
         const session = Array.from(sessions.values()).find(
           (s) => s.paneId === activeTab.activePaneId,
         );
-        if (session) window.api.pty.write(session.id, "claude\n");
+        if (session) api.pty.write(session.id, "claude\n");
         onClose();
       },
     },
@@ -185,7 +186,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
         const session = Array.from(sessions.values()).find(
           (s) => s.paneId === activeTab.activePaneId,
         );
-        if (session) window.api.pty.write(session.id, "opencode\n");
+        if (session) api.pty.write(session.id, "opencode\n");
         onClose();
       },
     },
@@ -198,7 +199,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
         const session = Array.from(sessions.values()).find(
           (s) => s.paneId === activeTab.activePaneId,
         );
-        if (session) window.api.pty.write(session.id, "aider\n");
+        if (session) api.pty.write(session.id, "aider\n");
         onClose();
       },
     },
@@ -220,10 +221,10 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
       shortcut: "⌘O",
       icon: "⌁",
       action: async () => {
-        const folder = await window.api.fs.openFolder();
+        const folder = await api.fs.openFolder();
         if (folder && activeTab?.activePaneId) {
           setRootFolder(folder);
-          const sessionId = await window.api.pty.create({ cwd: folder });
+          const sessionId = await api.pty.create({ cwd: folder });
           const newPaneId = tabsStore.splitTabPane(
             activeTab.id,
             activeTab.activePaneId,
@@ -289,7 +290,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
       action: async () => {
         if (!activeTab?.activePaneId) return;
         setRootFolder(folder);
-        const sessionId = await window.api.pty.create({ cwd: folder });
+        const sessionId = await api.pty.create({ cwd: folder });
         const newPaneId = tabsStore.splitTabPane(
           activeTab.id,
           activeTab.activePaneId,

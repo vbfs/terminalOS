@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import styles from "./Titlebar.module.css";
 import { useSessionsStore } from "../../store/sessions.store";
+import { api, IS_WEB } from "../../api";
 
 export const Titlebar: React.FC = () => {
   const [isMac] = useState(() =>
@@ -11,7 +12,7 @@ export const Titlebar: React.FC = () => {
 
   return (
     <div className={styles.titlebar}>
-      {isMac && <div className={styles.trafficLights} />}
+      {isMac && !IS_WEB && <div className={styles.trafficLights} />}
 
       <div className={styles.center}>
         <span className={styles.title}>terminalOS</span>
@@ -23,10 +24,10 @@ export const Titlebar: React.FC = () => {
         <span className={styles.connectedLabel}>connected</span>
       </div>
 
-      {!isMac && (
+      {!isMac && !IS_WEB && (
         <div className={styles.windowControls}>
           <button
-            onClick={() => window.api.window.minimize()}
+            onClick={() => api.window.minimize()}
             className={styles.winBtn}
           >
             <svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor">
@@ -34,7 +35,7 @@ export const Titlebar: React.FC = () => {
             </svg>
           </button>
           <button
-            onClick={() => window.api.window.maximize()}
+            onClick={() => api.window.maximize()}
             className={styles.winBtn}
           >
             <svg
@@ -49,7 +50,7 @@ export const Titlebar: React.FC = () => {
             </svg>
           </button>
           <button
-            onClick={() => window.api.window.close()}
+            onClick={() => api.window.close()}
             className={`${styles.winBtn} ${styles.closeBtn}`}
           >
             <svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor">

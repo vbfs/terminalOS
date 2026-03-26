@@ -1,3 +1,4 @@
+import { api } from "../api";
 import { useEffect } from 'react'
 import { useTabsStore } from '../store/tabs.store'
 import { useWorkspaceStore } from '../store/workspace.store'
@@ -68,7 +69,7 @@ export function useKeymap(handlers: KeymapHandlers = {}) {
         if (activeTab && activePaneId) {
           const activeSession = Array.from(sessionsStore.sessions.values()).find(s => s.paneId === activePaneId)
           const cwd = activeSession?.cwd || workspaceStore.rootFolder || undefined
-          const sessionId = await window.api.pty.create({ cwd })
+          const sessionId = await api.pty.create({ cwd })
           const newPaneId = tabsStore.splitTabPane(activeTab.id, activePaneId, 'h', sessionId)
           sessionsStore.addSession({ id: sessionId, paneId: newPaneId, name: 'Session', cwd: cwd ?? '', status: 'running', aiProcess: null, tokens: 0, model: null, costUsd: 0, alertMessage: null, condaEnv: null, createdAt: Date.now() })
         }
@@ -81,7 +82,7 @@ export function useKeymap(handlers: KeymapHandlers = {}) {
         if (activeTab && activePaneId) {
           const activeSession = Array.from(sessionsStore.sessions.values()).find(s => s.paneId === activePaneId)
           const cwd = activeSession?.cwd || workspaceStore.rootFolder || undefined
-          const sessionId = await window.api.pty.create({ cwd })
+          const sessionId = await api.pty.create({ cwd })
           const newPaneId = tabsStore.splitTabPane(activeTab.id, activePaneId, 'v', sessionId)
           sessionsStore.addSession({ id: sessionId, paneId: newPaneId, name: 'Session', cwd: cwd ?? '', status: 'running', aiProcess: null, tokens: 0, model: null, costUsd: 0, alertMessage: null, condaEnv: null, createdAt: Date.now() })
         }
@@ -109,7 +110,7 @@ export function useKeymap(handlers: KeymapHandlers = {}) {
         e.preventDefault()
         if (activePaneId) {
           const session = Array.from(sessionsStore.sessions.values()).find(s => s.paneId === activePaneId)
-          if (session) window.api.pty.write(session.id, 'claude\n')
+          if (session) api.pty.write(session.id, 'claude\n')
         }
         return
       }
@@ -119,7 +120,7 @@ export function useKeymap(handlers: KeymapHandlers = {}) {
         e.preventDefault()
         if (activePaneId) {
           const session = Array.from(sessionsStore.sessions.values()).find(s => s.paneId === activePaneId)
-          if (session) window.api.pty.write(session.id, 'opencode\n')
+          if (session) api.pty.write(session.id, 'opencode\n')
         }
         return
       }
@@ -127,12 +128,12 @@ export function useKeymap(handlers: KeymapHandlers = {}) {
       // Open Folder
       if (matchesShortcut(e, 'CmdOrCtrl+O')) {
         e.preventDefault()
-        const folder = await window.api.fs.openFolder()
+        const folder = await api.fs.openFolder()
         if (folder) {
           workspaceStore.setRootFolder(folder)
           if (activePaneId) {
             const session = Array.from(sessionsStore.sessions.values()).find(s => s.paneId === activePaneId)
-            if (session) window.api.pty.write(session.id, `cd "${folder}"\n`)
+            if (session) api.pty.write(session.id, `cd "${folder}"\n`)
           }
         }
         return

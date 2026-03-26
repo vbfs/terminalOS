@@ -1,4 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
+import { api } from "./api";
+import { FolderPicker } from "./components/FolderPicker/FolderPicker";
 import { Titlebar } from "./components/Titlebar/Titlebar";
 import { TabBar } from "./components/TabBar/TabBar";
 import { PaneGrid } from "./components/PaneGrid/PaneGrid";
@@ -42,7 +44,7 @@ async function restorePaneTree(
   saved: SavedNode
 ): Promise<{ node: PaneNode; sessions: Session[] }> {
   if (saved.type === 'leaf') {
-    const sessionId = await window.api.pty.create({ cwd: saved.cwd || undefined })
+    const sessionId = await api.pty.create({ cwd: saved.cwd || undefined })
     const session: Session = {
       id: sessionId,
       paneId: saved.id,
@@ -111,7 +113,7 @@ export const App: React.FC = () => {
     const n = useTabsStore.getState().tabs.length + 1;
     const tabId = createTab(`Workspace ${n}`);
     const cwd = rootFolder ?? undefined;
-    const sessionId = await window.api.pty.create({ cwd });
+    const sessionId = await api.pty.create({ cwd });
     const paneId = initTabRoot(tabId, sessionId);
     addSession({
       id: sessionId,
@@ -138,10 +140,10 @@ export const App: React.FC = () => {
       useSessionsStore.getState().sessions.values(),
     ).find((s) => s.paneId === paneId);
     const cwd = activeSession?.cwd || rootFolder || undefined;
-    const sessionId = await window.api.pty.create({ cwd });
+    const sessionId = await api.pty.create({ cwd });
     const newPaneId = splitTabPane(tabId, paneId, dir, sessionId);
     if (!newPaneId) {
-      window.api.pty.kill?.(sessionId);
+      api.pty.kill?.(sessionId);
       return;
     }
     addSession({
@@ -173,7 +175,7 @@ export const App: React.FC = () => {
     const sessions = useSessionsStore.getState().sessions;
     for (const session of sessions.values()) {
       if (session.paneId === paneId) {
-        window.api.pty.kill?.(session.id);
+        api.pty.kill?.(session.id);
         break;
       }
     }
@@ -188,7 +190,7 @@ export const App: React.FC = () => {
       for (const leaf of leaves) {
         for (const session of sessions.values()) {
           if (session.paneId === leaf.id) {
-            window.api.pty.kill?.(session.id);
+            api.pty.kill?.(session.id);
           }
         }
       }
@@ -220,7 +222,7 @@ export const App: React.FC = () => {
       } else {
         const tabId = createTab("Workspace 1");
         const cwd = rootFolder ?? undefined;
-        const sessionId = await window.api.pty.create({ cwd });
+        const sessionId = await api.pty.create({ cwd });
         const paneId = initTabRoot(tabId, sessionId);
         addSession({
           id: sessionId,
@@ -313,6 +315,7 @@ export const App: React.FC = () => {
       />
       <Settings isOpen={settingsOpen} onClose={() => setSettingsOpen(false)} />
       <ShortcutReference />
+      <FolderPicker />
     </div>
   );
 };

@@ -1,3 +1,4 @@
+import { api } from "../../api";
 import React, {
   useEffect,
   useCallback,
@@ -10,6 +11,7 @@ import hljs from "highlight.js";
 import styles from "./MarkdownPane.module.css";
 import { useMdPaneStore } from "../../store/mdpane.store";
 import { useTabsStore } from "../../store/tabs.store";
+import { useWorkspaceStore } from "../../store/workspace.store";
 import type { FsEntry } from "../../store/mdpane.store";
 import {
   IconX,
@@ -117,6 +119,15 @@ const FileBrowser: React.FC<FileBrowserProps> = ({
   isLoading,
 }) => {
   const { browse, openFile, goUp, newFile, newDir, moveEntry, copyExternal, deleteEntry, renameEntry } = useMdPaneStore();
+  const setRootFolder = useWorkspaceStore((s) => s.setRootFolder);
+
+  const handleChangeFolder = async () => {
+    const folder = await api.fs.openFolder();
+    if (folder) {
+      setRootFolder(folder);
+      browse(paneId, folder);
+    }
+  };
   const [newName, setNewName] = useState("");
   const [creating, setCreating] = useState<"file" | "dir" | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -209,12 +220,17 @@ const FileBrowser: React.FC<FileBrowserProps> = ({
         </button>
         <button
           className={styles.upBtn}
-          onClick={() => window.api.shell.openInFinder(browsePath)}
-          title="Open in Finder"
+          onClick={handleChangeFolder}
+          title="Change folder"
         >
           <IconFolder size={11} />
         </button>
-        <span className={styles.pathText}>{shortPath(browsePath)}</span>
+        <span
+          className={styles.pathText}
+          title={browsePath}
+          style={{ cursor: 'pointer' }}
+          onClick={handleChangeFolder}
+        >{shortPath(browsePath)}</span>
         <div className={styles.createBtns}>
           <button
             className={styles.createBtn}
@@ -406,7 +422,7 @@ const FileBrowser: React.FC<FileBrowserProps> = ({
                     const target = ctxMenu.entry.isDirectory
                       ? ctxMenu.entry.path
                       : ctxMenu.entry.path.split("/").slice(0, -1).join("/");
-                    window.api.shell.openInFinder(target);
+                    api.shell.openInFinder(target);
                   },
                 },
               ],
@@ -580,7 +596,7 @@ const Editor: React.FC<EditorProps> = ({
       })
       .from(previewRef.current)
       .output("arraybuffer");
-    await window.api.fs.writeBinaryFile(outputPath, buffer);
+    await api.fs.writeBinaryFile(outputPath, buffer);
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -911,14 +927,24 @@ const Editor: React.FC<EditorProps> = ({
 export const MarkdownPane: React.FC<MarkdownPaneProps> = React.memo(
   ({ paneId, cwd, isActive, canClose, restoreDirection = 'up', onClose, onFocus }) => {
     const state = useMdPaneStore((s) => s.panes.get(paneId));
-    const { init, destroy } = useMdPaneStore();
+    const { init, destroy, browse } = useMdPaneStore();
     const isMinimized = useTabsStore((s) => s.minimizedPanes.has(paneId));
     const toggleMinimize = useTabsStore((s) => s.toggleMinimizePane);
+    const rootFolder = useWorkspaceStore((s) => s.rootFolder);
 
+    // Initialize: prefer rootFolder over cwd if already set
     useEffect(() => {
-      init(paneId, cwd);
+      init(paneId, rootFolder ?? cwd);
       return () => destroy(paneId);
-    }, [paneId, cwd]); // eslint-disable-line react-hooks/exhaustive-deps
+    }, [paneId]); // eslint-disable-line react-hooks/exhaustive-deps
+
+    // When rootFolder changes, navigate the file browser to it
+    useEffect(() => {
+      if (!rootFolder) return;
+      const pane = useMdPaneStore.getState().panes.get(paneId);
+      if (!pane) return;
+      browse(paneId, rootFolder);
+    }, [rootFolder]); // eslint-disable-line react-hooks/exhaustive-deps
 
     if (!state) return null;
 
