@@ -1,5 +1,5 @@
-@import './tokens.css';
-@import './reset.css';
+@import "./tokens.css";
+@import "./reset.css";
 
 body {
   background: var(--bg-base);
@@ -7,8 +7,7 @@ body {
   font-family: var(--font-ui);
   font-size: 13px;
   line-height: 1.4;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: subpixel-antialiased;
   user-select: none;
 }
 
@@ -40,6 +39,11 @@ body {
 :focus-visible {
   outline: 1px solid var(--accent-border);
   outline-offset: -1px;
+}
+
+/* ── xterm canvas passthrough ───────────────────── */
+.xterm .xterm-screen canvas {
+  pointer-events: none;
 }
 
 /* ── Button base ───────────────────────────────── */

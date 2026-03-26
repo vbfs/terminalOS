@@ -1,8 +1,9 @@
 import { useEffect, useRef, useCallback } from "react";
-import { Terminal } from "xterm";
+import { Terminal } from "@xterm/xterm";
 import { FitAddon } from "@xterm/addon-fit";
 import { WebLinksAddon } from "@xterm/addon-web-links";
 import { SearchAddon } from "@xterm/addon-search";
+import { CanvasAddon } from "@xterm/addon-canvas";
 import { useSessionsStore } from "../store/sessions.store";
 import { useUiStore } from "../store/ui.store";
 import { usePreferencesStore } from "../store/preferences.store";
@@ -247,6 +248,7 @@ export function usePty({ sessionId, containerRef, onReady }: UsePtyOptions) {
             theme: getThemeById(usePreferencesStore.getState().themeId).term,
             scrollback: 5000,
             cursorBlink: true,
+            customGlyphs: true,
           });
 
           const fitAddon = new FitAddon();
@@ -256,6 +258,7 @@ export function usePty({ sessionId, containerRef, onReady }: UsePtyOptions) {
           terminal.loadAddon(searchAddon);
 
           terminal.open(container);
+          terminal.loadAddon(new CanvasAddon());
           fitAddon.fit();
 
           termRef.current = terminal;

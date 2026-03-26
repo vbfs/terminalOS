@@ -1,4 +1,4 @@
-import { Terminal } from 'xterm'
+import { Terminal } from "@xterm/xterm"
 import { FitAddon } from '@xterm/addon-fit'
 import { SearchAddon } from '@xterm/addon-search'
 
