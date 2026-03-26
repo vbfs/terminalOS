@@ -590,6 +590,26 @@ function startServer(port) {
     // Serve the pre-built React frontend
     const buildDir = path_1.default.resolve(__dirname, '../build');
     app.use(express_1.default.static(buildDir));
+    // ---- FS: pick-folder (native OS dialog) ----
+    app.get('/api/fs/pick-folder', async (_req, res) => {
+        try {
+            let cmd;
+            if (process.platform === 'darwin') {
+                cmd = `osascript -e 'POSIX path of (choose folder with prompt "Select a folder:")'`;
+            }
+            else if (process.platform === 'linux') {
+                cmd = `zenity --file-selection --directory --title="Select a folder"`;
+            }
+            else {
+                return res.json({ path: null });
+            }
+            const { stdout } = await execAsync(cmd);
+            res.json({ path: stdout.trim().replace(/\/$/, '') });
+        }
+        catch {
+            res.json({ path: null });
+        }
+    });
     // SPA fallback
     app.get('*', (_req, res) => {
         res.sendFile(path_1.default.join(buildDir, 'index.html'));

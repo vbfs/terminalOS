@@ -595,6 +595,25 @@ export function startServer(port: number): void {
   // Serve the pre-built React frontend
   const buildDir = path.resolve(__dirname, '../build')
   app.use(express.static(buildDir))
+
+  // ---- FS: pick-folder (native OS dialog) ----
+  app.get('/api/fs/pick-folder', async (_req, res) => {
+    try {
+      let cmd: string
+      if (process.platform === 'darwin') {
+        cmd = `osascript -e 'POSIX path of (choose folder with prompt "Select a folder:")'`
+      } else if (process.platform === 'linux') {
+        cmd = `zenity --file-selection --directory --title="Select a folder"`
+      } else {
+        return res.json({ path: null })
+      }
+      const { stdout } = await execAsync(cmd)
+      res.json({ path: stdout.trim().replace(/\/$/, '') })
+    } catch {
+      res.json({ path: null })
+    }
+  })
+
   // SPA fallback
   app.get('*', (_req, res) => {
     res.sendFile(path.join(buildDir, 'index.html'))

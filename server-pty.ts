@@ -366,6 +366,26 @@ app.get('/api/fs/versions/get', async (req, res) => {
   }
 })
 
+// ---- FS: pick-folder (native OS dialog) ----
+app.get('/api/fs/pick-folder', async (_req, res) => {
+  try {
+    let cmd: string
+    if (process.platform === 'darwin') {
+      cmd = `osascript -e 'POSIX path of (choose folder with prompt "Select a folder:")'`
+    } else if (process.platform === 'linux') {
+      cmd = `zenity --file-selection --directory --title="Select a folder"`
+    } else {
+      return res.json({ path: null })
+    }
+    const stdout = await new Promise<string>((resolve, reject) => {
+      childProcess.exec(cmd, (err, out) => (err ? reject(err) : resolve(out)))
+    })
+    res.json({ path: stdout.trim().replace(/\/$/, '') })
+  } catch {
+    res.json({ path: null })
+  }
+})
+
 // SPA fallback
 app.get('*', (_req, res) => {
   res.sendFile(pathModule.join(BUILD_DIR, 'index.html'))

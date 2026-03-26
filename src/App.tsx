@@ -201,6 +201,25 @@ export const App: React.FC = () => {
   useEffect(() => {
     if (initDoneRef.current) return;
     initDoneRef.current = true;
+    const createFreshSession = async (tabId: string, cwd?: string) => {
+      const sessionId = await api.pty.create({ cwd });
+      const paneId = initTabRoot(tabId, sessionId);
+      addSession({
+        id: sessionId,
+        paneId,
+        name: "shell",
+        cwd: cwd ?? "",
+        status: "running",
+        aiProcess: null,
+        tokens: 0,
+        model: null,
+        costUsd: 0,
+        alertMessage: null,
+        condaEnv: null,
+        createdAt: Date.now(),
+      });
+    };
+
     const init = async () => {
       const { tabs: savedTabs, activeTabIndex } = useLayoutStore.getState();
       if (savedTabs.length > 0) {
@@ -209,11 +228,16 @@ export const App: React.FC = () => {
           const tabId = createTab(savedTab.name);
           newTabIds.push(tabId);
           if (savedTab.root) {
-            const { node: restoredRoot, sessions: restoredSessions } =
-              await restorePaneTree(savedTab.root);
-            restoreTabRoot(tabId, restoredRoot, savedTab.activePaneId);
-            for (const session of restoredSessions) {
-              addSession(session);
+            try {
+              const { node: restoredRoot, sessions: restoredSessions } =
+                await restorePaneTree(savedTab.root);
+              restoreTabRoot(tabId, restoredRoot, savedTab.activePaneId);
+              for (const session of restoredSessions) {
+                addSession(session);
+              }
+            } catch {
+              // Restore failed (e.g. WS not yet connected) — fall back to fresh session
+              await createFreshSession(tabId, rootFolder ?? undefined);
             }
           }
         }
@@ -221,23 +245,7 @@ export const App: React.FC = () => {
         if (targetTabId) setActiveTab(targetTabId);
       } else {
         const tabId = createTab("Workspace 1");
-        const cwd = rootFolder ?? undefined;
-        const sessionId = await api.pty.create({ cwd });
-        const paneId = initTabRoot(tabId, sessionId);
-        addSession({
-          id: sessionId,
-          paneId,
-          name: "shell",
-          cwd: cwd ?? "",
-          status: "running",
-          aiProcess: null,
-          tokens: 0,
-          model: null,
-          costUsd: 0,
-          alertMessage: null,
-          condaEnv: null,
-          createdAt: Date.now(),
-        });
+        await createFreshSession(tabId, rootFolder ?? undefined);
       }
     };
     init();
