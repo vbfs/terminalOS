@@ -447,14 +447,21 @@ interface CodeEditorProps {
   onKeyDown: (e: React.KeyboardEvent<HTMLTextAreaElement>) => void;
 }
 
-const CodeEditor: React.FC<CodeEditorProps> = ({
+const CodeEditor = React.forwardRef<HTMLTextAreaElement, CodeEditorProps>(({
   content,
   language,
   onChange,
   onKeyDown,
-}) => {
-  const taRef = useRef<HTMLTextAreaElement>(null);
+}, ref) => {
+  const internalRef = useRef<HTMLTextAreaElement>(null);
   const preRef = useRef<HTMLPreElement>(null);
+
+  // Assign both internal ref and forwarded ref to the same element
+  const combinedRef = useCallback((node: HTMLTextAreaElement | null) => {
+    (internalRef as React.MutableRefObject<HTMLTextAreaElement | null>).current = node;
+    if (typeof ref === "function") ref(node);
+    else if (ref) (ref as React.MutableRefObject<HTMLTextAreaElement | null>).current = node;
+  }, [ref]);
 
   const highlighted = useMemo(() => {
     if (!language) return escapeHtml(content);
@@ -466,9 +473,9 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
   }, [content, language]);
 
   const syncScroll = () => {
-    if (taRef.current && preRef.current) {
-      preRef.current.scrollTop = taRef.current.scrollTop;
-      preRef.current.scrollLeft = taRef.current.scrollLeft;
+    if (internalRef.current && preRef.current) {
+      preRef.current.scrollTop = internalRef.current.scrollTop;
+      preRef.current.scrollLeft = internalRef.current.scrollLeft;
     }
   };
 
@@ -478,7 +485,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
         <code dangerouslySetInnerHTML={{ __html: highlighted + "\n" }} />
       </pre>
       <textarea
-        ref={taRef}
+        ref={combinedRef}
         className={styles.codeTextarea}
         value={content}
         onChange={(e) => onChange(e.target.value)}
@@ -491,7 +498,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
       />
     </div>
   );
-};
+});
 
 // ── Editor ────────────────────────────────────────────────────
 
@@ -515,6 +522,17 @@ const Editor: React.FC<EditorProps> = ({
   const { setContent, save, closeFile } = useMdPaneStore();
   const previewRef = useRef<HTMLDivElement>(null);
   const [showHistory, setShowHistory] = useState(false);
+
+  // Search state
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [matchIndex, setMatchIndex] = useState(0);
+  const searchInputRef = useRef<HTMLInputElement>(null);
+  const codeEditorRef = useRef<HTMLTextAreaElement>(null);
+  const markdownTextareaRef = useRef<HTMLTextAreaElement>(null);
+
+  // Syntax error state
+  const [syntaxError, setSyntaxError] = useState<string | null>(null);
 
   const filename = filePath.split("/").pop() ?? filePath;
   const isMarkdown = filePath.endsWith(".md") || filePath.endsWith(".mdx");
@@ -575,12 +593,163 @@ const Editor: React.FC<EditorProps> = ({
     triggerAutoSave();
   };
 
-  // Cmd+S
+  // Syntax error validation (debounced 500ms)
+  useEffect(() => {
+    if (isPdf || isMarkdown || !language) {
+      setSyntaxError(null);
+      return;
+    }
+    const timer = setTimeout(() => {
+      if (language === "json") {
+        try {
+          JSON.parse(content);
+          setSyntaxError(null);
+        } catch (e) {
+          setSyntaxError((e as Error).message);
+        }
+        return;
+      }
+      // Bracket matching for other languages
+      const stack: string[] = [];
+      const pairs: Record<string, string> = { "}": "{", "]": "[", ")": "(" };
+      let inString = false;
+      let stringChar = "";
+      for (let i = 0; i < content.length; i++) {
+        const c = content[i];
+        if (inString) {
+          if (c === stringChar && content[i - 1] !== "\\") inString = false;
+        } else if (c === '"' || c === "'" || c === "`") {
+          inString = true;
+          stringChar = c;
+        } else if ("{[(".includes(c)) {
+          stack.push(c);
+        } else if ("}])".includes(c)) {
+          if (stack.pop() !== pairs[c]) {
+            setSyntaxError(`Unmatched '${c}'`);
+            return;
+          }
+        }
+      }
+      setSyntaxError(stack.length > 0 ? `Unclosed '${stack[stack.length - 1]}'` : null);
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [content, language, isPdf, isMarkdown]);
+
+  // Search matches
+  const matches = useMemo(() => {
+    if (!searchQuery || !searchOpen) return [];
+    const lower = content.toLowerCase();
+    const query = searchQuery.toLowerCase();
+    const results: number[] = [];
+    let i = 0;
+    while (i < lower.length) {
+      const idx = lower.indexOf(query, i);
+      if (idx === -1) break;
+      results.push(idx);
+      i = idx + 1;
+    }
+    return results;
+  }, [content, searchQuery, searchOpen]);
+
+  const jumpToMatch = useCallback((idx: number) => {
+    if (matches.length === 0) return;
+    const pos = matches[idx];
+    const ta = isMarkdown ? markdownTextareaRef.current : codeEditorRef.current;
+    if (!ta) return;
+    ta.focus();
+    ta.setSelectionRange(pos, pos + searchQuery.length);
+    const linesBefore = content.slice(0, pos).split("\n").length;
+    ta.scrollTop = Math.max(0, (linesBefore - 5) * 21);
+    // Return focus to search input so Enter keeps cycling through matches
+    requestAnimationFrame(() => searchInputRef.current?.focus());
+  }, [matches, searchQuery, content, isMarkdown]);
+
+  // Reset index when matches change (don't auto-jump — wait for explicit navigation)
+  useEffect(() => {
+    setMatchIndex(0);
+  }, [matches.length]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const handleSearchKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Escape") {
+      setSearchOpen(false);
+      setSearchQuery("");
+    } else if (e.key === "Enter") {
+      e.preventDefault();
+      if (matches.length === 0) return;
+      const next = e.shiftKey
+        ? (matchIndex - 1 + matches.length) % matches.length
+        : (matchIndex + 1) % matches.length;
+      setMatchIndex(next);
+      jumpToMatch(next);
+    }
+  };
+
+  // Keyboard shortcuts: Cmd+S, Cmd+F, Enter (auto-indent), Tab
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    const ta = e.target as HTMLTextAreaElement;
+
+    // Cmd+S — save
     if ((e.metaKey || e.ctrlKey) && e.key === "s") {
       e.preventDefault();
       if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
       save(paneId, true);
+      return;
+    }
+
+    // Cmd+F — open search
+    if ((e.metaKey || e.ctrlKey) && e.key === "f") {
+      e.preventDefault();
+      setSearchOpen(true);
+      setTimeout(() => searchInputRef.current?.focus(), 50);
+      return;
+    }
+
+    // Escape — close search
+    if (e.key === "Escape" && searchOpen) {
+      setSearchOpen(false);
+      setSearchQuery("");
+      return;
+    }
+
+    // Tab / Shift+Tab — indent / dedent
+    if (e.key === "Tab") {
+      e.preventDefault();
+      const { selectionStart, selectionEnd, value } = ta;
+      if (e.shiftKey) {
+        const lineStart = value.lastIndexOf("\n", selectionStart - 1) + 1;
+        const spaces = value.slice(lineStart).match(/^( {1,2})/)?.[1]?.length ?? 0;
+        if (spaces > 0) {
+          const newContent = value.slice(0, lineStart) + value.slice(lineStart + spaces);
+          setContent(paneId, newContent);
+          triggerAutoSave();
+          const newPos = Math.max(lineStart, selectionStart - spaces);
+          requestAnimationFrame(() => ta.setSelectionRange(newPos, newPos));
+        }
+      } else {
+        const newContent = value.slice(0, selectionStart) + "  " + value.slice(selectionEnd);
+        setContent(paneId, newContent);
+        triggerAutoSave();
+        const newPos = selectionStart + 2;
+        requestAnimationFrame(() => ta.setSelectionRange(newPos, newPos));
+      }
+      return;
+    }
+
+    // Enter — auto-indent
+    if (e.key === "Enter") {
+      e.preventDefault();
+      const { selectionStart, value } = ta;
+      const lineStart = value.lastIndexOf("\n", selectionStart - 1) + 1;
+      const currentLine = value.slice(lineStart, selectionStart);
+      const indent = currentLine.match(/^(\s*)/)?.[1] ?? "";
+      const extraIndent = /[{([<]$/.test(currentLine.trimEnd()) ? "  " : "";
+      const newContent =
+        value.slice(0, selectionStart) + "\n" + indent + extraIndent + value.slice(selectionStart);
+      setContent(paneId, newContent);
+      triggerAutoSave();
+      const newPos = selectionStart + 1 + indent.length + extraIndent.length;
+      requestAnimationFrame(() => ta.setSelectionRange(newPos, newPos));
+      return;
     }
   };
 
@@ -601,6 +770,11 @@ const Editor: React.FC<EditorProps> = ({
           </span>
         )}
         {!isPdf && !isDirty && <span className={styles.savedLabel}>saved</span>}
+        {!isPdf && !isMarkdown && syntaxError && (
+          <span className={styles.syntaxError} title={syntaxError}>
+            ⚠ error
+          </span>
+        )}
         {isMarkdown && versionCount > 0 && (
           <span className={styles.versionBadge} title={`Version ${currentVersion}`}>
             v{currentVersion}
@@ -636,6 +810,53 @@ const Editor: React.FC<EditorProps> = ({
       </div>
 
       <div className={styles.editorBody}>
+        {!isPdf && searchOpen && (
+          <div className={styles.searchBar}>
+            <input
+              ref={searchInputRef}
+              className={styles.searchInput}
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              onKeyDown={handleSearchKeyDown}
+              placeholder="Search…"
+              autoFocus
+            />
+            <span className={`${styles.searchCount} ${searchQuery && matches.length === 0 ? styles.searchNoMatch : ""}`}>
+              {searchQuery ? `${matches.length > 0 ? matchIndex + 1 : 0} / ${matches.length}` : ""}
+            </span>
+            <button
+              className={styles.searchNav}
+              onClick={() => {
+                const prev = (matchIndex - 1 + matches.length) % matches.length;
+                setMatchIndex(prev);
+                jumpToMatch(prev);
+              }}
+              disabled={matches.length === 0}
+              title="Previous (Shift+Enter)"
+            >
+              ↑
+            </button>
+            <button
+              className={styles.searchNav}
+              onClick={() => {
+                const next = (matchIndex + 1) % matches.length;
+                setMatchIndex(next);
+                jumpToMatch(next);
+              }}
+              disabled={matches.length === 0}
+              title="Next (Enter)"
+            >
+              ↓
+            </button>
+            <button
+              className={styles.searchClose}
+              onClick={() => { setSearchOpen(false); setSearchQuery(""); }}
+              title="Close (Esc)"
+            >
+              ×
+            </button>
+          </div>
+        )}
         {isMarkdown && showHistory && (
           <VersionHistory
             filePath={filePath}
@@ -654,6 +875,7 @@ const Editor: React.FC<EditorProps> = ({
           <>
             <div className={styles.editorSide}>
               <textarea
+                ref={markdownTextareaRef}
                 className={styles.textarea}
                 value={content}
                 onChange={handleChange}
@@ -672,6 +894,7 @@ const Editor: React.FC<EditorProps> = ({
           </>
         ) : (
           <CodeEditor
+            ref={codeEditorRef}
             content={content}
             language={language}
             onChange={handleCodeChange}
