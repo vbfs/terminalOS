@@ -6,7 +6,7 @@
 
 **The terminal built for AI-native developers.**
 
-[![Version](https://img.shields.io/badge/version-0.3.0-blue.svg)](package.json)
+[![Version](https://img.shields.io/badge/version-0.4.0-blue.svg)](package.json)
 [![Platform](https://img.shields.io/badge/platform-macOS%20%7C%20Windows%20%7C%20Linux-lightgrey.svg)]()
 [![License](https://img.shields.io/badge/license-MIT-green.svg)]()
 
