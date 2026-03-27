@@ -74,18 +74,25 @@ The status bar surfaces live context without interrupting focus:
 
 ## What It Replaces
 
-| Before                                         | With terminalOS                           |
-| ---------------------------------------------- | ----------------------------------------- |
-| 3+ VSCode windows for different projects       | One app, multiple workspace tabs          |
-| No token visibility                            | Per-session and per-workspace token count |
-| Markdown notes in separate app                 | Editor integrated next to the terminal    |
-| Manually typing `claude` / `aider` to start AI | One shortcut per AI tool                  |
-| No context on which pane is running AI         | Live badge per pane                       |
-| No edit history for notes / context files      | Automatic version history with restore    |
-| No visibility into git state inside the app    | Branch + dirty state in the status bar    |
+| Before                                          | With terminalOS                                    |
+| ----------------------------------------------- | -------------------------------------------------- |
+| Downloading and installing a terminal app       | Run instantly with `npx terminalos` in the browser |
+| Terminal locked to one machine/OS               | Works in any browser, any OS, zero setup           |
+| No token visibility                             | Per-session and per-workspace token count          |
+| Markdown notes in separate app                  | Editor integrated next to the terminal             |
+| Manually typing `claude` / `aider` to start AI | One shortcut per AI tool                           |
+| No context on which pane is running AI          | Live badge per pane                                |
+| No edit history for notes / context files       | Automatic version history with restore             |
+| No visibility into git state inside the app     | Branch + dirty state in the status bar             |
 
 ---
 
 ## Platform
 
-macOS, Windows, Linux — desktop app (Electron).
+Browser-based — works on any OS (macOS, Windows, Linux) without installation.
+
+```bash
+npx terminalos
+```
+
+terminalOS starts a **local server on your machine** and opens in your default browser automatically. No app to download, no installer to run. Everything runs locally — your terminal sessions, token data, and files never leave your machine.

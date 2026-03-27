@@ -7,7 +7,7 @@
 **The terminal built for AI-native developers.**
 
 [![Version](https://img.shields.io/badge/version-0.4.0-blue.svg)](package.json)
-[![Platform](https://img.shields.io/badge/platform-macOS%20%7C%20Windows%20%7C%20Linux-lightgrey.svg)]()
+[![Platform](https://img.shields.io/badge/platform-browser-blue.svg)]()
 [![License](https://img.shields.io/badge/license-MIT-green.svg)]()
 
 </div>
@@ -31,9 +31,9 @@ You're using a 1980s tool to run 2025 software.
 
 ## What terminalOS Does
 
-terminalOS is a **desktop terminal multiplexer purpose-built for AI coding workflows**. It understands AI tools natively — detecting when they're running, tracking how much you're spending, and giving you a workspace that matches the way AI-assisted development actually works.
+terminalOS is a **browser-based terminal multiplexer purpose-built for AI coding workflows**. Run it instantly with a single command — no installation, no download. It understands AI tools natively — detecting when they're running, tracking how much you're spending, and giving you a workspace that matches the way AI-assisted development actually works.
 
-> Think iTerm2, but redesigned from scratch around Claude Code, Aider, and OpenCode.
+> Think iTerm2, but redesigned from scratch around Claude Code, Aider, and OpenCode — and running right in your browser.
 
 ---
 
@@ -186,7 +186,6 @@ Team leads and senior engineers rolling out AI coding tools across their org. Th
 
 ### Who This Is NOT For (Yet)
 
-- Developers who only use AI through browser-based IDEs (Cursor, GitHub Copilot in VS Code).
 - Non-technical users — this is a power-user terminal tool.
 - Teams already satisfied with Warp AI or Ghostty — though terminalOS goes deeper on AI-specific tooling.
 
@@ -194,16 +193,18 @@ Team leads and senior engineers rolling out AI coding tools across their org. Th
 
 ## Why terminalOS vs. Alternatives
 
-|                            | terminalOS | iTerm2 / Warp | VS Code Terminal | AI IDEs (Cursor) |
-| -------------------------- | ---------- | ------------- | ---------------- | ---------------- |
-| Native AI tool detection   | ✅         | ❌            | ❌               | Partial          |
-| Real-time token tracking   | ✅         | ❌            | ❌               | ❌               |
-| API error alerts           | ✅         | ❌            | ❌               | ❌               |
-| Multi-pane AI sessions     | ✅         | Manual        | Manual           | ❌               |
-| Integrated markdown editor | ✅         | ❌            | Extension        | ❌               |
-| Markdown version history   | ✅         | ❌            | ❌               | ❌               |
-| Built for CLI AI tools     | ✅         | ❌            | ❌               | ❌               |
-| Works with any AI tool     | ✅         | —             | —                | ❌ (locked in)   |
+|                                     | terminalOS | iTerm2 / Warp | VS Code Terminal | AI IDEs (Cursor) |
+| ----------------------------------- | ---------- | ------------- | ---------------- | ---------------- |
+| Native AI tool detection            | ✅         | ❌            | ❌               | Partial          |
+| Real-time token tracking            | ✅         | ❌            | ❌               | ❌               |
+| API error alerts                    | ✅         | ❌            | ❌               | ❌               |
+| Multi-pane AI sessions              | ✅         | Manual        | Manual           | ❌               |
+| Integrated markdown editor          | ✅         | ❌            | Extension        | ❌               |
+| Markdown version history            | ✅         | ❌            | ❌               | ❌               |
+| Built for CLI AI tools              | ✅         | ❌            | ❌               | ❌               |
+| Works with any AI tool              | ✅         | —             | —                | ❌ (locked in)   |
+| Zero-install, browser-based         | ✅         | ❌            | ❌               | ❌               |
+| 100% local — no cloud, full privacy | ✅         | ✅            | Partial          | ❌               |
 
 The key distinction: Warp and others add AI **to** a terminal. terminalOS is a terminal built **for** AI.
 
@@ -211,30 +212,15 @@ The key distinction: Warp and others add AI **to** a terminal. terminalOS is a t
 
 ## Installation
 
-### Download (Recommended)
+```bash
+npx terminalos
+```
 
-Download the latest release for your platform from the [Releases page]().
-
-| Platform                      | Download                |
-| ----------------------------- | ----------------------- |
-| macOS (Apple Silicon + Intel) | `.dmg` universal binary |
-| Windows                       | `.exe` NSIS installer   |
-| Linux                         | `.AppImage`             |
-
-### Build from Source
+That's it. terminalOS starts a **local server on your machine** and opens automatically in your browser. Everything runs locally — no cloud, no telemetry, no data sent anywhere. Your terminal sessions, files, and token usage never leave your machine.
 
 **Requirements:** Node.js 18+, npm 9+
 
-```bash
-git clone https://github.com/your-org/terminalOS
-cd terminalOS
-npm install
-npm run rebuild    # Compiles native terminal module
-npm run build      # Production build
-npm run dist       # Package for your platform
-```
-
-**Development (hot reload):**
+### Development (hot reload)
 
 ```bash
 npm run dev
@@ -244,7 +230,7 @@ npm run dev
 
 ## Getting Started
 
-1. **Open a folder** — use `⌘O` or the command palette to set your workspace root.
+1. **Start terminalOS** — run `npx terminalos` in your shell. It opens automatically in your browser. Then use `⌘O` or the command palette to set your workspace root.
 2. **Launch an AI tool** — press `⌘⇧C` for Claude Code, `⌘⇧O` for OpenCode, or type the command manually.
 3. **Watch the badge appear** — terminalOS detects the AI process and shows a live status indicator.
 4. **Split your workspace** — `⌘D` to split right, `⌘⇧D` to split below. Run your tests alongside AI.
@@ -275,7 +261,7 @@ npm run dev
 
 | Layer               | Technology            |
 | ------------------- | --------------------- |
-| Desktop runtime     | Electron 33           |
+| Server runtime      | Node.js 18+           |
 | UI framework        | React 19 + TypeScript |
 | Build tooling       | Vite 6                |
 | Terminal emulator   | XTerm.js 5.3          |
@@ -284,7 +270,6 @@ npm run dev
 | File watching       | Chokidar 4            |
 | Markdown rendering  | Marked 17             |
 | Syntax highlighting | Highlight.js 11       |
-| Auto-updater        | electron-updater      |
 | Virtualized lists   | React Window          |
 
 ---

@@ -415,6 +415,91 @@
         border-color: rgba(255, 255, 255, 0.3);
       }
 
+      /* COMMAND BLOCK */
+      .cmd-block {
+        display: inline-flex;
+        align-items: center;
+        gap: 0;
+        padding: 13px 20px;
+        background: var(--gray-950);
+        border: 1px solid var(--border-hover);
+        border-radius: 8px;
+        cursor: pointer;
+        transition:
+          border-color 0.15s,
+          background 0.15s;
+        user-select: none;
+      }
+
+      .cmd-block:hover {
+        border-color: rgba(255, 255, 255, 0.28);
+        background: var(--gray-900);
+      }
+
+      .cmd-block.copied {
+        border-color: var(--green);
+      }
+
+      .cmd-prompt {
+        font-family: var(--mono);
+        font-size: 15px;
+        color: var(--white);
+        margin-right: 10px;
+        pointer-events: none;
+      }
+
+      .cmd-text {
+        font-family: var(--mono);
+        font-size: 15px;
+        color: var(--white);
+        margin-right: 18px;
+        pointer-events: none;
+      }
+
+      .cmd-copy-icon {
+        color: var(--gray-500);
+        display: flex;
+        align-items: center;
+        transition: color 0.15s;
+        pointer-events: none;
+      }
+
+      .cmd-block:hover .cmd-copy-icon {
+        color: var(--gray-300);
+      }
+
+      .cmd-block.copied .cmd-copy-icon {
+        color: var(--green);
+      }
+
+      /* NAV CMD BUTTON */
+      .btn-cmd-nav {
+        font-family: var(--mono);
+        font-size: 13px;
+        color: var(--gray-300);
+        background: var(--gray-900);
+        border: 1px solid var(--border-hover);
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 7px 14px;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.15s;
+        white-space: nowrap;
+      }
+
+      .btn-cmd-nav:hover {
+        border-color: rgba(255, 255, 255, 0.3);
+        color: var(--white);
+        background: var(--gray-800);
+      }
+
+      .btn-cmd-nav.copied {
+        border-color: var(--green);
+        color: var(--green);
+      }
+
       /* HERO */
       .hero {
         display: flex;
@@ -1051,9 +1136,15 @@
         <li><a href="#compare">Compare</a></li>
         <li><a href="#themes">Themes</a></li>
       </ul>
-      <div class="nav-cta">
-        <a href="#" id="download" class="btn btn-primary">Download</a>
-      </div>
+      <!-- <div class="nav-cta">
+        <button class="btn-cmd-nav" id="nav-copy" title="Copy to clipboard">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="4 17 10 11 4 5"></polyline>
+            <line x1="12" y1="19" x2="20" y2="19"></line>
+          </svg>
+          npx terminalos
+        </button>
+      </div> -->
     </nav>
 
     <div class="hero">
@@ -1063,27 +1154,38 @@
       <h1 class="hero-title">Ai-Native <br /><em>Terminal Workspace</em></h1>
 
       <p class="hero-sub">
-        Stop juggling multiple windows. Get multi-pane workspaces, live token
-        tracking, and integrated markdown editing in one unified app.
+        One command. terminalOS opens in your browser, runs entirely local.
+        Multi-pane workspaces, live token tracking, markdown editing — no
+        install, your workspace.
       </p>
 
       <div class="hero-actions">
-        <a href="#" id="download-2" class="btn btn-primary">
-          Download
-          <svg
-            width="14"
-            height="14"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            stroke-width="2"
-          >
-            <path d="M7 17L17 7M17 7H7M17 7v10" />
-          </svg>
-        </a>
+        <button class="cmd-block" id="hero-copy">
+          <span class="cmd-prompt">$</span>
+          <span class="cmd-text">npx terminalos</span>
+          <span class="cmd-copy-icon">
+            <svg
+              width="15"
+              height="15"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+              <path
+                d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"
+              ></path>
+            </svg>
+          </span>
+        </button>
       </div>
 
-      <p class="hero-meta">macOS · Windows</p>
+      <p class="hero-meta">
+        No install · Runs locally · Node.js 18+ · Chrome · Firefox · Safari
+      </p>
 
       <div class="hero-ba-wrapper">
         <div class="ba-container" id="baContainer">
@@ -1134,7 +1236,6 @@
         </div>
       </div>
     </div>
-
     <hr class="full-divider" />
 
     <div id="features">
@@ -1371,23 +1472,17 @@
         <div class="platform-row reveal" style="margin-top: 48px">
           <span
             style="font-size: 13px; color: var(--gray-500); margin-right: 8px"
-            >Available on</span
+            >One Command</span
           >
+
           <div class="platform-chip">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
-              <path
-                d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"
-              />
-            </svg>
-            macOS
-          </div>
-          <div class="platform-chip">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
-              <path
-                d="M0 0h11.377v11.372H0zm12.623 0H24v11.372H12.623zM0 12.623h11.377V24H0zm12.623 0H24V24H12.623z"
-              />
-            </svg>
-            Windows
+            <svg
+              width="12"
+              height="12"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+            ></svg>
+            No install · Runs locally · Node.js 18+ · Chrome · Firefox · Safari
           </div>
         </div>
       </section>
@@ -1401,23 +1496,31 @@
           Start building<br />without the friction.
         </h2>
         <p class="cta-sub reveal">
-          Download terminalOS and run your AI agents from a workspace that keeps
-          up with you.
+          Um comando. Sem instalação. Rode terminalOS agora e pare de perder
+          contexto entre janelas.
         </p>
         <div class="cta-actions reveal">
-          <a href="#" id="download-3" class="btn btn-primary">
-            Download free
-            <svg
-              width="14"
-              height="14"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              stroke-width="2"
-            >
-              <path d="M7 17L17 7M17 7H7M17 7v10" />
-            </svg>
-          </a>
+          <button class="cmd-block" id="cta-copy">
+            <span class="cmd-prompt">$</span>
+            <span class="cmd-text">npx terminalos</span>
+            <span class="cmd-copy-icon">
+              <svg
+                width="15"
+                height="15"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                <path
+                  d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"
+                ></path>
+              </svg>
+            </span>
+          </button>
         </div>
       </section>
     </div>
@@ -1430,36 +1533,42 @@
     </footer>
 
     <script>
+      // ---- Copy to clipboard ----
       (function () {
-        var ua = navigator.userAgent;
-        var mac = /Macintosh|MacIntel|Mac OS X/.test(ua);
-        var win = /Windows/.test(ua);
-        var arm =
-          /arm64|aarch64/i.test(ua) || (mac && navigator.maxTouchPoints > 0);
+        var COMMAND = "npx terminalos";
+        var clipSvg =
+          '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>';
+        var checkSvg =
+          '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>';
 
-        var href, label;
-        if (mac) {
-          href = arm
-            ? "https://github.com/vbfs/terminalOS/releases/download/v0.4.0/terminalOS-0.4.0-arm64.dmg"
-            : "https://github.com/vbfs/terminalOS/releases/download/v0.4.0/terminalOS-0.4.0.dmg";
-          label = "Download for Mac";
-        } else if (win) {
-          href =
-            "https://github.com/vbfs/terminalOS/releases/download/v0.4.0/terminalOS.Setup.0.4.0.exe";
-          label = "Download for Windows";
-        } else {
-          href = "#install";
-          label = "Download free";
+        function copyCmd(el, iconEl) {
+          navigator.clipboard.writeText(COMMAND).then(function () {
+            el.classList.add("copied");
+            if (iconEl) iconEl.innerHTML = checkSvg;
+            setTimeout(function () {
+              el.classList.remove("copied");
+              if (iconEl) iconEl.innerHTML = clipSvg;
+            }, 2000);
+          });
         }
 
-        ["download", "download-2", "download-3"].forEach(function (id) {
-          var el = document.getElementById(id);
-          if (!el) return;
-          var svg = el.querySelector("svg");
-          el.setAttribute("href", href);
-          el.textContent = label;
-          if (svg) el.appendChild(svg);
+        document.querySelectorAll(".cmd-block").forEach(function (el) {
+          el.addEventListener("click", function () {
+            copyCmd(el, el.querySelector(".cmd-copy-icon"));
+          });
         });
+
+        var navBtn = document.getElementById("nav-copy");
+        if (navBtn) {
+          navBtn.addEventListener("click", function () {
+            navigator.clipboard.writeText(COMMAND).then(function () {
+              navBtn.classList.add("copied");
+              setTimeout(function () {
+                navBtn.classList.remove("copied");
+              }, 2000);
+            });
+          });
+        }
       })();
 
       // ---- Before / After slider ----
