@@ -1,6 +1,6 @@
 {
   "name": "terminalos",
-  "version": "0.6.1",
+  "version": "0.6.2",
   "description": "Browser-based terminal workspace built for AI-assisted development. Multi-pane layouts, live token tracking, integrated markdown editor, and 14 themes.",
   "bin": {
     "terminalos": "./bin/cli.js"
@@ -22,7 +22,7 @@
     "build:runtime": "tsc -p runtime/tsconfig.json",
     "build:all": "npm run build && npm run build:runtime",
     "build:npx": "npm run build:web && npm run build:runtime && node scripts/obfuscate-runtime.mjs",
-    "prepublishOnly": "npm run build:npx",
+    "publish": "npm run build:npx && npm publish",
     "npx": "node bin/cli.js --start"
   },
   "devDependencies": {
