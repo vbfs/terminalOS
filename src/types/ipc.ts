@@ -40,6 +40,7 @@ export interface IpcApi {
     onExit: (cb: (sessionId: string, code: number) => void) => Unsubscribe
     onAiDetected: (cb: (sessionId: string, aiProcess: AIProcess) => void) => Unsubscribe
     onAiExited: (cb: (sessionId: string) => void) => Unsubscribe
+    onError: (cb: (sessionId: string, message: string) => void) => Unsubscribe
   }
   fs: {
     openFolder: (initialPath?: string | null) => Promise<string | null>

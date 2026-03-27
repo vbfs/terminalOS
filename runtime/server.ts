@@ -198,6 +198,14 @@ interface PtySession {
   detector: ProcessDetector;
 }
 
+function resolveShell(): string {
+  if (process.platform === "win32") return "cmd.exe";
+  const candidates = [process.env.SHELL, "/bin/zsh", "/bin/bash", "/bin/sh"].filter(Boolean) as string[];
+  const found = candidates.find((s) => fsSync.existsSync(s));
+  if (!found) throw new Error(`No usable shell found (tried: ${candidates.join(", ")})`);
+  return found;
+}
+
 class WebPtyManager {
   private sessions = new Map<string, PtySession>();
   private resizeTimers = new Map<string, ReturnType<typeof setTimeout>>();
@@ -206,10 +214,7 @@ class WebPtyManager {
 
   create(opts: { cwd?: string; env?: Record<string, string> }): string {
     const sessionId = uuidv4();
-    const shell =
-      process.platform === "win32"
-        ? "cmd.exe"
-        : (process.env.SHELL ?? "/bin/bash");
+    const shell = resolveShell();
     const cwd = opts.cwd ?? process.env.HOME ?? "/";
     const isZsh = shell.endsWith("zsh");
     const promptEnv = isZsh
@@ -217,19 +222,27 @@ class WebPtyManager {
       : { PS1: " ", PROMPT: " " };
 
     const shellArgs = process.platform === "win32" ? [] : ["-l"];
-    const ptyProcess = pty.spawn(shell, shellArgs, {
-      name: "xterm-256color",
-      cols: 80,
-      rows: 24,
-      cwd,
-      env: {
-        ...process.env,
-        TERM: "xterm-256color",
-        COLORTERM: "truecolor",
-        ...promptEnv,
-        ...opts.env,
-      } as Record<string, string>,
-    });
+    let ptyProcess: pty.IPty;
+    try {
+      ptyProcess = pty.spawn(shell, shellArgs, {
+        name: "xterm-256color",
+        cols: 80,
+        rows: 24,
+        cwd,
+        env: {
+          ...process.env,
+          TERM: "xterm-256color",
+          COLORTERM: "truecolor",
+          ...promptEnv,
+          ...opts.env,
+        } as Record<string, string>,
+      });
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      console.error(`[aiTerm] Failed to spawn shell (${shell}):`, msg);
+      this.send("pty:error", [sessionId, `Failed to start shell (${shell}): ${msg}`]);
+      return sessionId;
+    }
 
     const detector = new ProcessDetector();
     const session: PtySession = {

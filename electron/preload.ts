@@ -35,6 +35,12 @@ const api = {
       ipcRenderer.on('pty:ai-exited', handler)
       return () => ipcRenderer.removeListener('pty:ai-exited', handler)
     },
+    onError: (cb: (sessionId: string, message: string) => void): Unsubscribe => {
+      const handler = (_: Electron.IpcRendererEvent, sessionId: string, message: string) =>
+        cb(sessionId, message)
+      ipcRenderer.on('pty:error', handler)
+      return () => ipcRenderer.removeListener('pty:error', handler)
+    },
   },
   fs: {
     openFolder: (): Promise<string | null> =>

@@ -477,6 +477,12 @@ export function usePty({ sessionId, containerRef, onReady }: UsePtyOptions) {
       setAiProcess(sessionId, null);
     });
 
+    const unsubError = api.pty.onError((id, message) => {
+      if (id !== sessionId) return;
+      termRef.current?.write(`\r\n\x1b[31mError: ${message}\x1b[0m\r\n`);
+      updateStatus(sessionId, "error", 1);
+    });
+
     return () => {
       ro.disconnect();
       document.removeEventListener("mouseup", handleMouseUp);
@@ -484,6 +490,7 @@ export function usePty({ sessionId, containerRef, onReady }: UsePtyOptions) {
       unsubExit();
       unsubAiDetected();
       unsubAiExited();
+      unsubError();
       if (aiIdleTimerRef.current) clearTimeout(aiIdleTimerRef.current);
       if (resizeDebounceRef.current) clearTimeout(resizeDebounceRef.current);
 
