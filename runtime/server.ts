@@ -1,6 +1,6 @@
 /**
  * terminalOS web runtime server.
- * Started by `npx terminalOS --run`. Serves the pre-built React frontend and
+ * Started by `npx terminalOS --start`. Serves the pre-built React frontend and
  * handles all terminal/FS operations over WebSocket so the user's local shell
  * and files are used — nothing runs on a remote server.
  */
