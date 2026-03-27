@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import styles from "./Titlebar.module.css";
 import { useSessionsStore } from "../../store/sessions.store";
 import { api, IS_WEB } from "../../api";
@@ -9,6 +9,19 @@ export const Titlebar: React.FC = () => {
   );
   const sessions = useSessionsStore((s) => s.sessions);
   const sessionCount = sessions.size;
+  const [online, setOnline] = useState(true);
+
+  useEffect(() => {
+    if (!IS_WEB) return;
+    const up = () => setOnline(true);
+    const down = () => setOnline(false);
+    window.addEventListener('ws:connected', up);
+    window.addEventListener('ws:disconnected', down);
+    return () => {
+      window.removeEventListener('ws:connected', up);
+      window.removeEventListener('ws:disconnected', down);
+    };
+  }, []);
 
   return (
     <div className={styles.titlebar}>
@@ -20,8 +33,10 @@ export const Titlebar: React.FC = () => {
 
       <div className={styles.right}>
         <span className={styles.sessionCount}>{sessionCount}</span>
-        <span className={styles.connectedDot} />
-        <span className={styles.connectedLabel}>connected</span>
+        <span className={online ? styles.connectedDot : styles.offlineDot} />
+        <span className={online ? styles.connectedLabel : styles.offlineLabel}>
+          {online ? "connected" : "offline"}
+        </span>
       </div>
 
       {!isMac && !IS_WEB && (
