@@ -32,12 +32,22 @@ function parseTokens(buffer: string): number | null {
     .replace(/workspace tokens[\s:~\d.,kK]+/gi, "");
 
   const patterns = [
-    { rx: /([\d]{1,3}(?:,[\d]{3})+)\s+\d+%/gi, type: "raw" }, // OpenCode: "64,101 31%"
+    { rx: /([\d]{1,3}(?:[.,][\d]{3})+)\s+\d+%/gi, type: "raw" }, // OpenCode: "64,101 31%" or "64.101 31%"
     { rx: /↑\s*([\d.,]+)(k)?\s*tokens/gi, type: "k-suffix" }, // OpenCode Loading / Generic
     { rx: /\(\s*([\d.,]+)(k)?\s*tokens\s*\)/gi, type: "k-suffix" }, // Aider: "(5.2k tokens)"
-    { rx: /tokens\s+used:\s*([\d,]+)/gi, type: "raw" }, // Claude Code
-    { rx: /(?<![,\d])([\d,]+)\s*tokens\b/gi, type: "raw" }, // Fallback universal
+    { rx: /tokens\s+used:\s*([\d.,]+)/gi, type: "raw" }, // Claude Code (comma or period thousands)
+    { rx: /(?<![.,\d])([\d.,]+)\s*tokens\b/gi, type: "raw" }, // Fallback universal
   ];
+
+  // Parse a raw number string that may use comma OR period as thousands separator
+  function parseRaw(s: string): number {
+    // X,XXX or X.XXX pattern = thousands separator → strip it
+    if (/^\d{1,3}(?:[.,]\d{3})+$/.test(s)) {
+      return parseInt(s.replace(/[,.]/g, ""), 10);
+    }
+    // Plain integer possibly with commas (e.g. "12,338" in some locales)
+    return parseInt(s.replace(/,/g, ""), 10);
+  }
 
   let bestMatch: RegExpMatchArray | null = null;
   let bestType: string | null = null;
@@ -57,13 +67,13 @@ function parseTokens(buffer: string): number | null {
 
   if (bestMatch && bestType) {
     if (bestType === "raw") {
-      return parseInt(bestMatch[1].replace(/,/g, ""));
+      return parseRaw(bestMatch[1]);
     }
 
     if (bestType === "k-suffix") {
       const rawNum = bestMatch[1];
-      const val = /,\d{3}$/.test(rawNum)
-        ? parseFloat(rawNum.replace(",", ""))
+      const val = /[.,]\d{3}$/.test(rawNum)
+        ? parseFloat(rawNum.replace(/[,.](\d{3})$/, "$1").replace(/[,.]/, "."))
         : parseFloat(rawNum.replace(",", "."));
       return bestMatch[2] ? Math.round(val * 1000) : Math.round(val);
     }
