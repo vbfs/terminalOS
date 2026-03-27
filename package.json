@@ -1,6 +1,6 @@
 {
   "name": "terminalos",
-  "version": "0.6.4",
+  "version": "0.6.5",
   "description": "Browser-based terminal workspace built for AI-assisted development. Multi-pane layouts, live token tracking, integrated markdown editor, and 14 themes.",
   "bin": {
     "terminalos": "./bin/cli.js"

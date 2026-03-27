@@ -70,6 +70,9 @@ if (isNaN(port) || port < 1 || port > 65535) {
   process.exit(1);
 }
 
+// Fix spawn-helper permissions at runtime (handles stale npx cache / arch mismatch)
+try { require('../scripts/fix-permissions'); } catch (_) {}
+
 // The runtime server is compiled to runtime-dist/server.js
 const { startServer } = require("../runtime-dist/server");
 startServer(port);
