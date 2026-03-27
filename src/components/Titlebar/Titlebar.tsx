@@ -12,7 +12,6 @@ export const Titlebar: React.FC = () => {
   const [online, setOnline] = useState(true);
 
   useEffect(() => {
-    if (!IS_WEB) return;
     const up = () => setOnline(true);
     const down = () => setOnline(false);
     window.addEventListener('ws:connected', up);
