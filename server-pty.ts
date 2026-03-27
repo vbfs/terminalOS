@@ -391,6 +391,11 @@ app.get('/api/fs/pick-folder', async (_req, res) => {
   }
 })
 
+// ---- App: platform info ----
+app.get('/api/app/platform', (_req, res) => {
+  res.json({ platform: process.platform })
+})
+
 // SPA fallback
 app.get('*', (_req, res) => {
   res.sendFile(pathModule.join(BUILD_DIR, 'index.html'))

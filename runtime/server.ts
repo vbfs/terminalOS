@@ -784,14 +784,22 @@ export function startServer(port: number): void {
         cmd = `osascript -e 'POSIX path of (choose folder with prompt "Select a folder:")'`;
       } else if (process.platform === "linux") {
         cmd = `zenity --file-selection --directory --title="Select a folder"`;
+      } else if (process.platform === "win32") {
+        cmd = `powershell -NoProfile -Command "Add-Type -AssemblyName System.Windows.Forms; $d = New-Object System.Windows.Forms.FolderBrowserDialog; $d.Description = 'Select a folder'; if ($d.ShowDialog() -eq 'OK') { Write-Output $d.SelectedPath }"`;
       } else {
-        return res.json({ path: null });
+        return res.json({ path: null, fallback: true });
       }
       const { stdout } = await execAsync(cmd);
-      res.json({ path: stdout.trim().replace(/\/$/, "") });
+      const picked = stdout.trim().replace(/\/$/, "");
+      res.json({ path: picked || null, fallback: false });
     } catch {
-      res.json({ path: null });
+      res.json({ path: null, fallback: false });
     }
+  });
+
+  // ---- App: platform info ----
+  app.get("/api/app/platform", (_req, res) => {
+    res.json({ platform: process.platform });
   });
 
   // SPA fallback

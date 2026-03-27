@@ -63,6 +63,7 @@ export interface IpcApi {
     getVersion: () => Promise<string>
     getGitBranch: (cwd: string) => Promise<string | null>
     checkForUpdates: () => Promise<{ version: string; url: string } | null>
+    getPlatform: () => Promise<string>
     onFocus: (cb: () => void) => Unsubscribe
     onBlur: (cb: () => void) => Unsubscribe
   }
