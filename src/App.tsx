@@ -22,6 +22,7 @@ import styles from "./App.module.css";
 import type { SplitDirection } from "./types/pane";
 import type { Session } from "./types/session";
 import { track } from "./lib/amplitude";
+import { disposeTerminal } from "./lib/terminal-registry";
 
 function serializePaneNode(node: PaneNode, sessions: Map<string, Session>): SavedNode {
   if (node.type === 'leaf') {
@@ -94,6 +95,7 @@ export const App: React.FC = () => {
     );
   }, [themeId]);
   const addSession = useSessionsStore((s) => s.addSession);
+  const replaceSession = useSessionsStore((s) => s.replaceSession);
   const sessions = useSessionsStore((s) => s.sessions);
   const {
     createTab,
@@ -103,6 +105,7 @@ export const App: React.FC = () => {
     splitMdPane,
     closeTabPane,
     restoreTabRoot,
+    updateLeafSessionId,
   } = useTabsStore();
   const activeTabId = useTabsStore((s) => s.activeTabId);
   const setActiveTab = useTabsStore((s) => s.setActiveTab);
@@ -258,6 +261,60 @@ export const App: React.FC = () => {
     };
     init();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Reconectar PTYs após o Mac sair do modo de descanso (WS reconecta mas PTYs morrem no servidor)
+  useEffect(() => {
+    const handleReconnect = async () => {
+      const { tabs: currentTabs } = useTabsStore.getState();
+      const { sessions: currentSessions } = useSessionsStore.getState();
+
+      for (const tab of currentTabs) {
+        if (!tab.root) continue;
+        const leaves = getAllLeaves(tab.root);
+        for (const leaf of leaves) {
+          const oldSession = Array.from(currentSessions.values()).find(
+            (s) => s.paneId === leaf.id
+          );
+          const cwd = oldSession?.cwd || rootFolder || undefined;
+          try {
+            const newSessionId = await api.pty.create({ cwd });
+            if (oldSession) {
+              disposeTerminal(oldSession.id);
+              updateLeafSessionId(tab.id, leaf.id, newSessionId);
+              replaceSession(oldSession.id, {
+                ...oldSession,
+                id: newSessionId,
+                status: "running",
+                aiProcess: null,
+                createdAt: Date.now(),
+              });
+            } else {
+              updateLeafSessionId(tab.id, leaf.id, newSessionId);
+              addSession({
+                id: newSessionId,
+                paneId: leaf.id,
+                name: "shell",
+                cwd: cwd ?? "",
+                status: "running",
+                aiProcess: null,
+                tokens: 0,
+                model: null,
+                costUsd: 0,
+                alertMessage: null,
+                condaEnv: null,
+                createdAt: Date.now(),
+              });
+            }
+          } catch {
+            // Se falhar, o usuário verá o terminal morto — não há o que fazer
+          }
+        }
+      }
+    };
+
+    window.addEventListener("ws:reconnected", handleReconnect);
+    return () => window.removeEventListener("ws:reconnected", handleReconnect);
+  }, [rootFolder, addSession, replaceSession, updateLeafSessionId]);
 
   // Auto-save layout whenever tabs or sessions change
   useEffect(() => {

@@ -42,6 +42,7 @@ interface TabsState {
   updateTabRatio: (tabId: string, splitId: string, ratio: number) => void
   getTabPaneIds: (tabId: string) => string[]
   toggleMinimizePane: (paneId: string) => void
+  updateLeafSessionId: (tabId: string, paneId: string, newSessionId: string) => void
   restoreTabRoot: (tabId: string, root: PaneNode, activePaneId: string | null) => void
 }
 
@@ -178,6 +179,17 @@ export const useTabsStore = create<TabsState>((set, get) => ({
     const tab = get().tabs.find((t) => t.id === tabId)
     if (!tab?.root) return []
     return getAllLeaves(tab.root).map((l) => l.id)
+  },
+
+  updateLeafSessionId: (tabId, paneId, newSessionId) => {
+    const tab = get().tabs.find((t) => t.id === tabId)
+    if (!tab?.root) return
+    function update(node: PaneNode): PaneNode {
+      if (node.type === 'leaf' && node.id === paneId) return { ...node, sessionId: newSessionId }
+      if (node.type === 'split') return { ...node, a: update(node.a), b: update(node.b) }
+      return node
+    }
+    set((s) => mapTab(s, tabId, (t) => ({ ...t, root: update(t.root!) })))
   },
 
   restoreTabRoot: (tabId, root, activePaneId) => {

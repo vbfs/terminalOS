@@ -20,6 +20,7 @@ interface SessionsState {
   setFocusedSession: (sessionId: string) => void
   rotateSession: () => void
 
+  replaceSession: (oldId: string, newSession: Session) => void
   getSession: (sessionId: string) => Session | undefined
   getActiveSessions: () => Session[]
   getOrderedSessions: () => Session[]
@@ -132,6 +133,16 @@ export const useSessionsStore = create<SessionsState>((set, get) => ({
       const idx = focusedSessionId ? sessionOrder.indexOf(focusedSessionId) : -1
       const nextIdx = (idx + 1) % sessionOrder.length
       return { focusedSessionId: sessionOrder[nextIdx] }
+    }),
+
+  replaceSession: (oldId, newSession) =>
+    set((state) => {
+      const next = new Map(state.sessions)
+      next.delete(oldId)
+      next.set(newSession.id, newSession)
+      const order = state.sessionOrder.map((id) => (id === oldId ? newSession.id : id))
+      const focused = state.focusedSessionId === oldId ? newSession.id : state.focusedSessionId
+      return { sessions: next, sessionOrder: order, focusedSessionId: focused }
     }),
 
   getSession: (sessionId) => get().sessions.get(sessionId),

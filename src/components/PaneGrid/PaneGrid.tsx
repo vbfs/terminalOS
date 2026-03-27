@@ -111,6 +111,7 @@ const NodeRenderer: React.FC<NodeRendererProps> = ({
   if (node.type === 'leaf') {
     return (
       <TermPane
+        key={node.sessionId}
         sessionId={node.sessionId}
         paneId={node.id}
         isActive={activePaneId === node.id}
