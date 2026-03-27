@@ -33,9 +33,10 @@ if (!hasRun) {
   logo.forEach((line) => console.log(pad + line));
   console.log("");
   console.log(
-    `${pad}${D}The terminal purpose-built for AI coding workflows.${R}  ${D}v${version}${R}`,
+    `${pad}${D}The browser-based terminal workspace built for AI-assisted development.${R}  ${D}v${version}${R}`,
   );
-  console.log(`${pad}${W}${B}terminalos.dev${R}`);
+
+  console.log(`${pad}${W}${B}https://terminalos.dev${R}`);
   console.log("");
   console.log(`${pad}${B}Features${R}`);
   console.log(
@@ -47,7 +48,7 @@ if (!hasRun) {
     `${pad}  ${W}›${R} Full shell access — runs directly in your browser`,
   );
   console.log(
-    `${pad}  ${W}›${R} No install required · ${W}npx terminalos --start${R}`,
+    `${pad}  ${W}›${R} No install required · ${W}Just run: npx terminalos --start${R}`,
   );
   console.log("");
   console.log(`${pad}${B}Usage${R}`);
