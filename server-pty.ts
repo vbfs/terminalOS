@@ -376,18 +376,18 @@ app.get('/api/fs/pick-folder', async (_req, res) => {
     } else if (process.platform === 'linux') {
       cmd = `zenity --file-selection --directory --title="Select a folder"`
     } else if (process.platform === 'win32') {
-      cmd = `powershell -NoProfile -Command "Add-Type -AssemblyName System.Windows.Forms; $d = New-Object System.Windows.Forms.FolderBrowserDialog; $d.Description = 'Select a folder'; if ($d.ShowDialog() -eq 'OK') { Write-Output $d.SelectedPath }"`
+      cmd = `powershell -NoProfile -Command "Add-Type -AssemblyName System.Windows.Forms; $f = New-Object System.Windows.Forms.Form; $f.TopMost = $true; $d = New-Object System.Windows.Forms.FolderBrowserDialog; $d.Description = 'Select a folder'; if ($d.ShowDialog($f) -eq [System.Windows.Forms.DialogResult]::OK) { Write-Output $d.SelectedPath }"`
     } else {
       return res.json({ path: null, fallback: true })
     }
     const stdout = await new Promise<string>((resolve, reject) => {
       childProcess.exec(cmd, (err, out) => (err ? reject(err) : resolve(out)))
     })
-    const picked = stdout.trim().replace(/\/$/, '')
+    const picked = stdout.trim().replace(/\r?\n/g, '').replace(/\/$/, '')
     res.json({ path: picked || null, fallback: false })
   } catch {
-    // User cancelled (osascript/zenity/powershell exit with error on cancel)
-    res.json({ path: null, fallback: false })
+    // PowerShell failed (not user-cancel) — fall back to manual picker
+    res.json({ path: null, fallback: true })
   }
 })
 
