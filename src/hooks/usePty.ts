@@ -272,13 +272,17 @@ export function usePty({ sessionId, containerRef, onReady }: UsePtyOptions) {
           setTimeout(() => {
             if (!termRef.current) return;
             api.pty.resize(sessionId, cols, rows);
-            api.app.getPlatform().then((platform) => {
-              if (platform !== 'win32') {
+            try {
+              api.app.getPlatform().then((platform) => {
+                if (platform !== 'win32') {
+                  setTimeout(() => api.pty.write(sessionId, "\x0c"), 30);
+                }
+              }).catch(() => {
                 setTimeout(() => api.pty.write(sessionId, "\x0c"), 30);
-              }
-            }).catch(() => {
+              });
+            } catch {
               setTimeout(() => api.pty.write(sessionId, "\x0c"), 30);
-            });
+            }
           }, 50);
 
           terminal.onData((data) => api.pty.write(sessionId, data));

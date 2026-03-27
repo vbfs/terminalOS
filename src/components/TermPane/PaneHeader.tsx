@@ -3,6 +3,7 @@ import React from "react";
 import styles from "./TermPane.module.css";
 import { useUiStore } from "../../store/ui.store";
 import { useWorkspaceStore } from "../../store/workspace.store";
+import { useSessionsStore } from "../../store/sessions.store";
 import { Tooltip } from "../Tooltip/Tooltip";
 function formatTokens(n: number): string {
   if (n >= 1000) return `${(n / 1000).toFixed(1)}k`;
@@ -69,6 +70,7 @@ export const PaneHeader: React.FC<PaneHeaderProps> = ({
     const folder = await api.fs.openFolder();
     if (folder) {
       api.pty.write(session.id, `cd "${folder}"\n`);
+      useSessionsStore.getState().updateCwd(session.id, folder);
     }
   };
 

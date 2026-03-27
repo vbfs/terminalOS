@@ -133,7 +133,10 @@ export function useKeymap(handlers: KeymapHandlers = {}) {
           workspaceStore.setRootFolder(folder)
           if (activePaneId) {
             const session = Array.from(sessionsStore.sessions.values()).find(s => s.paneId === activePaneId)
-            if (session) api.pty.write(session.id, `cd "${folder}"\n`)
+            if (session) {
+              api.pty.write(session.id, `cd "${folder}"\n`)
+              sessionsStore.updateCwd(session.id, folder)
+            }
           }
         }
         return

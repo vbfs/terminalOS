@@ -369,14 +369,17 @@ app.get('/api/fs/versions/get', async (req, res) => {
 
 // ---- FS: pick-folder (native OS dialog) ----
 app.get('/api/fs/pick-folder', async (_req, res) => {
+  // Windows: PowerShell dialogs are unreliable from a headless Node process.
+  // Always use the in-app FolderPicker modal on Windows.
+  if (process.platform === 'win32') {
+    return res.json({ path: null, fallback: true })
+  }
   try {
     let cmd: string
     if (process.platform === 'darwin') {
       cmd = `osascript -e 'POSIX path of (choose folder with prompt "Select a folder:")'`
     } else if (process.platform === 'linux') {
       cmd = `zenity --file-selection --directory --title="Select a folder"`
-    } else if (process.platform === 'win32') {
-      cmd = `powershell -NoProfile -Command "Add-Type -AssemblyName System.Windows.Forms; $f = New-Object System.Windows.Forms.Form; $f.TopMost = $true; $d = New-Object System.Windows.Forms.FolderBrowserDialog; $d.Description = 'Select a folder'; if ($d.ShowDialog($f) -eq [System.Windows.Forms.DialogResult]::OK) { Write-Output $d.SelectedPath }"`
     } else {
       return res.json({ path: null, fallback: true })
     }
@@ -386,8 +389,7 @@ app.get('/api/fs/pick-folder', async (_req, res) => {
     const picked = stdout.trim().replace(/\r?\n/g, '').replace(/\/$/, '')
     res.json({ path: picked || null, fallback: false })
   } catch {
-    // PowerShell failed (not user-cancel) — fall back to manual picker
-    res.json({ path: null, fallback: true })
+    res.json({ path: null, fallback: false })
   }
 })
 
