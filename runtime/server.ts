@@ -635,10 +635,24 @@ function handleConnection(
           break;
 
         // FS
-        case "fs:openFolder":
-          // Cannot open native dialog from browser — return null
-          if (id) respond(id, null);
+        case "fs:openFolder": {
+          try {
+            let cmd: string;
+            if (process.platform === "darwin") {
+              cmd = `osascript -e 'POSIX path of (choose folder with prompt "Select a folder:")'`;
+            } else if (process.platform === "linux") {
+              cmd = `zenity --file-selection --directory --title="Select a folder"`;
+            } else {
+              if (id) respond(id, null);
+              break;
+            }
+            const { stdout } = await execAsync(cmd);
+            if (id) respond(id, stdout.trim().replace(/\/$/, ""));
+          } catch {
+            if (id) respond(id, null);
+          }
           break;
+        }
         case "fs:readDir": {
           const entries = await fsWatcher.readDir(params.path as string);
           if (id) respond(id, entries);
