@@ -1,4 +1,4 @@
-import { useEffect, useRef, useCallback } from "react";
+import { useEffect, useRef, useCallback, useState } from "react";
 import { Terminal } from "@xterm/xterm";
 import { FitAddon } from "@xterm/addon-fit";
 import { WebLinksAddon } from "@xterm/addon-web-links";
@@ -198,6 +198,8 @@ export function usePty({ sessionId, containerRef, onReady }: UsePtyOptions) {
   // Timestamp do último parse bem-sucedido — cooldown para não re-parsear imediatamente
   const lastParsedAtRef = useRef<number>(0);
 
+  const [isInitializing, setIsInitializing] = useState(true);
+  const firstDataRef = useRef(false);
   const initializedRef = useRef(false);
   const resizeDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const lastSizeRef = useRef({ cols: 0, rows: 0 });
@@ -397,6 +399,11 @@ export function usePty({ sessionId, containerRef, onReady }: UsePtyOptions) {
     const unsubData = api.pty.onData((id, data) => {
       if (id !== sessionId) return;
 
+      if (!firstDataRef.current) {
+        firstDataRef.current = true;
+        termRef.current?.clear();
+        setIsInitializing(false);
+      }
       termRef.current?.write(data);
 
       // Só parseia quando um AI está ativo na sessão
@@ -521,5 +528,5 @@ export function usePty({ sessionId, containerRef, onReady }: UsePtyOptions) {
   const fit = useCallback(() => fitAddonRef.current?.fit(), []);
   const paste = useCallback((text: string) => termRef.current?.paste(text), []);
 
-  return { termRef, search, fit, paste };
+  return { termRef, search, fit, paste, isInitializing };
 }

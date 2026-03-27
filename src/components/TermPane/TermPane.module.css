@@ -240,6 +240,34 @@
   opacity: 1;
 }
 
+/* ── Initializing overlay ───────────────────────── */
+.initializing {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  pointer-events: none;
+  font-size: 12px;
+  font-family: var(--font-ui);
+  color: var(--muted);
+  opacity: 0.5;
+}
+
+@keyframes dots {
+  0%   { content: ""; }
+  33%  { content: "."; }
+  66%  { content: ".."; }
+  100% { content: "..."; }
+}
+
+.initDots::after {
+  content: "";
+  animation: dots 1.2s steps(1, end) infinite;
+}
+
 /* ── Placeholder / empty state ──────────────────── */
 .placeholder {
   position: absolute;

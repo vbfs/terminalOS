@@ -59,7 +59,7 @@ export const TermPane: React.FC<TermPaneProps> = React.memo(
       interactedSessions.has(sessionId),
     );
 
-    const { paste, fit } = usePty({ sessionId, containerRef });
+    const { paste, fit, isInitializing } = usePty({ sessionId, containerRef });
 
     useEffect(() => {
       if (isMinimized) return;
@@ -209,7 +209,13 @@ export const TermPane: React.FC<TermPaneProps> = React.memo(
             setHasInteracted(true);
           }}
         >
-          {!hasInteracted && (
+          {isInitializing && (
+            <div className={styles.initializing}>
+              <span>Initializing terminal</span>
+              <span className={styles.initDots}></span>
+            </div>
+          )}
+          {!hasInteracted && !isInitializing && (
             <div className={styles.placeholder}>
               {rootFolder ? (
                 <>
