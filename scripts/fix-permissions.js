@@ -8,9 +8,11 @@
 const fs = require('fs');
 const path = require('path');
 
-const prebuildsDir = path.join(__dirname, '..', 'node_modules', 'node-pty', 'prebuilds');
-
 try {
+  // Use require.resolve so we find the actual node-pty location regardless of
+  // whether npm hoisted it (npx cache) or left it nested (local node_modules).
+  const nodePtyRoot = path.dirname(require.resolve('node-pty/package.json'));
+  const prebuildsDir = path.join(nodePtyRoot, 'prebuilds');
   if (fs.existsSync(prebuildsDir)) {
     for (const dir of fs.readdirSync(prebuildsDir)) {
       const spawnHelper = path.join(prebuildsDir, dir, 'spawn-helper');
