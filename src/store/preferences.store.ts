@@ -11,7 +11,7 @@ interface PreferencesState {
 export const usePreferencesStore = create<PreferencesState>()(
   persist(
     (set) => ({
-      themeId: 'aiterm-dark',
+      themeId: 'all-black',
       hasSeenWelcome: false,
       setTheme: (id) => set({ themeId: id }),
       setHasSeenWelcome: (seen) => set({ hasSeenWelcome: seen }),

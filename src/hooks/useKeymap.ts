@@ -128,15 +128,15 @@ export function useKeymap(handlers: KeymapHandlers = {}) {
       // Open Folder
       if (matchesShortcut(e, 'CmdOrCtrl+O')) {
         e.preventDefault()
-        const folder = await api.fs.openFolder()
+        const activeSession = activePaneId
+          ? Array.from(sessionsStore.sessions.values()).find(s => s.paneId === activePaneId)
+          : undefined
+        const folder = await api.fs.openFolder(activeSession?.cwd ?? null)
         if (folder) {
           workspaceStore.setRootFolder(folder)
-          if (activePaneId) {
-            const session = Array.from(sessionsStore.sessions.values()).find(s => s.paneId === activePaneId)
-            if (session) {
-              api.pty.write(session.id, `cd "${folder}"\r\n`)
-              sessionsStore.updateCwd(session.id, folder)
-            }
+          if (activeSession) {
+            api.pty.write(activeSession.id, `cd "${folder}"\r\n`)
+            sessionsStore.updateCwd(activeSession.id, folder)
           }
         }
         return

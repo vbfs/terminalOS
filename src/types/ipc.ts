@@ -42,7 +42,7 @@ export interface IpcApi {
     onAiExited: (cb: (sessionId: string) => void) => Unsubscribe
   }
   fs: {
-    openFolder: () => Promise<string | null>
+    openFolder: (initialPath?: string | null) => Promise<string | null>
     readDir: (path: string) => Promise<FsEntry[]>
     readFile: (path: string) => Promise<string>
     writeFile: (path: string, content: string) => Promise<void>

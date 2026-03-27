@@ -221,7 +221,10 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
       shortcut: "⌘O",
       icon: "⌁",
       action: async () => {
-        const folder = await api.fs.openFolder();
+        const activeSession = activeTab?.activePaneId
+          ? Array.from(sessions.values()).find((s) => s.paneId === activeTab.activePaneId)
+          : undefined;
+        const folder = await api.fs.openFolder(activeSession?.cwd ?? null);
         if (folder && activeTab?.activePaneId) {
           setRootFolder(folder);
           const sessionId = await api.pty.create({ cwd: folder });

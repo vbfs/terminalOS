@@ -122,7 +122,7 @@ const FileBrowser: React.FC<FileBrowserProps> = ({
   const setRootFolder = useWorkspaceStore((s) => s.setRootFolder);
 
   const handleChangeFolder = async () => {
-    const folder = await api.fs.openFolder();
+    const folder = await api.fs.openFolder(browsePath);
     if (folder) {
       setRootFolder(folder);
       browse(paneId, folder);

@@ -22,7 +22,8 @@
     "build:runtime": "tsc -p runtime/tsconfig.json",
     "build:all": "npm run build && npm run build:runtime",
     "build:npx": "npm run build:web && npm run build:runtime && node scripts/obfuscate-runtime.mjs",
-    "prepublish": "npm run build:npx"
+    "prepublish": "npm run build:npx",
+    "npx": "node bin/cli.js --start"
   },
   "devDependencies": {
     "@types/express": "^5.0.6",

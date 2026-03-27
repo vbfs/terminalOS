@@ -67,7 +67,7 @@ export const PaneHeader: React.FC<PaneHeaderProps> = ({
 
   const handleOpenFolder = async (e: React.MouseEvent) => {
     e.stopPropagation();
-    const folder = await api.fs.openFolder();
+    const folder = await api.fs.openFolder(session.cwd);
     if (folder) {
       api.pty.write(session.id, `cd "${folder}"\r\n`);
       useSessionsStore.getState().updateCwd(session.id, folder);
