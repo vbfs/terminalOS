@@ -226,11 +226,16 @@ export function usePty({ sessionId, containerRef, onReady }: UsePtyOptions) {
       // deferred fit() so we catch the real post-paint dimensions.
       if (!entry || entry.contentRect.width === 0) {
         if (initializedRef.current) {
-          if (resizeDebounceRef.current) clearTimeout(resizeDebounceRef.current);
+          if (resizeDebounceRef.current)
+            clearTimeout(resizeDebounceRef.current);
           resizeDebounceRef.current = setTimeout(() => {
             fitAddonRef.current?.fit();
             const term = termRef.current;
-            if (term && (term.cols !== lastSizeRef.current.cols || term.rows !== lastSizeRef.current.rows)) {
+            if (
+              term &&
+              (term.cols !== lastSizeRef.current.cols ||
+                term.rows !== lastSizeRef.current.rows)
+            ) {
               lastSizeRef.current = { cols: term.cols, rows: term.rows };
               api.pty.resize(sessionId, term.cols, term.rows);
             }
@@ -284,20 +289,23 @@ export function usePty({ sessionId, containerRef, onReady }: UsePtyOptions) {
             if (!termRef.current) return;
             api.pty.resize(sessionId, cols, rows);
             try {
-              api.app.getPlatform().then((platform) => {
-                if (platform !== 'win32') {
+              api.app
+                .getPlatform()
+                .then((platform) => {
+                  if (platform !== "win32") {
+                    setTimeout(() => api.pty.write(sessionId, "\x0c"), 30);
+                  }
+                })
+                .catch(() => {
                   setTimeout(() => api.pty.write(sessionId, "\x0c"), 30);
-                }
-              }).catch(() => {
-                setTimeout(() => api.pty.write(sessionId, "\x0c"), 30);
-              });
+                });
             } catch {
               setTimeout(() => api.pty.write(sessionId, "\x0c"), 30);
             }
           }, 50);
 
           terminal.onData((data) => {
-            if (data === '\r') track('terminal_enter', { source: 'terminal' });
+            if (data === "\r") track("terminal_enter", { source: "terminal" });
             api.pty.write(sessionId, data);
           });
 
@@ -355,7 +363,8 @@ export function usePty({ sessionId, containerRef, onReady }: UsePtyOptions) {
     const triggerParse = (reason: string) => {
       const now = Date.now();
       // Cooldown: ignora re-parse em menos de 1.5s, exceto no "ai-exited" (parse final)
-      if (reason !== "ai-exited" && now - lastParsedAtRef.current < 1500) return;
+      if (reason !== "ai-exited" && now - lastParsedAtRef.current < 1500)
+        return;
       // Avança o cooldown SEMPRE (mesmo que deduplication descarte o valor),
       // para evitar spam quando o AI envia cursor blinks com tela estável.
       lastParsedAtRef.current = now;
@@ -365,9 +374,11 @@ export function usePty({ sessionId, containerRef, onReady }: UsePtyOptions) {
 
       const model = parseModel(rawBuffer) ?? parseModel(screenText);
       const tokens = parseTokens(screenText);
-      const costUsd = tokens !== null
-        ? (parseCostUsd(screenText) ?? estimateCost(tokens, model ?? getSession(sessionId)?.model ?? null))
-        : null;
+      const costUsd =
+        tokens !== null
+          ? (parseCostUsd(screenText) ??
+            estimateCost(tokens, model ?? getSession(sessionId)?.model ?? null))
+          : null;
       const alert = parseAlert(screenText);
 
       if (model) updateModel(sessionId, model);
@@ -375,11 +386,6 @@ export function usePty({ sessionId, containerRef, onReady }: UsePtyOptions) {
       if (tokens !== null && costUsd !== null) {
         // Deduplicação: só atualiza se o valor mudou
         if (tokens !== lastParsedTokensRef.current) {
-          const prev = lastParsedTokensRef.current;
-          const dropped = prev !== null && tokens < prev * 0.8; // queda > 20%
-          if (dropped) {
-            lastParsedTokensRef.current = tokens;
-          }
           lastParsedTokensRef.current = tokens;
           updateTokens(sessionId, tokens, costUsd);
         }
@@ -419,11 +425,12 @@ export function usePty({ sessionId, containerRef, onReady }: UsePtyOptions) {
           // Se a última linha visível for vazia (só cursor), considera como "esperando".
           const buf = term?.buffer?.active;
           if (buf) {
-            const lastLine = buf.getLine(buf.baseY + (term?.rows ?? 0) - 1)
-              ?.translateToString(true)
-              ?.trimEnd() ?? "";
+            const lastLine =
+              buf
+                .getLine(buf.baseY + (term?.rows ?? 0) - 1)
+                ?.translateToString(true)
+                ?.trimEnd() ?? "";
             if (lastLine === "") {
-              console.log("[aiTerm] fallback: última linha vazia → parseando");
               triggerParse("empty-line-fallback");
             }
           }
@@ -444,26 +451,24 @@ export function usePty({ sessionId, containerRef, onReady }: UsePtyOptions) {
 
     const unsubAiDetected = api.pty.onAiDetected((id, aiProcess) => {
       if (id !== sessionId) return;
-      console.log(`[aiTerm] AI detectado: ${aiProcess.name} — session=${sessionId}`);
       isAiActiveRef.current = true;
       parseBufferRef.current = "";
       lastParsedTokensRef.current = null;
       lastParsedAtRef.current = 0;
       setAiProcess(sessionId, aiProcess);
       setAlert(sessionId, null);
-      track('ai_detected', { agent: aiProcess.name });
+      track("ai_detected", { agent: aiProcess.name });
     });
 
     const unsubAiExited = api.pty.onAiExited((id) => {
       if (id !== sessionId) return;
-      console.log(`[aiTerm] AI saiu — session=${sessionId}, disparando parse final`);
       isAiActiveRef.current = false;
       if (aiIdleTimerRef.current) clearTimeout(aiIdleTimerRef.current);
       aiIdleTimerRef.current = null;
       triggerParse("ai-exited");
       parseBufferRef.current = "";
       const aiProcess = getSession(sessionId)?.aiProcess;
-      track('ai_exited', { agent: aiProcess?.name ?? 'unknown' });
+      track("ai_exited", { agent: aiProcess?.name ?? "unknown" });
       setAiProcess(sessionId, null);
     });
 
