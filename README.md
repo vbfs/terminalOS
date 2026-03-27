@@ -5,9 +5,9 @@
 # terminalOS
 
 **The browser-based terminal workspace built for AI-native developers.**
-One command. Runs locally. Opens in your browser\*\*
+One command. Runs locally. Opens in your browser
 
-[![Version](https://img.shields.io/badge/version-0.6.0-blue.svg)](package.json)
+[![Version](https://img.shields.io/badge/version-0.6.1-blue.svg)](package.json)
 [![Platform](https://img.shields.io/badge/platform-browser-blue.svg)]()
 [![License](https://img.shields.io/badge/license-MIT-green.svg)]()
 
