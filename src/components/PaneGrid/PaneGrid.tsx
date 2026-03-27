@@ -3,6 +3,7 @@ import styles from './PaneGrid.module.css'
 import { TermPane } from '../TermPane/TermPane'
 import { MarkdownPane } from '../MarkdownPane/MarkdownPane'
 import { useTabsStore } from '../../store/tabs.store'
+import { useSessionsStore } from '../../store/sessions.store'
 import type { PaneNode, SplitDirection } from '../../types/pane'
 
 // ── Helpers ────────────────────────────────────────────────────
@@ -231,6 +232,7 @@ const NodeRenderer: React.FC<NodeRendererProps> = ({
 export const PaneGrid: React.FC<PaneGridProps> = ({ tabId, onSplit, onClose, onOpenMd, onCommandPalette, onNewTab }) => {
   const tab = useTabsStore((s) => s.tabs.find((t) => t.id === tabId))
   const setTabActivePane = useTabsStore((s) => s.setTabActivePane)
+  const setFocusedSession = useSessionsStore((s) => s.setFocusedSession)
 
   if (!tab?.root) return null
 
@@ -243,7 +245,11 @@ export const PaneGrid: React.FC<PaneGridProps> = ({ tabId, onSplit, onClose, onO
         paneCount={tab.paneCount}
         onSplit={(paneId, dir) => onSplit(tabId, paneId, dir)}
         onClose={(paneId) => onClose(tabId, paneId)}
-        onFocus={(paneId) => setTabActivePane(tabId, paneId)}
+        onFocus={(paneId) => {
+          setTabActivePane(tabId, paneId)
+          const session = Array.from(useSessionsStore.getState().sessions.values()).find((s) => s.paneId === paneId)
+          if (session) setFocusedSession(session.id)
+        }}
         onOpenMd={(paneId) => onOpenMd(tabId, paneId)}
         onCommandPalette={onCommandPalette}
         onNewTab={onNewTab}
