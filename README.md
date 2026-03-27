@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="public/icon.png" alt="terminalOS Logo" width="96" />
+<img src="https://unpkg.com/terminalos/public/icon.png" alt="terminalOS Logo" width="96" />
 
 # terminalOS
 
