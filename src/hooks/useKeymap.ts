@@ -4,6 +4,7 @@ import { useTabsStore } from '../store/tabs.store'
 import { useWorkspaceStore } from '../store/workspace.store'
 import { useSessionsStore } from '../store/sessions.store'
 import { useUiStore } from '../store/ui.store'
+import { track } from '../lib/amplitude'
 
 interface KeymapHandlers {
   onCommandPalette?: () => void
@@ -52,6 +53,7 @@ export function useKeymap(handlers: KeymapHandlers = {}) {
       // Command palette
       if (matchesShortcut(e, 'CmdOrCtrl+K')) {
         e.preventDefault()
+        track('shortcut_used', { shortcut: 'CmdOrCtrl+K', action: 'command_palette' })
         handlers.onCommandPalette?.()
         return
       }
@@ -59,6 +61,7 @@ export function useKeymap(handlers: KeymapHandlers = {}) {
       // New tab
       if (matchesShortcut(e, 'CmdOrCtrl+T')) {
         e.preventDefault()
+        track('shortcut_used', { shortcut: 'CmdOrCtrl+T', action: 'new_tab' })
         handlers.onNewTab?.()
         return
       }
@@ -67,6 +70,7 @@ export function useKeymap(handlers: KeymapHandlers = {}) {
       if (matchesShortcut(e, 'CmdOrCtrl+D')) {
         e.preventDefault()
         if (activeTab && activePaneId) {
+          track('shortcut_used', { shortcut: 'CmdOrCtrl+D', action: 'split_right' })
           const activeSession = Array.from(sessionsStore.sessions.values()).find(s => s.paneId === activePaneId)
           const cwd = activeSession?.cwd || workspaceStore.rootFolder || undefined
           const sessionId = await api.pty.create({ cwd })
@@ -80,6 +84,7 @@ export function useKeymap(handlers: KeymapHandlers = {}) {
       if (matchesShortcut(e, 'CmdOrCtrl+Shift+D')) {
         e.preventDefault()
         if (activeTab && activePaneId) {
+          track('shortcut_used', { shortcut: 'CmdOrCtrl+Shift+D', action: 'split_below' })
           const activeSession = Array.from(sessionsStore.sessions.values()).find(s => s.paneId === activePaneId)
           const cwd = activeSession?.cwd || workspaceStore.rootFolder || undefined
           const sessionId = await api.pty.create({ cwd })
@@ -93,6 +98,7 @@ export function useKeymap(handlers: KeymapHandlers = {}) {
       if (matchesShortcut(e, 'CmdOrCtrl+W')) {
         e.preventDefault()
         if (activeTab && activePaneId) {
+          track('shortcut_used', { shortcut: 'CmdOrCtrl+W', action: 'close_pane' })
           tabsStore.closeTabPane(activeTab.id, activePaneId)
         }
         return
@@ -101,6 +107,7 @@ export function useKeymap(handlers: KeymapHandlers = {}) {
       // Open Markdown Editor
       if (matchesShortcut(e, 'CmdOrCtrl+Shift+M')) {
         e.preventDefault()
+        track('shortcut_used', { shortcut: 'CmdOrCtrl+Shift+M', action: 'open_markdown' })
         handlers.onOpenMd?.()
         return
       }
@@ -110,7 +117,10 @@ export function useKeymap(handlers: KeymapHandlers = {}) {
         e.preventDefault()
         if (activePaneId) {
           const session = Array.from(sessionsStore.sessions.values()).find(s => s.paneId === activePaneId)
-          if (session) api.pty.write(session.id, 'claude\n')
+          if (session) {
+            track('shortcut_used', { shortcut: 'CmdOrCtrl+Shift+C', action: 'launch_claude' })
+            api.pty.write(session.id, 'claude\n')
+          }
         }
         return
       }
@@ -120,7 +130,10 @@ export function useKeymap(handlers: KeymapHandlers = {}) {
         e.preventDefault()
         if (activePaneId) {
           const session = Array.from(sessionsStore.sessions.values()).find(s => s.paneId === activePaneId)
-          if (session) api.pty.write(session.id, 'opencode\n')
+          if (session) {
+            track('shortcut_used', { shortcut: 'CmdOrCtrl+Shift+O', action: 'launch_opencode' })
+            api.pty.write(session.id, 'opencode\n')
+          }
         }
         return
       }
@@ -128,6 +141,7 @@ export function useKeymap(handlers: KeymapHandlers = {}) {
       // Open Folder
       if (matchesShortcut(e, 'CmdOrCtrl+O')) {
         e.preventDefault()
+        track('shortcut_used', { shortcut: 'CmdOrCtrl+O', action: 'open_folder' })
         const activeSession = activePaneId
           ? Array.from(sessionsStore.sessions.values()).find(s => s.paneId === activePaneId)
           : undefined

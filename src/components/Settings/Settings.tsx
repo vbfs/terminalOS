@@ -2,6 +2,7 @@ import React, { useEffect, useRef } from 'react'
 import { THEMES } from '../../themes'
 import { usePreferencesStore } from '../../store/preferences.store'
 import styles from './Settings.module.css'
+import { track } from '../../lib/amplitude'
 
 interface SettingsProps {
   isOpen: boolean
@@ -42,7 +43,7 @@ export const Settings: React.FC<SettingsProps> = ({ isOpen, onClose }) => {
               <button
                 key={theme.id}
                 className={`${styles.themeCard} ${themeId === theme.id ? styles.selected : ''}`}
-                onClick={() => setTheme(theme.id)}
+                onClick={() => { setTheme(theme.id); track('theme_changed', { theme: theme.name, theme_id: theme.id }); }}
               >
                 <div className={styles.themePreview}>
                   {theme.preview.map((color, i) => (

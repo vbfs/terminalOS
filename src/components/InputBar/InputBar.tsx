@@ -6,6 +6,7 @@ import { getDotState } from '../../types/session'
 import type { Session } from '../../types/session'
 import { IconChevronDown, IconSend } from '../Icons'
 import { Tooltip } from '../Tooltip/Tooltip'
+import { track } from '../../lib/amplitude'
 
 export const InputBar: React.FC = () => {
   const inputRef = useRef<HTMLInputElement>(null)
@@ -52,6 +53,7 @@ export const InputBar: React.FC = () => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault()
       if (text.length > 0) {
+        track('terminal_enter', { source: 'input_bar' })
         sendText(text + '\r')
         setText('')
       }
@@ -87,6 +89,7 @@ export const InputBar: React.FC = () => {
 
   const handleSend = () => {
     if (text.length > 0) {
+      track('terminal_enter', { source: 'send_button' })
       sendText(text + '\r')
       setText('')
     }

@@ -10,6 +10,7 @@ import { usePreferencesStore } from "../store/preferences.store";
 import { getThemeById } from "../themes";
 import { estimateCost, normalizeModel } from "../utils/pricing";
 import { api } from "../api";
+import { track } from "../lib/amplitude";
 import {
   saveTerminal,
   takeTerminal,
@@ -295,7 +296,10 @@ export function usePty({ sessionId, containerRef, onReady }: UsePtyOptions) {
             }
           }, 50);
 
-          terminal.onData((data) => api.pty.write(sessionId, data));
+          terminal.onData((data) => {
+            if (data === '\r') track('terminal_enter', { source: 'terminal' });
+            api.pty.write(sessionId, data);
+          });
 
           terminal.parser.registerOscHandler(7, (data) => {
             try {
@@ -457,6 +461,7 @@ export function usePty({ sessionId, containerRef, onReady }: UsePtyOptions) {
       lastParsedAtRef.current = 0;
       setAiProcess(sessionId, aiProcess);
       setAlert(sessionId, null);
+      track('ai_detected', { agent: aiProcess.name });
     });
 
     const unsubAiExited = api.pty.onAiExited((id) => {
@@ -467,6 +472,8 @@ export function usePty({ sessionId, containerRef, onReady }: UsePtyOptions) {
       aiIdleTimerRef.current = null;
       triggerParse("ai-exited");
       parseBufferRef.current = "";
+      const aiProcess = getSession(sessionId)?.aiProcess;
+      track('ai_exited', { agent: aiProcess?.name ?? 'unknown' });
       setAiProcess(sessionId, null);
     });
 

@@ -8,6 +8,7 @@ import type { AgentType, DotState } from "../../types/session";
 import { IconX, IconPlus } from "../Icons";
 import { ConfirmDialog } from "../ConfirmDialog/ConfirmDialog";
 import { Tooltip } from "../Tooltip/Tooltip";
+import { track } from "../../lib/amplitude";
 
 const AGENT_LABELS: Record<AgentType, string> = {
   CLAUDE: "CLAUDE",
@@ -79,6 +80,7 @@ export const TabBar: React.FC<TabBarProps> = ({ onNewTab, onCloseTab }) => {
   const commitRename = () => {
     if (editingTabId && editValue.trim()) {
       renameTab(editingTabId, editValue.trim());
+      track('tab_renamed');
     }
     setEditingTabId(null);
   };
@@ -95,7 +97,7 @@ export const TabBar: React.FC<TabBarProps> = ({ onNewTab, onCloseTab }) => {
             <div
               key={tab.id}
               className={`${styles.tab} ${isActive ? styles.active : ""}`}
-              onClick={() => setActiveTab(tab.id)}
+              onClick={() => { setActiveTab(tab.id); track('tab_switched'); }}
               onDoubleClick={() => startRename(tab.id, tab.name)}
               title={tab.name}
             >

@@ -21,6 +21,7 @@ import type { PaneNode } from "./types/pane";
 import styles from "./App.module.css";
 import type { SplitDirection } from "./types/pane";
 import type { Session } from "./types/session";
+import { track } from "./lib/amplitude";
 
 function serializePaneNode(node: PaneNode, sessions: Map<string, Session>): SavedNode {
   if (node.type === 'leaf') {
@@ -129,6 +130,7 @@ export const App: React.FC = () => {
       condaEnv: null,
       createdAt: Date.now(),
     });
+    track('tab_created', { workspace_number: n });
   };
 
   const handleSplit = async (
@@ -160,6 +162,7 @@ export const App: React.FC = () => {
       condaEnv: null,
       createdAt: Date.now(),
     });
+    track('pane_split', { direction: dir });
   };
 
   const handleOpenMdPane = (tabId: string, paneId: string) => {
@@ -169,6 +172,7 @@ export const App: React.FC = () => {
     );
     const cwd = session?.cwd || rootFolder || "";
     splitMdPane(tabId, paneId, "h", cwd);
+    track('markdown_editor_opened');
   };
 
   const handleClosePane = (tabId: string, paneId: string) => {
@@ -180,6 +184,7 @@ export const App: React.FC = () => {
       }
     }
     closeTabPane(tabId, paneId);
+    track('pane_closed');
   };
 
   const handleCloseTab = (tabId: string) => {
@@ -196,6 +201,7 @@ export const App: React.FC = () => {
       }
     }
     closeTab(tabId);
+    track('tab_closed');
   };
 
   useEffect(() => {
@@ -219,6 +225,8 @@ export const App: React.FC = () => {
         createdAt: Date.now(),
       });
     };
+
+    track('app_loaded');
 
     const init = async () => {
       const { tabs: savedTabs, activeTabIndex } = useLayoutStore.getState();
@@ -319,7 +327,7 @@ export const App: React.FC = () => {
         isOpen={commandPaletteOpen}
         onClose={() => setCommandPaletteOpen(false)}
         onOpenMd={handleOpenMdPane}
-        onOpenSettings={() => { setCommandPaletteOpen(false); setSettingsOpen(true); }}
+        onOpenSettings={() => { setCommandPaletteOpen(false); setSettingsOpen(true); track('settings_opened'); }}
       />
       <Settings isOpen={settingsOpen} onClose={() => setSettingsOpen(false)} />
       <ShortcutReference />

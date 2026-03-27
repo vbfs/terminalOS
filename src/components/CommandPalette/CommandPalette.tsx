@@ -5,6 +5,7 @@ import { useTabsStore } from "../../store/tabs.store";
 import { useWorkspaceStore } from "../../store/workspace.store";
 import { useSessionsStore } from "../../store/sessions.store";
 import { useUiStore } from "../../store/ui.store";
+import { track } from "../../lib/amplitude";
 
 interface Command {
   id: string;
@@ -334,6 +335,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
       setQuery("");
       setSelectedIdx(0);
       setTimeout(() => inputRef.current?.focus(), 50);
+      track('command_palette_opened');
     }
   }, [isOpen]);
 
@@ -347,7 +349,8 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
         setSelectedIdx((i) => Math.max(i - 1, 0));
       } else if (e.key === "Enter") {
         e.preventDefault();
-        filtered[selectedIdx]?.action();
+        const cmd = filtered[selectedIdx];
+        if (cmd) { track('command_executed', { command: cmd.id, label: cmd.label, trigger: 'keyboard' }); cmd.action(); }
       } else if (e.key === "Escape") {
         e.preventDefault();
         onClose();
@@ -374,7 +377,7 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
             <div
               key={cmd.id}
               className={`${styles.result} ${idx === selectedIdx ? styles.selected : ""}`}
-              onClick={() => cmd.action()}
+              onClick={() => { track('command_executed', { command: cmd.id, label: cmd.label, trigger: 'click' }); cmd.action(); }}
               onMouseEnter={() => setSelectedIdx(idx)}
             >
               <span className={styles.resultIcon}>{cmd.icon ?? "›"}</span>

@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta
       http-equiv="Content-Security-Policy"
-      content="default-src 'self'; script-src 'self' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; font-src 'self' data:; img-src 'self' data: https: http: file:; frame-src localfile:; connect-src 'self' ws://localhost:* ws://*:* http://*:*"
+      content="default-src 'self'; script-src 'self' 'unsafe-eval' https://cdn.amplitude.com 'sha256-EoWZpXEHqK2wmB97irWq1RUIZ3Wr7tqozkihaam13bs='; style-src 'self' 'unsafe-inline'; font-src 'self' data:; img-src 'self' data: https: http: file:; frame-src localfile:; connect-src 'self' ws://localhost:* ws://*:* http://*:* https://*.amplitude.com"
     />
     <title>terminalOS — Ai-Native Terminal Workspace</title>
     <meta
@@ -34,6 +34,9 @@
     <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png" />
 
     <link rel="manifest" href="manifest.json" />
+
+    <script src="https://cdn.amplitude.com/script/7369857fc76b4cc0607f853e4d670697.js"></script>
+    <script>window.amplitude.init('7369857fc76b4cc0607f853e4d670697', {"fetchRemoteConfig":true,"autocapture":false});</script>
   </head>
   <body>
     <div id="root"></div>
