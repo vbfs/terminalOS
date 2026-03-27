@@ -378,14 +378,16 @@ app.get('/api/fs/pick-folder', async (_req, res) => {
     } else if (process.platform === 'win32') {
       cmd = `powershell -NoProfile -Command "Add-Type -AssemblyName System.Windows.Forms; $d = New-Object System.Windows.Forms.FolderBrowserDialog; $d.Description = 'Select a folder'; if ($d.ShowDialog() -eq 'OK') { Write-Output $d.SelectedPath }"`
     } else {
-      return res.json({ path: null })
+      return res.json({ path: null, fallback: true })
     }
     const stdout = await new Promise<string>((resolve, reject) => {
       childProcess.exec(cmd, (err, out) => (err ? reject(err) : resolve(out)))
     })
-    res.json({ path: stdout.trim().replace(/\/$/, '') })
+    const picked = stdout.trim().replace(/\/$/, '')
+    res.json({ path: picked || null, fallback: false })
   } catch {
-    res.json({ path: null })
+    // User cancelled (osascript/zenity/powershell exit with error on cancel)
+    res.json({ path: null, fallback: false })
   }
 })
 
