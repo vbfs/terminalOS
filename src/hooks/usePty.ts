@@ -370,12 +370,6 @@ export function usePty({ sessionId, containerRef, onReady }: UsePtyOptions) {
         : null;
       const alert = parseAlert(screenText);
 
-      console.group(`[aiTerm parse] trigger="${reason}"`);
-      console.log("screenText (últimas 20 linhas):\n" +
-        screenText.split("\n").slice(-20).join("\n"));
-      console.log("model:", model, "| tokens:", tokens, "| cost:", costUsd);
-      console.groupEnd();
-
       if (model) updateModel(sessionId, model);
 
       if (tokens !== null && costUsd !== null) {
@@ -383,15 +377,11 @@ export function usePty({ sessionId, containerRef, onReady }: UsePtyOptions) {
         if (tokens !== lastParsedTokensRef.current) {
           const prev = lastParsedTokensRef.current;
           const dropped = prev !== null && tokens < prev * 0.8; // queda > 20%
-          console.log(`[aiTerm] tokens atualizado: ${prev} → ${tokens}${dropped ? " ⚠️ DROP" : ""}`);
           if (dropped) {
-            // Log screenText completo para diagnosticar drops inesperados
-            console.log("[aiTerm] SCREEN COMPLETO no drop:\n" + screenText);
+            lastParsedTokensRef.current = tokens;
           }
           lastParsedTokensRef.current = tokens;
           updateTokens(sessionId, tokens, costUsd);
-        } else {
-          console.log(`[aiTerm] tokens sem mudança (${tokens}), ignorando`);
         }
       }
 
