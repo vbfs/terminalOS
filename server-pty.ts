@@ -80,35 +80,54 @@ const sessions = new Map<string, PtySession>()
 
 type EventCallback = (type: string, payload: Record<string, unknown>) => void
 
+function spawnShellWithFallback(cwd: string, env: Record<string, string>): pty.IPty {
+  if (process.platform === 'win32') {
+    return pty.spawn('cmd.exe', [], { name: 'xterm-256color', cols: 80, rows: 24, cwd, env })
+  }
+  const candidates = [process.env.SHELL, '/bin/zsh', '/bin/bash', '/bin/sh']
+    .filter((s, i, a) => Boolean(s) && a.indexOf(s) === i && fs.existsSync(s!)) as string[]
+  if (candidates.length === 0) throw new Error('No usable shell found')
+
+  for (const candidate of candidates) {
+    const isZsh = candidate.endsWith('zsh')
+    const promptEnv = isZsh ? { ZDOTDIR: createZdotdir() } : { PS1: ' ', PROMPT: ' ' }
+    try {
+      return pty.spawn(candidate, ['-l'], {
+        name: 'xterm-256color',
+        cols: 80,
+        rows: 24,
+        cwd,
+        env: { ...env, ...promptEnv },
+      })
+    } catch (err) {
+      console.warn(`[aiTerm] Shell ${candidate} failed to spawn: ${err instanceof Error ? err.message : err}`)
+    }
+  }
+  throw new Error(`No usable shell could be spawned (tried: ${candidates.join(', ')})`)
+}
+
 function createPtySession(
   opts: { cwd?: string; env?: Record<string, string> },
   onEvent: EventCallback,
 ): string {
   const sessionId = uuidv4()
-  const shell =
-    process.platform === 'win32'
-      ? 'cmd.exe'
-      : (process.env.SHELL ?? '/bin/bash')
   const cwd = opts.cwd ?? process.env.HOME ?? '/'
-  const isZsh = shell.endsWith('zsh')
-  const promptEnv = isZsh
-    ? { ZDOTDIR: createZdotdir() }
-    : { PS1: ' ', PROMPT: ' ' }
+  const baseEnv: Record<string, string> = {
+    ...(process.env as Record<string, string>),
+    TERM: 'xterm-256color',
+    COLORTERM: 'truecolor',
+    ...(opts.env ?? {}),
+  }
 
-  const shellArgs = process.platform === 'win32' ? [] : ['-l']
-  const ptyProcess = pty.spawn(shell, shellArgs, {
-    name: 'xterm-256color',
-    cols: 80,
-    rows: 24,
-    cwd,
-    env: {
-      ...(process.env as Record<string, string>),
-      TERM: 'xterm-256color',
-      COLORTERM: 'truecolor',
-      ...promptEnv,
-      ...(opts.env ?? {}),
-    },
-  })
+  let ptyProcess: pty.IPty
+  try {
+    ptyProcess = spawnShellWithFallback(cwd, baseEnv)
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err)
+    console.error(`[aiTerm] Failed to spawn shell:`, msg)
+    onEvent('pty:error', { sessionId, message: `Failed to start shell: ${msg}` })
+    return sessionId
+  }
 
   const detector = new ProcessDetector()
   const session: PtySession = {

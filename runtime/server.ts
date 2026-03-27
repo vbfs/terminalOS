@@ -198,12 +198,30 @@ interface PtySession {
   detector: ProcessDetector;
 }
 
-function resolveShell(): string {
-  if (process.platform === "win32") return "cmd.exe";
-  const candidates = [process.env.SHELL, "/bin/zsh", "/bin/bash", "/bin/sh"].filter(Boolean) as string[];
-  const found = candidates.find((s) => fsSync.existsSync(s));
-  if (!found) throw new Error(`No usable shell found (tried: ${candidates.join(", ")})`);
-  return found;
+function spawnShellWithFallback(cwd: string, env: Record<string, string>): pty.IPty {
+  if (process.platform === "win32") {
+    return pty.spawn("cmd.exe", [], { name: "xterm-256color", cols: 80, rows: 24, cwd, env });
+  }
+  const candidates = [process.env.SHELL, "/bin/zsh", "/bin/bash", "/bin/sh"]
+    .filter((s, i, a) => Boolean(s) && a.indexOf(s) === i && fsSync.existsSync(s!)) as string[];
+  if (candidates.length === 0) throw new Error("No usable shell found");
+
+  for (const candidate of candidates) {
+    const isZsh = candidate.endsWith("zsh");
+    const promptEnv = isZsh ? { ZDOTDIR: createZdotdir() } : { PS1: " ", PROMPT: " " };
+    try {
+      return pty.spawn(candidate, ["-l"], {
+        name: "xterm-256color",
+        cols: 80,
+        rows: 24,
+        cwd,
+        env: { ...env, ...promptEnv },
+      });
+    } catch (err) {
+      console.warn(`[aiTerm] Shell ${candidate} failed to spawn: ${err instanceof Error ? err.message : err}`);
+    }
+  }
+  throw new Error(`No usable shell could be spawned (tried: ${candidates.join(", ")})`);
 }
 
 class WebPtyManager {
@@ -214,33 +232,21 @@ class WebPtyManager {
 
   create(opts: { cwd?: string; env?: Record<string, string> }): string {
     const sessionId = uuidv4();
-    const shell = resolveShell();
     const cwd = opts.cwd ?? process.env.HOME ?? "/";
-    const isZsh = shell.endsWith("zsh");
-    const promptEnv = isZsh
-      ? { ZDOTDIR: createZdotdir() }
-      : { PS1: " ", PROMPT: " " };
+    const baseEnv: Record<string, string> = {
+      ...(process.env as Record<string, string>),
+      TERM: "xterm-256color",
+      COLORTERM: "truecolor",
+      ...(opts.env ?? {}),
+    };
 
-    const shellArgs = process.platform === "win32" ? [] : ["-l"];
     let ptyProcess: pty.IPty;
     try {
-      ptyProcess = pty.spawn(shell, shellArgs, {
-        name: "xterm-256color",
-        cols: 80,
-        rows: 24,
-        cwd,
-        env: {
-          ...process.env,
-          TERM: "xterm-256color",
-          COLORTERM: "truecolor",
-          ...promptEnv,
-          ...opts.env,
-        } as Record<string, string>,
-      });
+      ptyProcess = spawnShellWithFallback(cwd, baseEnv);
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);
-      console.error(`[aiTerm] Failed to spawn shell (${shell}):`, msg);
-      this.send("pty:error", [sessionId, `Failed to start shell (${shell}): ${msg}`]);
+      console.error(`[aiTerm] Failed to spawn shell:`, msg);
+      this.send("pty:error", [sessionId, `Failed to start shell: ${msg}`]);
       return sessionId;
     }
 

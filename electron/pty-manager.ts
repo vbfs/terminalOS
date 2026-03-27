@@ -56,34 +56,57 @@ export class PtyManager {
     this.win = win;
   }
 
+  private spawnWithFallback(
+    cwd: string,
+    env: Record<string, string>,
+    sessionId: string,
+  ): pty.IPty | null {
+    if (process.platform === "win32") {
+      return pty.spawn("cmd.exe", [], { name: "xterm-256color", cols: 80, rows: 24, cwd, env });
+    }
+    const candidates = [process.env.SHELL, "/bin/zsh", "/bin/bash", "/bin/sh"]
+      .filter((s, i, a) => Boolean(s) && a.indexOf(s) === i && fs.existsSync(s!)) as string[];
+    if (candidates.length === 0) {
+      if (!this.win.isDestroyed()) {
+        this.win.webContents.send("pty:error", sessionId, "No usable shell found");
+      }
+      return null;
+    }
+    for (const candidate of candidates) {
+      const isZsh = candidate.endsWith("zsh");
+      const promptEnv = isZsh ? { ZDOTDIR: createZdotdir() } : { PS1: " ", PROMPT: " " };
+      try {
+        return pty.spawn(candidate, ["-l"], {
+          name: "xterm-256color",
+          cols: 80,
+          rows: 24,
+          cwd,
+          env: { ...env, ...promptEnv },
+        });
+      } catch (err) {
+        console.warn(`[aiTerm] Shell ${candidate} failed to spawn: ${err instanceof Error ? err.message : err}`);
+      }
+    }
+    const msg = `No usable shell could be spawned (tried: ${candidates.join(", ")})`;
+    console.error(`[aiTerm] ${msg}`);
+    if (!this.win.isDestroyed()) {
+      this.win.webContents.send("pty:error", sessionId, msg);
+    }
+    return null;
+  }
+
   create(opts: { cwd?: string; env?: Record<string, string> }): string {
     const sessionId = uuidv4();
-    const shell =
-      process.platform === "win32"
-        ? "cmd.exe"
-        : (process.env.SHELL ?? "/bin/bash");
-
     const cwd = opts.cwd ?? process.env.HOME ?? "/";
+    const baseEnv = {
+      ...process.env,
+      TERM: "xterm-256color",
+      COLORTERM: "truecolor",
+      ...opts.env,
+    } as Record<string, string>;
 
-    const isZsh = shell.endsWith("zsh");
-    const promptEnv = isZsh
-      ? { ZDOTDIR: createZdotdir() }
-      : { PS1: " ", PROMPT: " " };
-
-    const shellArgs = process.platform === "win32" ? [] : ["-l"];
-    const ptyProcess = pty.spawn(shell, shellArgs, {
-      name: "xterm-256color",
-      cols: 80,
-      rows: 24,
-      cwd,
-      env: {
-        ...process.env,
-        TERM: "xterm-256color",
-        COLORTERM: "truecolor",
-        ...promptEnv,
-        ...opts.env,
-      },
-    });
+    const ptyProcess = this.spawnWithFallback(cwd, baseEnv, sessionId);
+    if (!ptyProcess) return sessionId;
 
     const detector = new ProcessDetector();
     const session: Session = {
