@@ -69,7 +69,7 @@ export const PaneHeader: React.FC<PaneHeaderProps> = ({
     e.stopPropagation();
     const folder = await api.fs.openFolder();
     if (folder) {
-      api.pty.write(session.id, `cd "${folder}"\n`);
+      api.pty.write(session.id, `cd "${folder}"\r\n`);
       useSessionsStore.getState().updateCwd(session.id, folder);
     }
   };

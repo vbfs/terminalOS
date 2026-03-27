@@ -134,7 +134,7 @@ export function useKeymap(handlers: KeymapHandlers = {}) {
           if (activePaneId) {
             const session = Array.from(sessionsStore.sessions.values()).find(s => s.paneId === activePaneId)
             if (session) {
-              api.pty.write(session.id, `cd "${folder}"\n`)
+              api.pty.write(session.id, `cd "${folder}"\r\n`)
               sessionsStore.updateCwd(session.id, folder)
             }
           }
