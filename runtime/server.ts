@@ -216,7 +216,8 @@ class WebPtyManager {
       ? { ZDOTDIR: createZdotdir() }
       : { PS1: " ", PROMPT: " " };
 
-    const ptyProcess = pty.spawn(shell, ["-l"], {
+    const shellArgs = process.platform === "win32" ? [] : ["-l"];
+    const ptyProcess = pty.spawn(shell, shellArgs, {
       name: "xterm-256color",
       cols: 80,
       rows: 24,

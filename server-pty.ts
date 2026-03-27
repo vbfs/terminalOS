@@ -95,7 +95,8 @@ function createPtySession(
     ? { ZDOTDIR: createZdotdir() }
     : { PS1: ' ', PROMPT: ' ' }
 
-  const ptyProcess = pty.spawn(shell, ['-l'], {
+  const shellArgs = process.platform === 'win32' ? [] : ['-l']
+  const ptyProcess = pty.spawn(shell, shellArgs, {
     name: 'xterm-256color',
     cols: 80,
     rows: 24,
@@ -374,6 +375,8 @@ app.get('/api/fs/pick-folder', async (_req, res) => {
       cmd = `osascript -e 'POSIX path of (choose folder with prompt "Select a folder:")'`
     } else if (process.platform === 'linux') {
       cmd = `zenity --file-selection --directory --title="Select a folder"`
+    } else if (process.platform === 'win32') {
+      cmd = `powershell -NoProfile -Command "Add-Type -AssemblyName System.Windows.Forms; $d = New-Object System.Windows.Forms.FolderBrowserDialog; $d.Description = 'Select a folder'; if ($d.ShowDialog() -eq 'OK') { Write-Output $d.SelectedPath }"`
     } else {
       return res.json({ path: null })
     }

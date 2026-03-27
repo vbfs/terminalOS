@@ -21,9 +21,12 @@ function formatTokens(n: number): string {
 
 function shortenCwd(cwd: string): string {
   if (!cwd) return "";
-  const stripped = cwd.replace(/^\/(Users|home)\/[^/]+\//, "");
+  const normalized = cwd.replace(/\\/g, "/");
+  const stripped = normalized
+    .replace(/^\/(Users|home)\/[^/]+\//, "")
+    .replace(/^[A-Za-z]:\/Users\/[^/]+\//, "");
   const parts = stripped.split("/").filter(Boolean);
-  if (parts.length === 0) return cwd;
+  if (parts.length === 0) return normalized;
   return parts.slice(-2).join("/");
 }
 

@@ -37,7 +37,13 @@ interface PaneHeaderProps {
 
 function shortPath(cwd: string): string {
   if (!cwd) return "~";
-  const parts = cwd.replace(/^\/Users\/[^/]+/, "~").split("/");
+  const normalized = cwd.replace(/\\/g, "/");
+  const stripped = normalized
+    .replace(/^\/Users\/[^/]+/, "~")
+    .replace(/^\/home\/[^/]+/, "~")
+    .replace(/^[A-Za-z]:\/Users\/[^/]+/, "~");
+  const parts = stripped.split("/").filter(Boolean);
+  if (parts.length === 0) return normalized;
   return parts.slice(-2).join("/");
 }
 
@@ -56,7 +62,7 @@ export const PaneHeader: React.FC<PaneHeaderProps> = ({
   const path = shortPath(session.cwd);
   const copiedFlash = useUiStore((s) => s.copiedFlash);
   const rootFolder = useWorkspaceStore((s) => s.rootFolder);
-  const workspaceName = (rootFolder ?? session.cwd ?? "").split("/").filter(Boolean).pop() ?? null;
+  const workspaceName = (rootFolder ?? session.cwd ?? "").replace(/\\/g, "/").split("/").filter(Boolean).pop() ?? null;
 
   const handleOpenFolder = async (e: React.MouseEvent) => {
     e.stopPropagation();

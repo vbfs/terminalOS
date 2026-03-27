@@ -196,11 +196,15 @@ export const useMdPaneStore = create<MdPaneStoreState>((set, get) => ({
   goUp: async (paneId) => {
     const pane = get().panes.get(paneId)
     if (!pane) return
-    // Use simple string manipulation since path-browserify may not be available
-    const parts = pane.browsePath.replace(/\/$/, '').split('/')
+    // Normalize Windows backslashes before splitting
+    const normalized = pane.browsePath.replace(/\\/g, '/').replace(/\/$/, '')
+    if (!normalized) return
+    const parts = normalized.split('/')
     if (parts.length <= 1) return
     parts.pop()
-    const parent = parts.join('/') || '/'
+    const joined = parts.join('/')
+    // Handle Windows drive letter root: 'C:' → 'C:/'
+    const parent = /^[A-Za-z]:$/.test(joined) ? joined + '/' : (joined || '/')
     await get().browse(paneId, parent)
   },
 
