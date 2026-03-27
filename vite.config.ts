@@ -17,6 +17,7 @@ export default defineConfig({
   plugins: [react()],
   root: 'src',
   base: './',
+  publicDir: path.resolve(__dirname, 'public'),
   build: {
     outDir: '../build',
     emptyOutDir: true,
