@@ -1,5 +1,6 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
+import obfuscatorPlugin from 'vite-plugin-javascript-obfuscator'
 import path from 'path'
 import { readFileSync } from 'fs'
 
@@ -14,7 +15,28 @@ export default defineConfig({
       ? { 'import.meta.env.VITE_SERVER_URL': JSON.stringify(process.env.VITE_SERVER_URL) }
       : {}),
   },
-  plugins: [react()],
+  plugins: [
+    react(),
+    ...(process.env.NODE_ENV === 'production'
+      ? [
+          obfuscatorPlugin({
+            options: {
+              compact: true,
+              controlFlowFlattening: true,
+              controlFlowFlatteningThreshold: 0.5,
+              deadCodeInjection: false,
+              stringArray: true,
+              stringArrayEncoding: ['rc4'],
+              stringArrayThreshold: 0.75,
+              renameGlobals: false,
+              selfDefending: true,
+              debugProtection: false,
+              disableConsoleOutput: false,
+            },
+          }),
+        ]
+      : []),
+  ],
   root: 'src',
   base: './',
   publicDir: path.resolve(__dirname, 'public'),
