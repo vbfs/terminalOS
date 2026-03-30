@@ -15,9 +15,11 @@ export const Titlebar: React.FC = () => {
     const up = () => setOnline(true);
     const down = () => setOnline(false);
     window.addEventListener('ws:connected', up);
+    window.addEventListener('ws:reconnected', up);
     window.addEventListener('ws:disconnected', down);
     return () => {
       window.removeEventListener('ws:connected', up);
+      window.removeEventListener('ws:reconnected', up);
       window.removeEventListener('ws:disconnected', down);
     };
   }, []);
